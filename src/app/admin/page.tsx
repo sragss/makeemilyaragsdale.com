@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getDb } from "@/db";
 import {
   Table,
@@ -11,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { isAdminAuthenticated } from "./actions";
 import { LoginForm } from "./login-form";
+import { CreateInviteForm } from "./create-invite";
 
 export const dynamic = "force-dynamic";
 
@@ -60,6 +62,8 @@ export default async function AdminPage() {
 
         <Separator />
 
+        <CreateInviteForm />
+
         <Table>
           <TableHeader>
             <TableRow>
@@ -74,7 +78,12 @@ export default async function AdminPage() {
             {allInvites.map((invite) => (
               <TableRow key={invite.id}>
                 <TableCell className="font-mono text-xs">
-                  {invite.code}
+                  <Link
+                    href={`/admin/rsvp/${invite.code}`}
+                    className="underline underline-offset-4 decoration-muted-foreground/50 hover:decoration-foreground transition-colors"
+                  >
+                    {invite.code}
+                  </Link>
                 </TableCell>
                 <TableCell>
                   <div className="space-y-0.5">

@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MakeEmilyARagsdale.com
+
+Wedding website for Emily Devery & Sam Ragsdale — February 27, 2027 — San Miguel de Allende, Mexico.
+
+## Stack
+
+- **Framework**: Next.js 16 (App Router, Turbopack)
+- **Styling**: Tailwind CSS v4 + shadcn/ui
+- **Database**: Neon Postgres + Drizzle ORM
+- **Hosting**: Vercel (sragss-projects/makeemilyaragsdale-com)
+- **Domain**: makeemilyaragsdale.com
+
+## Pages
+
+| Route | Purpose |
+|-------|---------|
+| `/` | Landing — date, names, location |
+| `/details` | Schedule, venue, dress code, accommodation |
+| `/rsvp` | Code entry → RSVP form |
+| `/rsvp/[code]` | Direct RSVP link (e.g. `/rsvp/EBR-TOVIK`) |
+| `/admin` | Password-protected dashboard |
+| `/admin/rsvp/[code]` | Edit individual invite details |
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Requires `.env.local` with:
+```
+DATABASE_URL="postgresql://..."
+ADMIN_PASSWORD="emily-ragsdale"
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+pnpm dev          # Local dev server
+pnpm build        # Production build
+pnpm db:push      # Push schema changes to Neon
+pnpm db:seed      # Seed test data (generates new random codes)
+pnpm db:studio    # Drizzle Studio (database GUI)
+```
 
-## Learn More
+## Deployment
 
-To learn more about Next.js, take a look at the following resources:
+Push to `main` → auto-deploys to production on Vercel. PRs get preview deployments.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Environment variables (`DATABASE_URL`, `ADMIN_PASSWORD`) are set in Vercel project settings.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## RSVP Codes
 
-## Deploy on Vercel
+Each invite gets a pronounceable code like `EBR-TOVIK` (consonant-vowel alternating pattern). Codes are generated in `src/lib/codes.ts`. Guests enter codes at `/rsvp` or visit `/rsvp/EBR-TOVIK` directly.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+New invites can be created from the admin dashboard.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Admin
+
+- **URL**: makeemilyaragsdale.com/admin
+- **Password**: Set via `ADMIN_PASSWORD` env var
+- Click any code in the table to edit guest details, hotel booking status, and booking value
+- Create new invites with the "+ New Invite" button

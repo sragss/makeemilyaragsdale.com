@@ -3,6 +3,7 @@ import {
   text,
   boolean,
   integer,
+  numeric,
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
@@ -14,6 +15,7 @@ export const invites = pgTable("invites", {
   hotelEligible: boolean("hotel_eligible").notNull().default(false),
   maxGuests: integer("max_guests").notNull().default(2),
   notes: text("notes"),
+  address: text("address"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -53,6 +55,8 @@ export const hotelBookings = pgTable("hotel_bookings", {
     .references(() => invites.id),
   willBook: boolean("will_book"),
   acknowledgedPolicy: boolean("acknowledged_policy").notNull().default(false),
+  bookingComplete: boolean("booking_complete").notNull().default(false),
+  bookingValue: numeric("booking_value"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
