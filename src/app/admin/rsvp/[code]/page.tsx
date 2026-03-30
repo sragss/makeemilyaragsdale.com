@@ -6,6 +6,8 @@ import { Separator } from "@/components/ui/separator";
 import { isAdminAuthenticated } from "../../actions";
 import { redirect } from "next/navigation";
 import { EditForm } from "./edit-form";
+import { EventLog } from "./event-log";
+import { DeleteButton } from "./delete-button";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +27,9 @@ export default async function AdminRsvpDetail({
     with: {
       guests: true,
       hotelBookings: true,
+      events: {
+        orderBy: (events, { desc }) => [desc(events.createdAt)],
+      },
     },
   });
 
@@ -65,6 +70,14 @@ export default async function AdminRsvpDetail({
       : null,
   };
 
+  const events = invite.events.map((e) => ({
+    id: e.id,
+    type: e.type,
+    ip: e.ip,
+    userAgent: e.userAgent,
+    createdAt: e.createdAt.toISOString(),
+  }));
+
   return (
     <main className="flex flex-1 flex-col items-center px-6 py-16">
       <div className="max-w-2xl w-full space-y-8">
@@ -93,6 +106,14 @@ export default async function AdminRsvpDetail({
         <Separator />
 
         <EditForm invite={data} />
+
+        <Separator />
+
+        <EventLog events={events} />
+
+        <Separator />
+
+        <DeleteButton inviteId={invite.id} code={invite.code} />
       </div>
     </main>
   );

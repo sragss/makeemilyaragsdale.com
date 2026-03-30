@@ -65,3 +65,12 @@ export async function updateHotelBooking(
   }
   return { success: true };
 }
+
+export async function deleteInvite(inviteId: string) {
+  const db = getDb();
+  await db
+    .update(invites)
+    .set({ deleted: true })
+    .where(eq(invites.id, inviteId));
+  return { success: true };
+}

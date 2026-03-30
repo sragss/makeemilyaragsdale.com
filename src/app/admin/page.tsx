@@ -13,6 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { isAdminAuthenticated } from "./actions";
 import { LoginForm } from "./login-form";
 import { CreateInviteForm } from "./create-invite";
+import { CopyButton } from "./copy-button";
 
 export const dynamic = "force-dynamic";
 
@@ -32,7 +33,7 @@ export default async function AdminPage() {
 
   const db = getDb();
 
-  const allInvites = await db.query.invites.findMany({
+  const allInvitesRaw = await db.query.invites.findMany({
     with: {
       guests: true,
       hotelBookings: true,
@@ -40,6 +41,7 @@ export default async function AdminPage() {
     orderBy: (invites, { asc }) => [asc(invites.code)],
   });
 
+  const allInvites = allInvitesRaw.filter((i) => !i.deleted);
   const totalGuests = allInvites.flatMap((i) => i.guests);
   const attending = totalGuests.filter((g) => g.attending === true);
   const declined = totalGuests.filter((g) => g.attending === false);
@@ -72,6 +74,7 @@ export default async function AdminPage() {
               <TableHead>Status</TableHead>
               <TableHead>Hotel</TableHead>
               <TableHead>Contact</TableHead>
+              <TableHead></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -163,6 +166,9 @@ export default async function AdminPage() {
                       </div>
                     ))}
                   </div>
+                </TableCell>
+                <TableCell>
+                  <CopyButton url={`https://makeemilyaragsdale.com/rsvp/${invite.code}`} />
                 </TableCell>
               </TableRow>
             ))}

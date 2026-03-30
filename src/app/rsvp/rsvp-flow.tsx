@@ -13,6 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { BotanicalConfetti } from "@/components/botanicals";
 import { NoiseBackground } from "@/components/ui/noise-background";
 import { lookupInvite, submitRsvp, type InviteData } from "./actions";
+import { trackView, trackEvent } from "./track";
 
 export function RsvpFlow({ initialCode }: { initialCode?: string }) {
   const [step, setStep] = useState<"code" | "form" | "done">(
@@ -44,6 +45,8 @@ export function RsvpFlow({ initialCode }: { initialCode?: string }) {
     }
     setInvite(result);
     setStep("form");
+    // Track the view
+    trackView(c);
     // Update URL so refresh persists the code
     const normalized = c.trim().toUpperCase();
     window.history.replaceState(null, "", `/rsvp/${normalized}`);
@@ -530,6 +533,7 @@ function RsvpForm({
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block text-sm underline underline-offset-4 decoration-muted-foreground/50 hover:decoration-foreground transition-colors"
+                onClick={() => trackEvent(invite.id, "belmond_click")}
               >
                 View the Belmond
               </a>
