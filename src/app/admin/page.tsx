@@ -1,19 +1,9 @@
-import Link from "next/link";
 import { getDb } from "@/db";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { isAdminAuthenticated } from "./actions";
 import { LoginForm } from "./login-form";
 import { CreateInviteForm } from "./create-invite";
-import { CopyButton } from "./copy-button";
+import { AdminTable } from "./admin-table";
 
 export const dynamic = "force-dynamic";
 
@@ -50,9 +40,31 @@ export default async function AdminPage() {
     (i) => i.hotelBookings?.willBook === true
   );
 
+  const tableData = allInvites.map((inv) => ({
+    id: inv.id,
+    code: inv.code,
+    hotelEligible: inv.hotelEligible,
+    address: inv.address,
+    guests: inv.guests.map((g) => ({
+      id: g.id,
+      name: g.name,
+      attending: g.attending,
+      email: g.email,
+      phone: g.phone,
+      dietaryRestrictions: g.dietaryRestrictions,
+      plusOneName: g.plusOneName,
+    })),
+    hotelBooking: inv.hotelBookings
+      ? {
+          willBook: inv.hotelBookings.willBook,
+          bookingComplete: inv.hotelBookings.bookingComplete,
+        }
+      : null,
+  }));
+
   return (
     <main className="flex flex-1 flex-col items-center px-6 py-16">
-      <div className="max-w-4xl w-full space-y-8">
+      <div className="max-w-5xl w-full space-y-8">
         <h1 className="font-serif text-3xl font-light">Admin</h1>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
@@ -66,114 +78,7 @@ export default async function AdminPage() {
 
         <CreateInviteForm />
 
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Code</TableHead>
-              <TableHead>Guests</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Hotel</TableHead>
-              <TableHead>Contact</TableHead>
-              <TableHead></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {allInvites.map((invite) => (
-              <TableRow key={invite.id}>
-                <TableCell className="font-mono text-xs">
-                  <Link
-                    href={`/admin/rsvp/${invite.code}`}
-                    className="underline underline-offset-4 decoration-muted-foreground/50 hover:decoration-foreground transition-colors"
-                  >
-                    {invite.code}
-                  </Link>
-                </TableCell>
-                <TableCell>
-                  <div className="space-y-0.5">
-                    {invite.guests.map((g) => (
-                      <div key={g.id} className="text-sm">
-                        {g.name}
-                        {g.plusOneName && (
-                          <span className="text-muted-foreground">
-                            {" "}
-                            + {g.plusOneName}
-                          </span>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  {invite.guests.map((g) => (
-                    <div key={g.id}>
-                      {g.attending === true && (
-                        <Badge variant="secondary" className="text-xs">
-                          Yes
-                        </Badge>
-                      )}
-                      {g.attending === false && (
-                        <Badge variant="outline" className="text-xs">
-                          No
-                        </Badge>
-                      )}
-                      {g.attending === null && (
-                        <Badge
-                          variant="outline"
-                          className="text-xs text-muted-foreground"
-                        >
-                          Pending
-                        </Badge>
-                      )}
-                    </div>
-                  ))}
-                </TableCell>
-                <TableCell>
-                  {invite.hotelEligible ? (
-                    invite.hotelBookings?.willBook === true ? (
-                      <Badge variant="secondary" className="text-xs">
-                        Booking
-                      </Badge>
-                    ) : invite.hotelBookings?.willBook === false ? (
-                      <span className="text-xs text-muted-foreground">
-                        Declined
-                      </span>
-                    ) : (
-                      <span className="text-xs text-muted-foreground">
-                        Eligible
-                      </span>
-                    )
-                  ) : (
-                    <span className="text-xs text-muted-foreground">
-                      &mdash;
-                    </span>
-                  )}
-                </TableCell>
-                <TableCell>
-                  <div className="space-y-0.5">
-                    {invite.guests.map((g) => (
-                      <div
-                        key={g.id}
-                        className="text-xs text-muted-foreground"
-                      >
-                        {g.email && <span>{g.email}</span>}
-                        {g.email && g.phone && <span> / </span>}
-                        {g.phone && <span>{g.phone}</span>}
-                        {g.dietaryRestrictions && (
-                          <span className="block text-muted-foreground/60">
-                            Diet: {g.dietaryRestrictions}
-                          </span>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <CopyButton url={`https://makeemilyaragsdale.com/rsvp/${invite.code}`} />
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <AdminTable invites={tableData} />
       </div>
     </main>
   );
