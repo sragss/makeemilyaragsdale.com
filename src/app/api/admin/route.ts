@@ -247,10 +247,19 @@ export async function POST(req: NextRequest) {
       );
 
     const updates: Record<string, unknown> = {};
-    if ("name" in body) updates.name = String(body.name);
+    if ("name" in body) {
+      const name = String(body.name).trim();
+      if (!name) return badRequest("Guest name cannot be empty");
+      updates.name = name;
+    }
     if ("attending" in body)
       updates.attending = body.attending === null ? null : body.attending === true;
-    if ("email" in body) updates.email = (body.email as string) || null;
+    if ("email" in body) {
+      const email = (body.email as string) || null;
+      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+        return badRequest(`Invalid email format: ${email}`);
+      updates.email = email;
+    }
     if ("phone" in body) updates.phone = (body.phone as string) || null;
     if ("dietaryRestrictions" in body)
       updates.dietaryRestrictions =

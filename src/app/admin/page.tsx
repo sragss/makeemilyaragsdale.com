@@ -4,6 +4,7 @@ import { isAdminAuthenticated } from "./actions";
 import { LoginForm } from "./login-form";
 import { CreateInviteForm } from "./create-invite";
 import { AdminTable } from "./admin-table";
+import { AgentPrompt } from "./agent-prompt";
 
 export const dynamic = "force-dynamic";
 
@@ -66,6 +67,8 @@ export default async function AdminPage() {
     <main className="flex flex-1 flex-col items-center px-6 py-16">
       <div className="max-w-5xl w-full space-y-8">
         <h1 className="font-serif text-3xl font-light">Admin</h1>
+
+        <AgentPrompt />
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
           <Stat label="Attending" value={attending.length} />
