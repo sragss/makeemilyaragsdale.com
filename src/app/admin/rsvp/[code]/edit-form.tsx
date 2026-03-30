@@ -12,7 +12,8 @@ import { useRouter } from "next/navigation";
 interface GuestData {
   id: string;
   name: string;
-  attending: boolean | null;
+  attendingFriday: boolean | null;
+  attendingSaturday: boolean | null;
   email: string | null;
   phone: string | null;
   dietaryRestrictions: string | null;
@@ -78,7 +79,8 @@ export function EditForm({ invite }: { invite: InviteData }) {
     for (const g of guestForms) {
       await updateGuest(g.id, {
         name: g.name,
-        attending: g.attending,
+        attendingFriday: g.attendingFriday,
+        attendingSaturday: g.attendingSaturday,
         email: g.email || null,
         phone: g.phone || null,
         dietaryRestrictions: g.dietaryRestrictions || null,
@@ -166,7 +168,7 @@ export function EditForm({ invite }: { invite: InviteData }) {
           </h2>
           <Separator />
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label>Name</Label>
               <Input
@@ -175,12 +177,12 @@ export function EditForm({ invite }: { invite: InviteData }) {
               />
             </div>
             <div className="space-y-2">
-              <Label>Attending</Label>
+              <Label>Friday</Label>
               <select
                 value={
-                  guest.attending === null
+                  guest.attendingFriday === null
                     ? "pending"
-                    : guest.attending
+                    : guest.attendingFriday
                       ? "yes"
                       : "no"
                 }
@@ -188,7 +190,32 @@ export function EditForm({ invite }: { invite: InviteData }) {
                   const v = e.target.value;
                   updateGuestField(
                     i,
-                    "attending",
+                    "attendingFriday",
+                    v === "pending" ? null : v === "yes"
+                  );
+                }}
+                className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm"
+              >
+                <option value="pending">Pending</option>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+              </select>
+            </div>
+            <div className="space-y-2">
+              <Label>Saturday</Label>
+              <select
+                value={
+                  guest.attendingSaturday === null
+                    ? "pending"
+                    : guest.attendingSaturday
+                      ? "yes"
+                      : "no"
+                }
+                onChange={(e) => {
+                  const v = e.target.value;
+                  updateGuestField(
+                    i,
+                    "attendingSaturday",
                     v === "pending" ? null : v === "yes"
                   );
                 }}

@@ -335,7 +335,9 @@ function RsvpForm({
     invite.guests.map((g) => ({
       id: g.id,
       name: g.name,
-      attending: g.attending ?? true,
+      coming: (g.attendingFriday ?? true) || (g.attendingSaturday ?? true),
+      attendingFriday: g.attendingFriday ?? true,
+      attendingSaturday: g.attendingSaturday ?? true,
       email: g.email ?? "",
       phone: g.phone ?? "",
       dietaryRestrictions: g.dietaryRestrictions ?? "",
@@ -351,7 +353,7 @@ function RsvpForm({
   const [submitting, setSubmitting] = useState(false);
   const [showHotelConfetti, setShowHotelConfetti] = useState(false);
 
-  const attendingGuests = guestData.filter((g) => g.attending);
+  const attendingGuests = guestData.filter((g) => g.coming);
   const missingContact = attendingGuests.some(
     (g) => !g.email.trim() || !g.phone.trim()
   );
@@ -378,7 +380,8 @@ function RsvpForm({
       inviteId: invite.id,
       guests: guestData.map((g) => ({
         id: g.id,
-        attending: g.attending,
+        attendingFriday: g.coming ? g.attendingFriday : false,
+        attendingSaturday: g.coming ? g.attendingSaturday : false,
         email: g.email,
         phone: g.phone,
         dietaryRestrictions: g.dietaryRestrictions,
@@ -388,7 +391,7 @@ function RsvpForm({
       hotelAcknowledged: invite.hotelEligible ? hotelAcknowledged : undefined,
     });
     setSubmitting(false);
-    onComplete(guestData.some((g) => g.attending));
+    onComplete(guestData.some((g) => g.coming));
   }
 
   return (
@@ -426,12 +429,18 @@ function RsvpForm({
           <p className="font-serif text-xl font-light">{guest.name}</p>
 
           <AttendToggle
-            attending={guest.attending}
-            onChange={(v) => updateGuest(i, "attending", v)}
+            attending={guest.coming}
+            onChange={(v) => {
+              updateGuest(i, "coming", v);
+              if (v) {
+                updateGuest(i, "attendingFriday", true);
+                updateGuest(i, "attendingSaturday", true);
+              }
+            }}
           />
 
           <AnimatePresence initial={false}>
-            {guest.attending && (
+            {guest.coming && (
               <motion.div
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
@@ -440,6 +449,35 @@ function RsvpForm({
                 className="overflow-hidden"
               >
                 <div className="space-y-4 pt-2">
+                  <div className="space-y-2">
+                    <Label className="text-muted-foreground">Which events?</Label>
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          id={`sat-${i}`}
+                          checked={guest.attendingSaturday}
+                          onCheckedChange={(v) =>
+                            updateGuest(i, "attendingSaturday", v === true)
+                          }
+                        />
+                        <Label htmlFor={`sat-${i}`} className="font-normal">
+                          Saturday Wedding &mdash; Feb 27
+                        </Label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          id={`fri-${i}`}
+                          checked={guest.attendingFriday}
+                          onCheckedChange={(v) =>
+                            updateGuest(i, "attendingFriday", v === true)
+                          }
+                        />
+                        <Label htmlFor={`fri-${i}`} className="font-normal">
+                          Friday Pool Party &mdash; Feb 26, 3&ndash;8 PM
+                        </Label>
+                      </div>
+                    </div>
+                  </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-0">
                     <Label htmlFor={`email-${i}`}>Email</Label>
                     <Label htmlFor={`phone-${i}`} className="hidden sm:block">Phone</Label>
@@ -514,7 +552,7 @@ function RsvpForm({
         </div>
       ))}
 
-      {invite.hotelEligible && guestData.some((g) => g.attending) && (
+      {invite.hotelEligible && guestData.some((g) => g.coming) && (
         <>
           <Separator />
           <div className="space-y-4">

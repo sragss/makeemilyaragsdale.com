@@ -27,7 +27,8 @@ export async function lookupInvite(code: string) {
       isPrimary: g.isPrimary,
       email: g.email,
       phone: g.phone,
-      attending: g.attending,
+      attendingFriday: g.attendingFriday,
+      attendingSaturday: g.attendingSaturday,
       dietaryRestrictions: g.dietaryRestrictions,
       plusOneName: g.plusOneName,
     })),
@@ -39,7 +40,8 @@ export type InviteData = NonNullable<Awaited<ReturnType<typeof lookupInvite>>>;
 
 interface GuestSubmission {
   id: string;
-  attending: boolean;
+  attendingFriday: boolean;
+  attendingSaturday: boolean;
   email: string;
   phone: string;
   dietaryRestrictions: string;
@@ -60,7 +62,8 @@ export async function submitRsvp(data: RsvpSubmission) {
     await db
       .update(guests)
       .set({
-        attending: guest.attending,
+        attendingFriday: guest.attendingFriday,
+        attendingSaturday: guest.attendingSaturday,
         email: guest.email || null,
         phone: guest.phone || null,
         dietaryRestrictions: guest.dietaryRestrictions || null,

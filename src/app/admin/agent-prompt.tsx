@@ -21,9 +21,11 @@ READING:
 WRITING (POST /api/admin with JSON body):
   {"action":"create", "guestNames":["Name1","Name2"], "hotelEligible":false, "address":"...", "notes":"..."}
   {"action":"update_invite", "code":"EBR-XXX", "hotelEligible":true, "address":"..."}
-  {"action":"update_guest", "code":"EBR-XXX", "guestName":"Name", "attending":true, "email":"...", "phone":"..."}
+  {"action":"update_guest", "code":"EBR-XXX", "guestName":"Name", "attendingFriday":true, "attendingSaturday":true, "email":"...", "phone":"..."}
   {"action":"update_hotel", "code":"EBR-XXX", "willBook":true, "bookingComplete":true, "bookingValue":"4500.00"}
   {"action":"delete", "code":"EBR-XXX", "confirm":true}
+
+EVENTS: Two events — Friday pool party (Feb 26) and Saturday wedding (Feb 27). Each guest has attendingFriday and attendingSaturday (true/false/null).
 
 SAFETY:
 - Delete requires "confirm":true — it soft-deletes only (recoverable)
@@ -31,7 +33,7 @@ SAFETY:
 - Guest lookup: use "code"+"guestName" (case-insensitive) or "guestId"
 - Codes are auto-generated (EBR-XXXXX format). Never create custom codes.
 - All codes are uppercase. API normalizes automatically.
-- "attending" accepts true, false, or null (pending)`;
+- attendingFriday/attendingSaturday accept true, false, or null (pending)`;
 
 export function AgentPrompt() {
   const [open, setOpen] = useState(false);

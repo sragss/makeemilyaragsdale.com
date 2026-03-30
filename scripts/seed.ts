@@ -1,6 +1,6 @@
 import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
-import { invites, guests, hotelBookings } from "../src/db/schema";
+import { invites, guests, hotelBookings, inviteEvents } from "../src/db/schema";
 import { generateCode } from "../src/lib/codes";
 
 async function seed() {
@@ -8,6 +8,7 @@ async function seed() {
   const db = drizzle(sql);
 
   // Clear existing data (order matters for FK constraints)
+  await db.delete(inviteEvents);
   await db.delete(hotelBookings);
   await db.delete(guests);
   await db.delete(invites);

@@ -54,7 +54,8 @@ export default async function AdminRsvpDetail({
     guests: invite.guests.map((g) => ({
       id: g.id,
       name: g.name,
-      attending: g.attending,
+      attendingFriday: g.attendingFriday,
+      attendingSaturday: g.attendingSaturday,
       email: g.email,
       phone: g.phone,
       dietaryRestrictions: g.dietaryRestrictions,

@@ -45,7 +45,8 @@ export async function GET(req: NextRequest) {
           id: g.id,
           name: g.name,
           isPrimary: g.isPrimary,
-          attending: g.attending,
+          attendingFriday: g.attendingFriday,
+          attendingSaturday: g.attendingSaturday,
           email: g.email,
           phone: g.phone,
           dietaryRestrictions: g.dietaryRestrictions,
@@ -88,7 +89,8 @@ export async function GET(req: NextRequest) {
         id: g.id,
         name: g.name,
         isPrimary: g.isPrimary,
-        attending: g.attending,
+        attendingFriday: g.attendingFriday,
+        attendingSaturday: g.attendingSaturday,
         email: g.email,
         phone: g.phone,
         dietaryRestrictions: g.dietaryRestrictions,
@@ -118,9 +120,11 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       invites: active.length,
       guests: allGuests.length,
-      attending: allGuests.filter((g) => g.attending === true).length,
-      declined: allGuests.filter((g) => g.attending === false).length,
-      pending: allGuests.filter((g) => g.attending === null).length,
+      attendingFriday: allGuests.filter((g) => g.attendingFriday === true).length,
+      attendingSaturday: allGuests.filter((g) => g.attendingSaturday === true).length,
+      attending: allGuests.filter((g) => g.attendingFriday || g.attendingSaturday).length,
+      declined: allGuests.filter((g) => g.attendingFriday === false && g.attendingSaturday === false).length,
+      pending: allGuests.filter((g) => g.attendingFriday === null && g.attendingSaturday === null).length,
       hotelEligible: active.filter((i) => i.hotelEligible).length,
       hotelBooking: active.filter((i) => i.hotelBookings?.willBook === true)
         .length,
@@ -252,8 +256,10 @@ export async function POST(req: NextRequest) {
       if (!name) return badRequest("Guest name cannot be empty");
       updates.name = name;
     }
-    if ("attending" in body)
-      updates.attending = body.attending === null ? null : body.attending === true;
+    if ("attendingFriday" in body)
+      updates.attendingFriday = body.attendingFriday === null ? null : body.attendingFriday === true;
+    if ("attendingSaturday" in body)
+      updates.attendingSaturday = body.attendingSaturday === null ? null : body.attendingSaturday === true;
     if ("email" in body) {
       const email = (body.email as string) || null;
       if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
@@ -269,7 +275,7 @@ export async function POST(req: NextRequest) {
 
     if (Object.keys(updates).length === 0)
       return badRequest(
-        "No fields to update. Provide name, attending, email, phone, dietaryRestrictions, or plusOneName"
+        "No fields to update. Provide name, attendingFriday, attendingSaturday, email, phone, dietaryRestrictions, or plusOneName"
       );
 
     updates.updatedAt = new Date();

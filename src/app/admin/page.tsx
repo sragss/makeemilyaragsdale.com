@@ -34,9 +34,15 @@ export default async function AdminPage() {
 
   const allInvites = allInvitesRaw.filter((i) => !i.deleted);
   const totalGuests = allInvites.flatMap((i) => i.guests);
-  const attending = totalGuests.filter((g) => g.attending === true);
-  const declined = totalGuests.filter((g) => g.attending === false);
-  const pending = totalGuests.filter((g) => g.attending === null);
+  const attending = totalGuests.filter(
+    (g) => g.attendingFriday || g.attendingSaturday
+  );
+  const declined = totalGuests.filter(
+    (g) => g.attendingFriday === false && g.attendingSaturday === false
+  );
+  const pending = totalGuests.filter(
+    (g) => g.attendingFriday === null && g.attendingSaturday === null
+  );
   const hotelYes = allInvites.filter(
     (i) => i.hotelBookings?.willBook === true
   );
@@ -49,7 +55,8 @@ export default async function AdminPage() {
     guests: inv.guests.map((g) => ({
       id: g.id,
       name: g.name,
-      attending: g.attending,
+      attendingFriday: g.attendingFriday,
+      attendingSaturday: g.attendingSaturday,
       email: g.email,
       phone: g.phone,
       dietaryRestrictions: g.dietaryRestrictions,
@@ -70,10 +77,14 @@ export default async function AdminPage() {
 
         <AgentPrompt />
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 text-center">
           <Stat label="Attending" value={attending.length} />
           <Stat label="Declined" value={declined.length} />
           <Stat label="Pending" value={pending.length} />
+          <Stat
+            label="Friday"
+            value={totalGuests.filter((g) => g.attendingFriday === true).length}
+          />
           <Stat label="Hotel bookings" value={hotelYes.length} />
         </div>
 

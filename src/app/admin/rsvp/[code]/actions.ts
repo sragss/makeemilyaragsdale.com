@@ -8,7 +8,8 @@ export async function updateGuest(
   guestId: string,
   data: {
     name?: string;
-    attending?: boolean | null;
+    attendingFriday?: boolean | null;
+    attendingSaturday?: boolean | null;
     email?: string | null;
     phone?: string | null;
     dietaryRestrictions?: string | null;

@@ -35,7 +35,8 @@ interface InviteRow {
   guests: {
     id: string;
     name: string;
-    attending: boolean | null;
+    attendingFriday: boolean | null;
+    attendingSaturday: boolean | null;
     email: string | null;
     phone: string | null;
     dietaryRestrictions: string | null;
@@ -147,10 +148,14 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
 
     if (filterStatus.size > 0) {
       result = result.filter((inv) => {
-        const statuses = inv.guests.map((g) => g.attending);
-        if (filterStatus.has("attending") && statuses.some((s) => s === true)) return true;
-        if (filterStatus.has("declined") && statuses.every((s) => s === false)) return true;
-        if (filterStatus.has("pending") && statuses.some((s) => s === null)) return true;
+        const guestStatuses = inv.guests.map((g) => {
+          if (g.attendingFriday || g.attendingSaturday) return "attending";
+          if (g.attendingFriday === false && g.attendingSaturday === false) return "declined";
+          return "pending";
+        });
+        if (filterStatus.has("attending") && guestStatuses.includes("attending")) return true;
+        if (filterStatus.has("declined") && guestStatuses.every((s) => s === "declined")) return true;
+        if (filterStatus.has("pending") && guestStatuses.includes("pending")) return true;
         return false;
       });
     }
@@ -360,17 +365,19 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
               <TableCell>
                 {invite.guests.map((g) => (
                   <div key={g.id}>
-                    {g.attending === true && (
+                    {(g.attendingFriday || g.attendingSaturday) ? (
                       <Badge variant="secondary" className="text-xs">
-                        Yes
+                        {g.attendingFriday && g.attendingSaturday
+                          ? "Fri+Sat"
+                          : g.attendingSaturday
+                            ? "Sat"
+                            : "Fri"}
                       </Badge>
-                    )}
-                    {g.attending === false && (
+                    ) : g.attendingFriday === false && g.attendingSaturday === false ? (
                       <Badge variant="outline" className="text-xs">
                         No
                       </Badge>
-                    )}
-                    {g.attending === null && (
+                    ) : (
                       <Badge
                         variant="outline"
                         className="text-xs text-muted-foreground"
