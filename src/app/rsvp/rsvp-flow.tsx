@@ -16,9 +16,7 @@ import { lookupInvite, submitRsvp, type InviteData } from "./actions";
 import { trackView, trackEvent } from "./track";
 
 export function RsvpFlow({ initialCode }: { initialCode?: string }) {
-  const [step, setStep] = useState<"code" | "form" | "done">(
-    initialCode ? "code" : "code"
-  );
+  const [step, setStep] = useState<"code" | "form" | "done">("code");
   const [invite, setInvite] = useState<InviteData | null>(null);
   const [code, setCode] = useState(initialCode ?? "");
   const [error, setError] = useState("");
@@ -373,25 +371,33 @@ function RsvpForm({
     );
   }
 
+  const [submitError, setSubmitError] = useState("");
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
-    await submitRsvp({
-      inviteId: invite.id,
-      guests: guestData.map((g) => ({
-        id: g.id,
-        attendingFriday: g.coming ? g.attendingFriday : false,
-        attendingSaturday: g.coming ? g.attendingSaturday : false,
-        email: g.email,
-        phone: g.phone,
-        dietaryRestrictions: g.dietaryRestrictions,
-        plusOneName: g.plusOneName,
-      })),
-      hotelWillBook: invite.hotelEligible ? hotelWillBook : undefined,
-      hotelAcknowledged: invite.hotelEligible ? hotelAcknowledged : undefined,
-    });
-    setSubmitting(false);
-    onComplete(guestData.some((g) => g.coming));
+    setSubmitError("");
+    try {
+      await submitRsvp({
+        inviteId: invite.id,
+        guests: guestData.map((g) => ({
+          id: g.id,
+          attendingFriday: g.coming ? g.attendingFriday : false,
+          attendingSaturday: g.coming ? g.attendingSaturday : false,
+          email: g.email,
+          phone: g.phone,
+          dietaryRestrictions: g.dietaryRestrictions,
+          plusOneName: g.plusOneName,
+        })),
+        hotelWillBook: invite.hotelEligible ? hotelWillBook : undefined,
+        hotelAcknowledged: invite.hotelEligible ? hotelAcknowledged : undefined,
+      });
+      onComplete(guestData.some((g) => g.coming));
+    } catch {
+      setSubmitError("Something went wrong. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -662,6 +668,9 @@ function RsvpForm({
         </>
       )}
 
+      {submitError && (
+        <p className="text-sm text-destructive text-center">{submitError}</p>
+      )}
       <Button type="submit" disabled={submitting || !canSubmit} className="w-full">
         {submitting ? "Submitting..." : "Submit RSVP"}
       </Button>

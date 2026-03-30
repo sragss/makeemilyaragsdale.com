@@ -29,32 +29,44 @@ export function EventLog({ events }: { events: EventData[] }) {
       ...new Set(events.map((e) => e.ip).filter(Boolean)),
     ] as string[];
 
-    uniqueIps.forEach(async (ip) => {
-      // Skip private/local IPs
-      if (
-        ip.startsWith("192.168.") ||
-        ip.startsWith("10.") ||
-        ip.startsWith("127.") ||
-        ip === "::1"
-      )
-        return;
-      try {
-        const res = await fetch(`https://ip-api.com/json/${ip}?fields=lat,lon,city,regionName,country`);
+    const publicIps = uniqueIps.filter(
+      (ip) =>
+        !ip.startsWith("192.168.") &&
+        !ip.startsWith("10.") &&
+        !ip.startsWith("127.") &&
+        ip !== "::1"
+    );
+
+    if (publicIps.length === 0) return;
+
+    Promise.allSettled(
+      publicIps.map(async (ip) => {
+        const res = await fetch(
+          `https://ip-api.com/json/${ip}?fields=lat,lon,city,regionName,country`,
+          { signal: AbortSignal.timeout(5000) }
+        );
         const data = await res.json();
         if (data.lat && data.lon) {
-          setLocations((prev) => ({
-            ...prev,
-            [ip]: {
-              lat: data.lat,
-              lon: data.lon,
-              city: data.city,
-              region: data.regionName,
-              country: data.country,
-            },
-          }));
+          return {
+            ip,
+            lat: data.lat as number,
+            lon: data.lon as number,
+            city: data.city as string,
+            region: data.regionName as string,
+            country: data.country as string,
+          };
         }
-      } catch {
-        // Silently skip failed lookups
+        return null;
+      })
+    ).then((results) => {
+      const resolved: Record<string, IpLocation> = {};
+      for (const r of results) {
+        if (r.status === "fulfilled" && r.value) {
+          resolved[r.value.ip] = r.value;
+        }
+      }
+      if (Object.keys(resolved).length > 0) {
+        setLocations(resolved);
       }
     });
   }, [events]);
