@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -66,155 +67,164 @@ export function CreateInviteForm() {
     setResult(null);
   }
 
-  if (!open) {
-    return (
-      <Button variant="outline" onClick={() => setOpen(true)}>
-        + New Invite
-      </Button>
-    );
-  }
-
-  if (result) {
-    return (
-      <div className="space-y-4 border border-border rounded-sm p-4">
-        <p className="text-sm">
-          Created{" "}
-          <span className="font-mono font-medium">{result.code}</span>
-        </p>
-        <p className="text-xs text-muted-foreground">
-          Share this link:{" "}
-          <span className="font-mono">
-            makeemilyaragsdale.com{result.url}
-          </span>
-        </p>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              navigator.clipboard.writeText(
-                `https://makeemilyaragsdale.com${result.url}`
-              );
-            }}
-          >
-            Copy link
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              handleReset();
-            }}
-          >
-            Create another
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              handleReset();
-              setOpen(false);
-              router.refresh();
-            }}
-          >
-            Done
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-4 border border-border rounded-sm p-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xs tracking-[0.3em] uppercase text-muted-foreground">
-          New Invite
-        </h2>
-        <button
-          onClick={() => {
-            handleReset();
-            setOpen(false);
-          }}
-          className="text-xs text-muted-foreground hover:text-foreground"
-        >
-          Cancel
-        </button>
-      </div>
-      <Separator />
+    <>
+      {!open && (
+        <Button variant="outline" onClick={() => setOpen(true)}>
+          + New Invite
+        </Button>
+      )}
 
-      <div className="space-y-2">
-        <Label>Guests</Label>
-        {guestNames.map((name, i) => (
-          <div key={i} className="flex gap-2">
-            <Input
-              placeholder={`Guest ${i + 1} name`}
-              value={name}
-              onChange={(e) => updateName(i, e.target.value)}
-            />
-            {guestNames.length > 1 && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => removeGuest(i)}
-                className="shrink-0 px-2"
-              >
-                &times;
-              </Button>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            className="overflow-hidden"
+          >
+            {result ? (
+              <div className="space-y-4 border border-border rounded-sm p-4">
+                <p className="text-sm">
+                  Created{" "}
+                  <span className="font-mono font-medium">{result.code}</span>
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Share this link:{" "}
+                  <span className="font-mono">
+                    makeemilyaragsdale.com{result.url}
+                  </span>
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      navigator.clipboard.writeText(
+                        `https://makeemilyaragsdale.com${result.url}`
+                      );
+                    }}
+                  >
+                    Copy link
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleReset()}
+                  >
+                    Create another
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      handleReset();
+                      setOpen(false);
+                      router.refresh();
+                    }}
+                  >
+                    Done
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4 border border-border rounded-sm p-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xs tracking-[0.3em] uppercase text-muted-foreground">
+                    New Invite
+                  </h2>
+                  <button
+                    onClick={() => {
+                      handleReset();
+                      setOpen(false);
+                    }}
+                    className="text-xs text-muted-foreground hover:text-foreground cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                </div>
+                <Separator />
+
+                <div className="space-y-2">
+                  <Label>Guests</Label>
+                  {guestNames.map((name, i) => (
+                    <div key={i} className="flex gap-2">
+                      <Input
+                        placeholder={`Guest ${i + 1} name`}
+                        value={name}
+                        onChange={(e) => updateName(i, e.target.value)}
+                      />
+                      {guestNames.length > 1 && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => removeGuest(i)}
+                          className="shrink-0 px-2"
+                        >
+                          &times;
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={addGuest}
+                    className="text-xs text-muted-foreground hover:text-foreground cursor-pointer"
+                  >
+                    + Add guest
+                  </button>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Mailing Address (optional)</Label>
+                  <Input
+                    placeholder="123 Main St, City, State ZIP"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                  />
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="new-hotel"
+                    checked={hotelEligible}
+                    onCheckedChange={(v) => setHotelEligible(v === true)}
+                  />
+                  <Tooltip>
+                    <TooltipTrigger className="underline decoration-dotted underline-offset-4 decoration-muted-foreground/50 cursor-help text-sm font-medium">
+                      Hotel eligible
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="max-w-xs text-xs">
+                      Invite this guest to book at the Belmond (3 nights,
+                      Thu-Sat). Reserved for close friends and family. Rooms are
+                      scarce — we need bookings promptly as funds are held until
+                      the block fills.
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Notes (optional)</Label>
+                  <Input
+                    placeholder="Internal notes..."
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                  />
+                </div>
+
+                <Button
+                  onClick={handleCreate}
+                  disabled={saving || guestNames.every((n) => !n.trim())}
+                  className="w-full"
+                >
+                  {saving ? "Creating..." : "Create Invite"}
+                </Button>
+              </div>
             )}
-          </div>
-        ))}
-        <button
-          type="button"
-          onClick={addGuest}
-          className="text-xs text-muted-foreground hover:text-foreground"
-        >
-          + Add guest
-        </button>
-      </div>
-
-      <div className="space-y-2">
-        <Label>Mailing Address (optional)</Label>
-        <Input
-          placeholder="123 Main St, City, State ZIP"
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-        />
-      </div>
-
-      <div className="flex items-center gap-2">
-        <Checkbox
-          id="new-hotel"
-          checked={hotelEligible}
-          onCheckedChange={(v) => setHotelEligible(v === true)}
-        />
-        <Tooltip>
-          <TooltipTrigger className="underline decoration-dotted underline-offset-4 decoration-muted-foreground/50 cursor-help text-sm font-medium">
-            Hotel eligible
-          </TooltipTrigger>
-          <TooltipContent side="top" className="max-w-xs text-xs">
-            Invite this guest to book at the Belmond (3 nights, Thu-Sat).
-            Reserved for close friends and family. Rooms are scarce — we
-            need bookings promptly as funds are held until the block fills.
-          </TooltipContent>
-        </Tooltip>
-      </div>
-
-      <div className="space-y-2">
-        <Label>Notes (optional)</Label>
-        <Input
-          placeholder="Internal notes..."
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-        />
-      </div>
-
-      <Button
-        onClick={handleCreate}
-        disabled={saving || guestNames.every((n) => !n.trim())}
-        className="w-full"
-      >
-        {saving ? "Creating..." : "Create Invite"}
-      </Button>
-    </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

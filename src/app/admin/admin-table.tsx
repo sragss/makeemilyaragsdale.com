@@ -48,43 +48,53 @@ interface InviteRow {
 }
 
 type SortKey = "code" | "name";
-type FilterStatus = "all" | "attending" | "declined" | "pending";
-type FilterHotel =
-  | "all"
-  | "eligible"
-  | "booking"
-  | "booked"
-  | "declined_hotel";
-type FilterAddr = "all" | "has_addr" | "no_addr";
 
-const STATUS_LABELS: Record<FilterStatus, string> = {
-  all: "All",
-  attending: "Attending",
-  declined: "Declined",
-  pending: "Pending",
-};
+const STATUS_OPTIONS = [
+  { value: "attending", label: "Attending" },
+  { value: "declined", label: "Declined" },
+  { value: "pending", label: "Pending" },
+] as const;
 
-const HOTEL_LABELS: Record<FilterHotel, string> = {
-  all: "All",
+const HOTEL_OPTIONS = [
+  { value: "eligible", label: "Eligible" },
+  { value: "booking", label: "Booking" },
+  { value: "booked", label: "Booked" },
+  { value: "declined_hotel", label: "Declined" },
+] as const;
+
+const ADDR_OPTIONS = [
+  { value: "has_addr", label: "Has address" },
+  { value: "no_addr", label: "Missing" },
+] as const;
+
+// Keep these for backward compat in labels
+const HOTEL_LABELS: Record<string, string> = {
   eligible: "Eligible",
   booking: "Booking",
   booked: "Booked",
   declined_hotel: "Declined",
 };
 
-const ADDR_LABELS: Record<FilterAddr, string> = {
-  all: "All",
-  has_addr: "Has address",
-  no_addr: "Missing",
-};
+
 
 export function AdminTable({ invites }: { invites: InviteRow[] }) {
   const [search, setSearch] = useState("");
-  const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
-  const [filterHotel, setFilterHotel] = useState<FilterHotel>("all");
-  const [filterAddr, setFilterAddr] = useState<FilterAddr>("all");
+  const [filterStatus, setFilterStatus] = useState<Set<string>>(new Set());
+  const [filterHotel, setFilterHotel] = useState<Set<string>>(new Set());
+  const [filterAddr, setFilterAddr] = useState<Set<string>>(new Set());
   const [sortKey, setSortKey] = useState<SortKey>("code");
   const [sortAsc, setSortAsc] = useState(true);
+
+  function toggleFilter(
+    current: Set<string>,
+    setter: (s: Set<string>) => void,
+    value: string
+  ) {
+    const next = new Set(current);
+    if (next.has(value)) next.delete(value);
+    else next.add(value);
+    setter(next);
+  }
 
   function toggleSort(key: SortKey) {
     if (sortKey === key) {
@@ -96,21 +106,28 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
   }
 
   const activeFilters: { label: string; clear: () => void }[] = [];
-  if (filterStatus !== "all")
+  for (const v of filterStatus) {
+    const opt = STATUS_OPTIONS.find((o) => o.value === v);
+    if (opt)
+      activeFilters.push({
+        label: `Status: ${opt.label}`,
+        clear: () => toggleFilter(filterStatus, setFilterStatus, v),
+      });
+  }
+  for (const v of filterHotel) {
     activeFilters.push({
-      label: `Status: ${STATUS_LABELS[filterStatus]}`,
-      clear: () => setFilterStatus("all"),
+      label: `Hotel: ${HOTEL_LABELS[v] ?? v}`,
+      clear: () => toggleFilter(filterHotel, setFilterHotel, v),
     });
-  if (filterHotel !== "all")
-    activeFilters.push({
-      label: `Hotel: ${HOTEL_LABELS[filterHotel]}`,
-      clear: () => setFilterHotel("all"),
-    });
-  if (filterAddr !== "all")
-    activeFilters.push({
-      label: `Address: ${ADDR_LABELS[filterAddr]}`,
-      clear: () => setFilterAddr("all"),
-    });
+  }
+  for (const v of filterAddr) {
+    const opt = ADDR_OPTIONS.find((o) => o.value === v);
+    if (opt)
+      activeFilters.push({
+        label: `Address: ${opt.label}`,
+        clear: () => toggleFilter(filterAddr, setFilterAddr, v),
+      });
+  }
 
   const filtered = useMemo(() => {
     let result = invites;
@@ -128,39 +145,32 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
       });
     }
 
-    if (filterStatus !== "all") {
+    if (filterStatus.size > 0) {
       result = result.filter((inv) => {
         const statuses = inv.guests.map((g) => g.attending);
-        if (filterStatus === "attending")
-          return statuses.some((s) => s === true);
-        if (filterStatus === "declined")
-          return statuses.every((s) => s === false);
-        if (filterStatus === "pending")
-          return statuses.some((s) => s === null);
-        return true;
+        if (filterStatus.has("attending") && statuses.some((s) => s === true)) return true;
+        if (filterStatus.has("declined") && statuses.every((s) => s === false)) return true;
+        if (filterStatus.has("pending") && statuses.some((s) => s === null)) return true;
+        return false;
       });
     }
 
-    if (filterHotel !== "all") {
+    if (filterHotel.size > 0) {
       result = result.filter((inv) => {
-        if (filterHotel === "eligible") return inv.hotelEligible;
-        if (filterHotel === "booking")
-          return (
-            inv.hotelBooking?.willBook === true &&
-            !inv.hotelBooking?.bookingComplete
-          );
-        if (filterHotel === "booked")
-          return inv.hotelBooking?.bookingComplete === true;
-        if (filterHotel === "declined_hotel")
-          return inv.hotelBooking?.willBook === false;
-        return true;
+        if (filterHotel.has("eligible") && inv.hotelEligible) return true;
+        if (filterHotel.has("booking") && inv.hotelBooking?.willBook === true && !inv.hotelBooking?.bookingComplete) return true;
+        if (filterHotel.has("booked") && inv.hotelBooking?.bookingComplete === true) return true;
+        if (filterHotel.has("declined_hotel") && inv.hotelBooking?.willBook === false) return true;
+        return false;
       });
     }
 
-    if (filterAddr !== "all") {
-      result = result.filter((inv) =>
-        filterAddr === "has_addr" ? !!inv.address : !inv.address
-      );
+    if (filterAddr.size > 0) {
+      result = result.filter((inv) => {
+        if (filterAddr.has("has_addr") && inv.address) return true;
+        if (filterAddr.has("no_addr") && !inv.address) return true;
+        return false;
+      });
     }
 
     result = [...result].sort((a, b) => {
@@ -211,93 +221,56 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
             )}
           </PopoverTrigger>
           <PopoverContent align="end" className="w-72 space-y-4">
+            <FilterSection
+              label="Status"
+              options={STATUS_OPTIONS}
+              selected={filterStatus}
+              onToggle={(v) => toggleFilter(filterStatus, setFilterStatus, v)}
+            />
+            <Separator />
             <div className="space-y-2">
-              <Label className="text-xs text-muted-foreground">Status</Label>
+              <Tooltip>
+                <TooltipTrigger className="text-xs text-muted-foreground underline decoration-dotted underline-offset-4 decoration-muted-foreground/50">
+                  Hotel
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-xs text-xs">
+                  Hotel-eligible guests are invited to book at the Belmond
+                  (3 nights, Thu-Sat). Close friends and family. Rooms are
+                  scarce — we need bookings promptly as funds are held until
+                  the block fills.
+                </TooltipContent>
+              </Tooltip>
               <div className="flex flex-wrap gap-1">
-                {(
-                  Object.entries(STATUS_LABELS) as [FilterStatus, string][]
-                ).map(([value, label]) => (
+                {HOTEL_OPTIONS.map((opt) => (
                   <button
-                    key={value}
-                    onClick={() => setFilterStatus(value)}
+                    key={opt.value}
+                    onClick={() => toggleFilter(filterHotel, setFilterHotel, opt.value)}
                     className={`px-2 py-1 text-xs rounded-sm border transition-colors cursor-pointer ${
-                      filterStatus === value
+                      filterHotel.has(opt.value)
                         ? "bg-primary text-primary-foreground border-primary"
                         : "bg-transparent text-muted-foreground border-border hover:border-foreground/30"
                     }`}
                   >
-                    {label}
+                    {opt.label}
                   </button>
                 ))}
               </div>
             </div>
-
             <Separator />
-
-            <div className="space-y-2">
-              <Label className="text-xs text-muted-foreground">
-                <Tooltip>
-                  <TooltipTrigger className="underline decoration-dotted underline-offset-4 decoration-muted-foreground/50">
-                    Hotel
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="max-w-xs text-xs">
-                    Hotel-eligible guests are invited to book at the Belmond
-                    (3 nights, Thu-Sat). Close friends and family. Rooms are
-                    scarce — we need bookings promptly as funds are held until
-                    the block fills.
-                  </TooltipContent>
-                </Tooltip>
-              </Label>
-              <div className="flex flex-wrap gap-1">
-                {(
-                  Object.entries(HOTEL_LABELS) as [FilterHotel, string][]
-                ).map(([value, label]) => (
-                  <button
-                    key={value}
-                    onClick={() => setFilterHotel(value)}
-                    className={`px-2 py-1 text-xs rounded-sm border transition-colors cursor-pointer ${
-                      filterHotel === value
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "bg-transparent text-muted-foreground border-border hover:border-foreground/30"
-                    }`}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <Separator />
-
-            <div className="space-y-2">
-              <Label className="text-xs text-muted-foreground">Address</Label>
-              <div className="flex flex-wrap gap-1">
-                {(Object.entries(ADDR_LABELS) as [FilterAddr, string][]).map(
-                  ([value, label]) => (
-                    <button
-                      key={value}
-                      onClick={() => setFilterAddr(value)}
-                      className={`px-2 py-1 text-xs rounded-sm border transition-colors cursor-pointer ${
-                        filterAddr === value
-                          ? "bg-primary text-primary-foreground border-primary"
-                          : "bg-transparent text-muted-foreground border-border hover:border-foreground/30"
-                      }`}
-                    >
-                      {label}
-                    </button>
-                  )
-                )}
-              </div>
-            </div>
-
+            <FilterSection
+              label="Address"
+              options={ADDR_OPTIONS}
+              selected={filterAddr}
+              onToggle={(v) => toggleFilter(filterAddr, setFilterAddr, v)}
+            />
             {activeFilters.length > 0 && (
               <>
                 <Separator />
                 <button
                   onClick={() => {
-                    setFilterStatus("all");
-                    setFilterHotel("all");
-                    setFilterAddr("all");
+                    setFilterStatus(new Set());
+                    setFilterHotel(new Set());
+                    setFilterAddr(new Set());
                   }}
                   className="text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                 >
@@ -335,7 +308,8 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
         {search && ` matching \u201c${search}\u201d`}
       </p>
 
-      <Table>
+      <div className="overflow-x-auto scrollbar-none">
+      <Table className="min-w-[700px]">
         <TableHeader>
           <TableRow>
             <TableHead
@@ -480,6 +454,40 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
           ))}
         </TableBody>
       </Table>
+      </div>
+    </div>
+  );
+}
+
+function FilterSection({
+  label,
+  options,
+  selected,
+  onToggle,
+}: {
+  label: string;
+  options: readonly { value: string; label: string }[];
+  selected: Set<string>;
+  onToggle: (value: string) => void;
+}) {
+  return (
+    <div className="space-y-2">
+      <Label className="text-xs text-muted-foreground">{label}</Label>
+      <div className="flex flex-wrap gap-1">
+        {options.map((opt) => (
+          <button
+            key={opt.value}
+            onClick={() => onToggle(opt.value)}
+            className={`px-2 py-1 text-xs rounded-sm border transition-colors cursor-pointer ${
+              selected.has(opt.value)
+                ? "bg-primary text-primary-foreground border-primary"
+                : "bg-transparent text-muted-foreground border-border hover:border-foreground/30"
+            }`}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
