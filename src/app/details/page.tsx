@@ -1,5 +1,15 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
+
+export const metadata: Metadata = {
+  title: "Details — Make Emily a Ragsdale",
+  openGraph: {
+    title: "The Details — Emily & Sam",
+    description: "Schedule, venue, dress code, and travel info for February 27, 2027",
+    images: [{ url: "/images/og-details.jpg", width: 1536, height: 1024 }],
+  },
+};
 
 export default function Details() {
   return (

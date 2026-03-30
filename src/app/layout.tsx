@@ -25,6 +25,11 @@ export const metadata: Metadata = {
   title: "Make Emily a Ragsdale",
   description:
     "Emily Devery & Sam Ragsdale — February 27, 2027 — San Miguel de Allende, Mexico",
+  openGraph: {
+    title: "Emily & Sam — February 27, 2027",
+    description: "San Miguel de Allende, Mexico",
+    images: [{ url: "/images/og-home.jpg", width: 1536, height: 1024 }],
+  },
 };
 
 export default function RootLayout({

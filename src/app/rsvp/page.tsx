@@ -1,5 +1,15 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { RsvpFlow } from "./rsvp-flow";
+
+export const metadata: Metadata = {
+  title: "RSVP — Make Emily a Ragsdale",
+  openGraph: {
+    title: "RSVP — Emily & Sam",
+    description: "Join us in San Miguel de Allende — February 27, 2027",
+    images: [{ url: "/images/og-rsvp.jpg", width: 1536, height: 1024 }],
+  },
+};
 
 export default async function RsvpPage({
   searchParams,

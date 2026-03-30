@@ -77,15 +77,13 @@ export default async function AdminPage() {
 
         <AgentPrompt />
 
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 text-center">
-          <Stat label="Attending" value={attending.length} />
+        <div className="grid grid-cols-3 sm:grid-cols-6 gap-4 text-center">
+          <Stat label="Saturday" value={totalGuests.filter((g) => g.attendingSaturday === true).length} />
+          <Stat label="Friday" value={totalGuests.filter((g) => g.attendingFriday === true).length} />
           <Stat label="Declined" value={declined.length} />
           <Stat label="Pending" value={pending.length} />
-          <Stat
-            label="Friday"
-            value={totalGuests.filter((g) => g.attendingFriday === true).length}
-          />
-          <Stat label="Hotel bookings" value={hotelYes.length} />
+          <Stat label="Hotel" value={hotelYes.length} />
+          <Stat label="Invites" value={allInvites.length} />
         </div>
 
         <Separator />
