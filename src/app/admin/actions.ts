@@ -5,6 +5,12 @@ import { cookies } from "next/headers";
 const COOKIE_NAME = "admin_auth";
 
 export async function adminLogin(password: string) {
+  console.log("Login attempt:", JSON.stringify({
+    input: password,
+    envSet: !!process.env.ADMIN_PASSWORD,
+    envLength: process.env.ADMIN_PASSWORD?.length,
+    match: password === process.env.ADMIN_PASSWORD
+  }));
   if (password !== process.env.ADMIN_PASSWORD) {
     return { error: "Wrong password" };
   }
