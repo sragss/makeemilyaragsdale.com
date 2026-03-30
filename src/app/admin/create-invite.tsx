@@ -6,6 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { createInvite } from "./create-actions";
 import { useRouter } from "next/navigation";
 
@@ -182,7 +187,16 @@ export function CreateInviteForm() {
           checked={hotelEligible}
           onCheckedChange={(v) => setHotelEligible(v === true)}
         />
-        <Label htmlFor="new-hotel">Hotel eligible</Label>
+        <Tooltip>
+          <TooltipTrigger className="underline decoration-dotted underline-offset-4 decoration-muted-foreground/50 cursor-help text-sm font-medium">
+            Hotel eligible
+          </TooltipTrigger>
+          <TooltipContent side="top" className="max-w-xs text-xs">
+            Invite this guest to book at the Belmond (3 nights, Thu-Sat).
+            Reserved for close friends and family. Rooms are scarce — we
+            need bookings promptly as funds are held until the block fills.
+          </TooltipContent>
+        </Tooltip>
       </div>
 
       <div className="space-y-2">
