@@ -25,7 +25,11 @@ To deploy: just `git push origin main`. Vercel handles the rest.
 - **Neon project**: `makeemilyaragsdale` (org: Sam, region: aws-us-east-2)
 - **Schema changes**: Edit `src/db/schema.ts`, then `pnpm db:push`
 - **Seed data**: `pnpm db:seed` — creates 3 test invites with random pronounceable codes
-- **Tables**: `invites` (code, hotel_eligible, max_guests, notes, address), `guests` (name, attending, email, phone, dietary, plus_one), `hotel_bookings` (will_book, booking_complete, booking_value)
+- **Tables**:
+  - `invites`: code, hotel_eligible, max_guests, notes, address, deleted
+  - `guests`: name, is_primary, attending, email, phone, dietary_restrictions, plus_one_name
+  - `hotel_bookings`: will_book, acknowledged_policy, booking_complete, booking_value
+  - `invite_events`: type (view/belmond_click), ip, user_agent, created_at
 
 ## RSVP Flow
 
@@ -42,6 +46,140 @@ To deploy: just `git push origin main`. Vercel handles the rest.
 - Dashboard shows stats (attending/declined/pending/hotel bookings) + table of all invites
 - Click any code → `/admin/rsvp/CODE` — edit all fields, mark hotel booking complete, set booking value
 - "+ New Invite" button creates invites with auto-generated codes
+- Activity log with IP geolocation map on each invite detail page
+
+## Admin API
+
+**All requests require `Authorization: Bearer <ADMIN_PASSWORD>` header.**
+
+Base URL: `https://makeemilyaragsdale.com/api/admin` (or `http://localhost:3002/api/admin` for local dev)
+
+### Reading Data
+
+#### List all invites
+```bash
+curl -H "Authorization: Bearer emily-ragsdale" \
+  "https://makeemilyaragsdale.com/api/admin?action=list"
+```
+Returns `{ invites: [...], count: N }`
+
+#### Get single invite with events
+```bash
+curl -H "Authorization: Bearer emily-ragsdale" \
+  "https://makeemilyaragsdale.com/api/admin?action=get&code=EBR-TOVIK"
+```
+Returns full invite with guests, hotel booking, and activity events (views, clicks).
+
+#### Get stats
+```bash
+curl -H "Authorization: Bearer emily-ragsdale" \
+  "https://makeemilyaragsdale.com/api/admin?action=stats"
+```
+Returns `{ invites, guests, attending, declined, pending, hotelEligible, hotelBooking, hotelComplete }`
+
+### Writing Data
+
+All writes are POST with JSON body. Every request must include `"action"` field.
+
+#### Create invite
+```bash
+curl -X POST -H "Authorization: Bearer emily-ragsdale" \
+  -H "Content-Type: application/json" \
+  "https://makeemilyaragsdale.com/api/admin" \
+  -d '{
+    "action": "create",
+    "guestNames": ["Jane Doe", "John Doe"],
+    "hotelEligible": true,
+    "address": "123 Main St, Austin TX 78701",
+    "notes": "College friends"
+  }'
+```
+- `guestNames` (required): array of strings, at least one
+- `hotelEligible` (optional): boolean, default false
+- `address` (optional): string, mailing address
+- `notes` (optional): string, internal notes
+- Returns `{ success, code, url, id }` — code is auto-generated (e.g. EBR-TOVIK)
+
+#### Update invite settings
+```bash
+curl -X POST -H "Authorization: Bearer emily-ragsdale" \
+  -H "Content-Type: application/json" \
+  "https://makeemilyaragsdale.com/api/admin" \
+  -d '{
+    "action": "update_invite",
+    "code": "EBR-TOVIK",
+    "hotelEligible": false,
+    "address": "456 Oak Ave, NYC 10001"
+  }'
+```
+- `code` (required): invite code
+- Optional fields: `hotelEligible`, `maxGuests`, `address`, `notes`
+
+#### Update guest
+```bash
+curl -X POST -H "Authorization: Bearer emily-ragsdale" \
+  -H "Content-Type: application/json" \
+  "https://makeemilyaragsdale.com/api/admin" \
+  -d '{
+    "action": "update_guest",
+    "code": "EBR-TOVIK",
+    "guestName": "Jane Doe",
+    "attending": true,
+    "email": "jane@example.com",
+    "phone": "+1 555 123 4567"
+  }'
+```
+- Identify guest by `guestId` OR by `code` + `guestName` (case-insensitive match)
+- Optional fields: `name`, `attending` (true/false/null), `email`, `phone`, `dietaryRestrictions`, `plusOneName`
+- Set `attending: null` to reset to pending
+
+#### Update hotel booking
+```bash
+curl -X POST -H "Authorization: Bearer emily-ragsdale" \
+  -H "Content-Type: application/json" \
+  "https://makeemilyaragsdale.com/api/admin" \
+  -d '{
+    "action": "update_hotel",
+    "code": "EBR-TOVIK",
+    "willBook": true,
+    "bookingComplete": true,
+    "bookingValue": "4500.00"
+  }'
+```
+- `code` (required): must be a hotel-eligible invite
+- Optional fields: `willBook` (true/false/null), `bookingComplete` (boolean), `bookingValue` (string dollar amount)
+
+#### Delete invite (soft delete)
+```bash
+curl -X POST -H "Authorization: Bearer emily-ragsdale" \
+  -H "Content-Type: application/json" \
+  "https://makeemilyaragsdale.com/api/admin" \
+  -d '{
+    "action": "delete",
+    "code": "EBR-TOVIK",
+    "confirm": true
+  }'
+```
+- `code` (required): invite code
+- `confirm` (required): must be `true` — safety check to prevent accidental deletion
+- Soft deletes only (sets `deleted: true`). Data remains in DB and can be recovered.
+
+### Error Handling
+
+All errors return `{ error: "message" }` with appropriate HTTP status:
+- 400: Bad request (missing fields, validation errors)
+- 401: Missing or wrong Authorization header
+- 404: Invite/guest not found
+
+### Important Notes
+
+- **Never modify the database directly.** Use this API or the admin UI at `/admin`.
+- Invite codes are auto-generated pronounceable strings like `EBR-TOVIK`. Do not create custom codes.
+- All codes are uppercase. The API normalizes input to uppercase automatically.
+- Guest lookup by name is case-insensitive.
+- Hotel operations only work on hotel-eligible invites. Set `hotelEligible: true` on the invite first.
+- Delete requires `"confirm": true` as a safety check.
+- The `attending` field accepts `true`, `false`, or `null` (pending/not yet responded).
 
 ## Design
 
@@ -57,9 +195,12 @@ To deploy: just `git push origin main`. Vercel handles the rest.
 - `src/app/details/page.tsx` — Event details
 - `src/app/rsvp/rsvp-flow.tsx` — Main RSVP client component (toggle, form, confetti)
 - `src/app/rsvp/actions.ts` — Server actions for RSVP lookup/submit
+- `src/app/rsvp/track.ts` — Event tracking (views, Belmond clicks)
 - `src/app/admin/page.tsx` — Admin dashboard
+- `src/app/admin/admin-table.tsx` — Client-side table with search, filters, sorting
 - `src/app/admin/rsvp/[code]/page.tsx` — Admin invite detail/edit
-- `src/db/schema.ts` — Drizzle schema (invites, guests, hotel_bookings)
+- `src/app/api/admin/route.ts` — REST API for programmatic access
+- `src/db/schema.ts` — Drizzle schema (invites, guests, hotel_bookings, invite_events)
 - `src/lib/codes.ts` — Pronounceable code generator
 - `src/components/botanicals.tsx` — Canvas confetti (green hand-drawn roses)
 - `src/components/ui/noise-background.tsx` — Animated gradient + noise component
