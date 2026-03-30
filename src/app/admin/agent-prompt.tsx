@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Copy, Check } from "lucide-react";
+import { Copy, Check, ChevronRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 
 const AGENT_PROMPT = `You have access to the MakeEmilyARagsdale.com wedding admin API.
@@ -33,33 +34,59 @@ SAFETY:
 - "attending" accepts true, false, or null (pending)`;
 
 export function AgentPrompt() {
+  const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
   return (
-    <div className="relative border border-border rounded-sm">
-      <div className="flex items-center justify-between px-3 py-2 border-b border-border">
-        <span className="text-xs text-muted-foreground">
-          Agent prompt — copy and give to any AI assistant
-        </span>
-        <button
-          onClick={() => {
+    <div className="border border-border rounded-sm">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex items-center justify-between w-full px-3 py-2 cursor-pointer group"
+      >
+        <div className="flex items-center gap-2">
+          <motion.div
+            animate={{ rotate: open ? 90 : 0 }}
+            transition={{ duration: 0.15 }}
+          >
+            <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+          </motion.div>
+          <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">
+            Agent Prompt — paste into your agent and it can administrate
+          </span>
+        </div>
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
             navigator.clipboard.writeText(AGENT_PROMPT);
             setCopied(true);
             toast("Agent prompt copied");
             setTimeout(() => setCopied(false), 1500);
           }}
-          className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer p-1"
+          className="text-muted-foreground hover:text-foreground transition-colors p-1"
         >
           {copied ? (
             <Check className="h-3.5 w-3.5" />
           ) : (
             <Copy className="h-3.5 w-3.5" />
           )}
-        </button>
-      </div>
-      <pre className="px-3 py-2 text-[11px] leading-relaxed text-muted-foreground font-mono overflow-x-auto scrollbar-none max-h-32 overflow-y-auto scrollbar-none">
-        {AGENT_PROMPT}
-      </pre>
+        </div>
+      </button>
+
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+            className="overflow-hidden"
+          >
+            <pre className="px-3 pb-3 pt-1 text-[11px] leading-relaxed text-muted-foreground font-mono overflow-x-auto scrollbar-none border-t border-border">
+              {AGENT_PROMPT}
+            </pre>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
