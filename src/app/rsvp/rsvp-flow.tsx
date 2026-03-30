@@ -13,6 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { BotanicalConfetti } from "@/components/botanicals";
 import { NoiseBackground } from "@/components/ui/noise-background";
 import { lookupInvite, submitRsvp, type InviteData } from "./actions";
+import { NOISE_GRADIENT_COLORS } from "@/lib/constants";
 import { trackView, trackEvent } from "./track";
 
 export function RsvpFlow({ initialCode }: { initialCode?: string }) {
@@ -21,14 +22,7 @@ export function RsvpFlow({ initialCode }: { initialCode?: string }) {
   const [code, setCode] = useState(initialCode ?? "");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [anyAttending, setAnyAttending] = useState(false);
-
-  useEffect(() => {
-    if (initialCode) {
-      handleLookup(initialCode);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const [completedAttending, setCompletedAttending] = useState(false);
 
   async function handleLookup(lookupCode?: string) {
     const c = lookupCode ?? code;
@@ -50,10 +44,14 @@ export function RsvpFlow({ initialCode }: { initialCode?: string }) {
     window.history.replaceState(null, "", `/rsvp/${normalized}`);
   }
 
+  // Auto-lookup when arriving via /rsvp/[code]
+  // eslint-disable-next-line react-hooks/exhaustive-deps — initialCode is a server prop, stable across renders
+  useEffect(() => { if (initialCode) handleLookup(initialCode); }, []);
+
   if (step === "done") {
     return (
       <>
-        {anyAttending && <BotanicalConfetti />}
+        {completedAttending && <BotanicalConfetti />}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -61,10 +59,10 @@ export function RsvpFlow({ initialCode }: { initialCode?: string }) {
           className="text-center space-y-6 py-12"
         >
           <p className="font-serif text-3xl font-light">
-            {anyAttending ? "See you there" : "We'll miss you"}
+            {completedAttending ? "See you there" : "We'll miss you"}
           </p>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            {anyAttending
+            {completedAttending
               ? "We can't wait to celebrate with you in San Miguel."
               : "Thanks for letting us know. We\u2019ll be thinking of you."}
           </p>
@@ -103,7 +101,7 @@ export function RsvpFlow({ initialCode }: { initialCode?: string }) {
     <RsvpForm
       invite={invite}
       onComplete={(attending) => {
-        setAnyAttending(attending);
+        setCompletedAttending(attending);
         setStep("done");
       }}
     />
@@ -239,11 +237,7 @@ function NoiseInput(props: React.ComponentProps<typeof Input>) {
   return (
     <NoiseBackground
       containerClassName="rounded-sm"
-      gradientColors={[
-        "rgb(180, 140, 100)",
-        "rgb(160, 120, 80)",
-        "rgb(200, 160, 110)",
-      ]}
+      gradientColors={[...NOISE_GRADIENT_COLORS]}
       noiseIntensity={0.1}
       speed={0.03}
     >
@@ -266,11 +260,7 @@ function AttendToggle({
   return (
     <NoiseBackground
       containerClassName="rounded-sm cursor-pointer transition-shadow duration-200 hover:shadow-[0_0_0_1px_rgba(0,0,0,0.08),0_2px_8px_rgba(0,0,0,0.06)]"
-      gradientColors={[
-        "rgb(180, 140, 100)",
-        "rgb(160, 120, 80)",
-        "rgb(200, 160, 110)",
-      ]}
+      gradientColors={[...NOISE_GRADIENT_COLORS]}
       noiseIntensity={0.15}
       speed={0.04}
     >
@@ -327,7 +317,7 @@ function RsvpForm({
   onComplete,
 }: {
   invite: InviteData;
-  onComplete: (anyAttending: boolean) => void;
+  onComplete: (completedAttending: boolean) => void;
 }) {
   const [guestData, setGuestData] = useState(
     invite.guests.map((g) => ({

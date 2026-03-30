@@ -1,8 +1,10 @@
 "use server";
 
 import { getDb } from "@/db";
-import { invites, guests, hotelBookings } from "@/db/schema";
+import { invites, guests } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { upsertHotelBooking } from "@/lib/hotel";
+import { EMAIL_REGEX } from "@/lib/constants";
 
 export async function lookupInvite(code: string) {
   const db = getDb();
@@ -59,6 +61,10 @@ export async function submitRsvp(data: RsvpSubmission) {
   const db = getDb();
 
   for (const guest of data.guests) {
+    if (guest.email && !EMAIL_REGEX.test(guest.email)) {
+      throw new Error(`Invalid email: ${guest.email}`);
+    }
+
     await db
       .update(guests)
       .set({
@@ -74,25 +80,10 @@ export async function submitRsvp(data: RsvpSubmission) {
   }
 
   if (data.hotelWillBook !== undefined) {
-    const existing = await db.query.hotelBookings.findFirst({
-      where: eq(hotelBookings.inviteId, data.inviteId),
+    await upsertHotelBooking(data.inviteId, {
+      willBook: data.hotelWillBook,
+      acknowledgedPolicy: data.hotelAcknowledged ?? false,
     });
-
-    if (existing) {
-      await db
-        .update(hotelBookings)
-        .set({
-          willBook: data.hotelWillBook,
-          acknowledgedPolicy: data.hotelAcknowledged ?? false,
-        })
-        .where(eq(hotelBookings.inviteId, data.inviteId));
-    } else {
-      await db.insert(hotelBookings).values({
-        inviteId: data.inviteId,
-        willBook: data.hotelWillBook,
-        acknowledgedPolicy: data.hotelAcknowledged ?? false,
-      });
-    }
   }
 
   return { success: true };
