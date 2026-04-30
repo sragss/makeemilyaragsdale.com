@@ -21,7 +21,7 @@ export const HotelBookingSchema = z.object({
 });
 
 export const EventSchema = z.object({
-  type: z.enum(["view", "belmond_click"]),
+  type: z.enum(["view", "belmond_click", "address_view", "address_submit"]),
   ip: z.string().nullable(),
   createdAt: z.string().datetime(),
 });
@@ -120,6 +120,8 @@ export const CreateResponseSchema = z.object({
   success: z.literal(true),
   code: z.string(),
   url: z.string().url(),
+  addressUrl: z.string().url(),
+  rsvpUrl: z.string().url(),
   id: z.string().uuid(),
 });
 

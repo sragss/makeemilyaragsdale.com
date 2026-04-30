@@ -51,6 +51,7 @@ export default async function AdminRsvpDetail({
     maxGuests: invite.maxGuests,
     notes: invite.notes,
     address: invite.address,
+    philMode: invite.philMode,
     guests: invite.guests.map((g) => ({
       id: g.id,
       name: g.name,

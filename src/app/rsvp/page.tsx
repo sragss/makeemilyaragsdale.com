@@ -31,6 +31,9 @@ export default async function RsvpPage({
           <h1 className="font-serif text-4xl font-light tracking-tight">
             RSVP
           </h1>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Enter the code stamped on your invitation.
+          </p>
         </header>
 
         <RsvpFlow initialCode={code} />

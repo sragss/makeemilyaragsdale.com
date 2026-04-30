@@ -34,9 +34,6 @@ export default async function AdminPage() {
 
   const allInvites = allInvitesRaw.filter((i) => !i.deleted);
   const totalGuests = allInvites.flatMap((i) => i.guests);
-  const attending = totalGuests.filter(
-    (g) => g.attendingFriday || g.attendingSaturday
-  );
   const declined = totalGuests.filter(
     (g) => g.attendingFriday === false && g.attendingSaturday === false
   );

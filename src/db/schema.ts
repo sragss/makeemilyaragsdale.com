@@ -16,6 +16,7 @@ export const invites = pgTable("invites", {
   maxGuests: integer("max_guests").notNull().default(2),
   notes: text("notes"),
   address: text("address"),
+  philMode: boolean("phil_mode").notNull().default(false),
   deleted: boolean("deleted").notNull().default(false),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });

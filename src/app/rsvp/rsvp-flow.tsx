@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -11,12 +11,17 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { NoiseBackground } from "@/components/ui/noise-background";
 import { BotanicalConfetti } from "@/components/botanicals";
+import { FabulousConfetti } from "@/components/fabulous-confetti";
+import { SamHeadFly } from "@/components/sam-head-fly";
 import { NOISE_GRADIENT_COLORS } from "@/lib/constants";
 import { lookupInvite, submitRsvp, type InviteData } from "./actions";
 import { trackView, trackEvent } from "./track";
 import { AttendToggle } from "./attend-toggle";
 import { DietaryPicker } from "./dietary-picker";
 import { NoiseInput } from "./noise-input";
+import { ShyButton } from "./shy-button";
+import { PronounPicker } from "./pronoun-picker";
+import { SamHeadTrail } from "@/components/sam-head-trail";
 
 // ── Main flow: code entry → form → done ──
 
@@ -28,8 +33,7 @@ export function RsvpFlow({ initialCode }: { initialCode?: string }) {
   const [loading, setLoading] = useState(false);
   const [completedAttending, setCompletedAttending] = useState(false);
 
-  async function handleLookup(lookupCode?: string) {
-    const c = lookupCode ?? code;
+  const loadInvite = useCallback(async (c: string) => {
     if (!c.trim()) return;
     setLoading(true);
     setError("");
@@ -43,16 +47,27 @@ export function RsvpFlow({ initialCode }: { initialCode?: string }) {
     setStep("form");
     trackView(c);
     window.history.replaceState(null, "", `/rsvp/${c.trim().toUpperCase()}`);
+  }, []);
+
+  async function handleLookup(lookupCode?: string) {
+    await loadInvite(lookupCode ?? code);
   }
 
-  // Auto-lookup when arriving via /rsvp/[code]
-  // eslint-disable-next-line react-hooks/exhaustive-deps — initialCode is a server prop, stable across renders
-  useEffect(() => { if (initialCode) handleLookup(initialCode); }, []);
+  // Auto-lookup when arriving via /rsvp/[code].
+  useEffect(() => {
+    if (!initialCode) return;
+    const timer = window.setTimeout(() => {
+      void loadInvite(initialCode);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [initialCode, loadInvite]);
 
   if (step === "done") {
     return (
       <>
+        {invite?.philMode && <SamHeadTrail />}
         {completedAttending && <BotanicalConfetti />}
+        {completedAttending && invite?.philMode && <SamHeadFly />}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -79,7 +94,7 @@ export function RsvpFlow({ initialCode }: { initialCode?: string }) {
           <Label htmlFor="code">Enter your invite code</Label>
           <Input
             id="code"
-            placeholder="e.g. EBR-TOVIK"
+            placeholder="Stamped code, e.g. EBR-TOVIK"
             value={code}
             onChange={(e) => setCode(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleLookup()}
@@ -99,13 +114,16 @@ export function RsvpFlow({ initialCode }: { initialCode?: string }) {
   }
 
   return (
-    <RsvpForm
-      invite={invite}
-      onComplete={(attending) => {
-        setCompletedAttending(attending);
-        setStep("done");
-      }}
-    />
+    <>
+      {invite.philMode && <SamHeadTrail />}
+      <RsvpForm
+        invite={invite}
+        onComplete={(attending) => {
+          setCompletedAttending(attending);
+          setStep("done");
+        }}
+      />
+    </>
   );
 }
 
@@ -140,6 +158,8 @@ function RsvpForm({
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [showHotelConfetti, setShowHotelConfetti] = useState(false);
+  const [isHomosexual, setIsHomosexual] = useState(false);
+  const [showHomoConfetti, setShowHomoConfetti] = useState(false);
 
   const attendingGuests = guestData.filter((g) => g.coming);
   const missingContact = attendingGuests.some(
@@ -149,7 +169,8 @@ function RsvpForm({
     invite.hotelEligible &&
     attendingGuests.length > 0 &&
     hotelWillBook === undefined;
-  const canSubmit = !missingContact && !missingHotel;
+  const missingHomo = invite.philMode && !isHomosexual;
+  const canSubmit = !missingContact && !missingHotel && !missingHomo;
 
   function updateGuest(index: number, field: string, value: string | boolean) {
     setGuestData((prev) =>
@@ -187,6 +208,7 @@ function RsvpForm({
   return (
     <>
       {showHotelConfetti && <BotanicalConfetti duration={3500} />}
+      {showHomoConfetti && <FabulousConfetti duration={7000} />}
       <form onSubmit={handleSubmit} className="space-y-10">
         <EventSummary />
         <Separator />
@@ -248,7 +270,11 @@ function RsvpForm({
                         updateGuest(i, "dietaryRestrictions", v)
                       }
                       id={`dietary-${i}`}
+                      philMode={invite.philMode}
                     />
+                    {invite.philMode && (
+                      <PronounPicker id={`pronouns-${i}`} />
+                    )}
                   </div>
                 </motion.div>
               )}
@@ -269,16 +295,46 @@ function RsvpForm({
           />
         )}
 
+        {invite.philMode && (
+          <div className="flex items-start gap-2">
+            <Checkbox
+              id="homo-required"
+              checked={isHomosexual}
+              onCheckedChange={(v) => {
+                const checked = v === true;
+                setIsHomosexual(checked);
+                if (checked) setShowHomoConfetti(true);
+              }}
+            />
+            <Label
+              htmlFor="homo-required"
+              className="text-sm font-normal leading-relaxed"
+            >
+              I&apos;m a homosexual <span className="text-destructive">*</span>
+            </Label>
+          </div>
+        )}
+
         {submitError && (
           <p className="text-sm text-destructive text-center">{submitError}</p>
         )}
-        <Button
-          type="submit"
-          disabled={submitting || !canSubmit}
-          className="w-full"
-        >
-          {submitting ? "Submitting..." : "Submit RSVP"}
-        </Button>
+        {invite.philMode ? (
+          <ShyButton
+            type="submit"
+            disabled={submitting || !canSubmit}
+            className="w-full"
+          >
+            {submitting ? "Submitting..." : "Submit RSVP"}
+          </ShyButton>
+        ) : (
+          <Button
+            type="submit"
+            disabled={submitting || !canSubmit}
+            className="w-full"
+          >
+            {submitting ? "Submitting..." : "Submit RSVP"}
+          </Button>
+        )}
       </form>
     </>
   );
@@ -371,9 +427,11 @@ function ContactFields({
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-0">
-        <Label htmlFor={`email-${guestIndex}`}>Email</Label>
+        <Label htmlFor={`email-${guestIndex}`}>
+          Email <span className="text-destructive">*</span>
+        </Label>
         <Label htmlFor={`phone-${guestIndex}`} className="hidden sm:block">
-          Phone
+          Phone <span className="text-destructive">*</span>
         </Label>
       </div>
       <div className="relative rounded-sm overflow-hidden -mt-2">
@@ -388,7 +446,7 @@ function ContactFields({
         <div className="relative z-10 flex flex-col sm:flex-row gap-[3px] bg-background p-[3px]">
           <div className="flex-1 space-y-2 sm:space-y-0">
             <Label htmlFor={`phone-${guestIndex}`} className="sm:hidden">
-              Phone
+              Phone <span className="text-destructive">*</span>
             </Label>
             <Input
               id={`email-${guestIndex}`}
@@ -442,7 +500,7 @@ function HotelSection({
             and Saturday Feb 27. No pressure &mdash; we know it&apos;s pricey.
           </p>
           <a
-            href="https://www.belmond.com/hotels/north-america/mexico/belmond-casa-de-sierra-nevada"
+            href="https://www.belmond.com/hotels/north-america/mexico/san-miguel-de-allende/belmond-casa-de-sierra-nevada/"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block text-sm underline underline-offset-4 decoration-muted-foreground/50 hover:decoration-foreground transition-colors"
@@ -473,7 +531,9 @@ function HotelSection({
         </div>
 
         <div className="space-y-2">
-          <Label>Would you like to book?</Label>
+          <Label>
+            Would you like to book? <span className="text-destructive">*</span>
+          </Label>
           <RadioGroup
             value={
               hotelWillBook === undefined

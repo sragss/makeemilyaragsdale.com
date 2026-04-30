@@ -32,6 +32,7 @@ export async function updateInvite(
     maxGuests?: number;
     notes?: string | null;
     address?: string | null;
+    philMode?: boolean;
   }
 ) {
   const db = getDb();

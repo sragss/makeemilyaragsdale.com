@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { RsvpFlow } from "../rsvp-flow";
+import { AddressFlow } from "../address-flow";
 
 export const metadata: Metadata = {
-  title: "RSVP — Make Emily a Ragsdale",
+  title: "Mailing Address - Make Emily a Ragsdale",
   robots: { index: false },
   openGraph: {
-    title: "You're Invited — Emily & Sam",
-    description: "RSVP for February 27, 2027 in San Miguel de Allende",
+    title: "Mailing Address - Emily & Sam",
+    description: "Tell us where to send your invitation.",
     images: [{ url: "/images/og-rsvp.jpg", width: 1536, height: 1024 }],
   },
 };
 
-export default async function RsvpCodePage({
+export default async function AddressCodePage({
   params,
 }: {
   params: Promise<{ code: string }>;
@@ -30,14 +30,11 @@ export default async function RsvpCodePage({
             Emily & Sam
           </Link>
           <h1 className="font-serif text-4xl font-light tracking-tight">
-            RSVP
+            Mailing Address
           </h1>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            Enter the code stamped on your invitation.
-          </p>
         </header>
 
-        <RsvpFlow initialCode={code.toUpperCase()} />
+        <AddressFlow initialCode={code.toUpperCase()} />
       </div>
     </main>
   );

@@ -34,6 +34,10 @@ export default function Home() {
             RSVP
           </Link>
         </nav>
+
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Your invitation has your RSVP code.
+        </p>
       </div>
     </main>
   );

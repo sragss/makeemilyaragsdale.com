@@ -34,6 +34,7 @@ interface InviteData {
   maxGuests: number;
   notes: string | null;
   address: string | null;
+  philMode: boolean;
   guests: GuestData[];
   hotelBooking: HotelData | null;
 }
@@ -49,6 +50,7 @@ export function EditForm({ invite }: { invite: InviteData }) {
     maxGuests: invite.maxGuests,
     notes: invite.notes ?? "",
     address: invite.address ?? "",
+    philMode: invite.philMode,
   });
   const [hotelForm, setHotelForm] = useState({
     willBook: invite.hotelBooking?.willBook ?? null,
@@ -74,6 +76,7 @@ export function EditForm({ invite }: { invite: InviteData }) {
       maxGuests: inviteForm.maxGuests,
       notes: inviteForm.notes || null,
       address: inviteForm.address || null,
+      philMode: inviteForm.philMode,
     });
 
     for (const g of guestForms) {
@@ -135,6 +138,19 @@ export function EditForm({ invite }: { invite: InviteData }) {
                 }
               />
               <Label htmlFor="hotel-eligible">Hotel eligible</Label>
+            </div>
+            <div className="flex items-center gap-2 pb-2">
+              <Checkbox
+                id="phil-mode"
+                checked={inviteForm.philMode}
+                onCheckedChange={(v) =>
+                  setInviteForm((f) => ({
+                    ...f,
+                    philMode: v === true,
+                  }))
+                }
+              />
+              <Label htmlFor="phil-mode">Phil mode</Label>
             </div>
           </div>
         </div>

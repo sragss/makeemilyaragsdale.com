@@ -25,7 +25,8 @@ export function CreateInviteForm() {
   const [notes, setNotes] = useState("");
   const [result, setResult] = useState<{
     code: string;
-    url: string;
+    addressUrl: string;
+    rsvpUrl: string;
   } | null>(null);
 
   function addGuest() {
@@ -55,7 +56,11 @@ export function CreateInviteForm() {
     setSaving(false);
 
     if (res.code) {
-      setResult({ code: res.code, url: `/rsvp/${res.code}` });
+      setResult({
+        code: res.code,
+        addressUrl: `/address/${res.code}`,
+        rsvpUrl: `/rsvp/${res.code}`,
+      });
     }
   }
 
@@ -91,9 +96,15 @@ export function CreateInviteForm() {
                   <span className="font-mono font-medium">{result.code}</span>
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Share this link:{" "}
+                  Text this address link:{" "}
                   <span className="font-mono">
-                    makeemilyaragsdale.com{result.url}
+                    makeemilyaragsdale.com{result.addressUrl}
+                  </span>
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Print on invite: makeemilyaragsdale.com with code{" "}
+                  <span className="font-mono">
+                    {result.code}
                   </span>
                 </p>
                 <div className="flex gap-2">
@@ -102,11 +113,22 @@ export function CreateInviteForm() {
                     size="sm"
                     onClick={() => {
                       navigator.clipboard.writeText(
-                        `https://makeemilyaragsdale.com${result.url}`
+                        `https://makeemilyaragsdale.com${result.addressUrl}`
                       );
                     }}
                   >
-                    Copy link
+                    Copy address link
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      navigator.clipboard.writeText(
+                        `https://makeemilyaragsdale.com${result.rsvpUrl}`
+                      );
+                    }}
+                  >
+                    Copy RSVP link
                   </Button>
                   <Button
                     variant="outline"

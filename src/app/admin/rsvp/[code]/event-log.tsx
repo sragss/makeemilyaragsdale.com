@@ -21,6 +21,21 @@ interface IpLocation {
   country: string;
 }
 
+function getEventLabel(type: string) {
+  switch (type) {
+    case "view":
+      return "Opened RSVP";
+    case "belmond_click":
+      return "Clicked Belmond link";
+    case "address_view":
+      return "Opened address page";
+    case "address_submit":
+      return "Submitted address";
+    default:
+      return type;
+  }
+}
+
 export function EventLog({ events }: { events: EventData[] }) {
   const [locations, setLocations] = useState<Record<string, IpLocation>>({});
 
@@ -110,11 +125,7 @@ export function EventLog({ events }: { events: EventData[] }) {
             >
               <div className="space-y-0.5">
                 <span className="font-medium">
-                  {event.type === "view"
-                    ? "Opened RSVP"
-                    : event.type === "belmond_click"
-                      ? "Clicked Belmond link"
-                      : event.type}
+                  {getEventLabel(event.type)}
                 </span>
                 {loc && (
                   <span className="text-muted-foreground block">

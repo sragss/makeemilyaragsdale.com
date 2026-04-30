@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Table,
   TableBody,
@@ -26,6 +27,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { CopyButton } from "./copy-button";
+import { updateInvite } from "./rsvp/[code]/actions";
 
 interface InviteRow {
   id: string;
@@ -137,6 +139,7 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
       const q = search.toLowerCase();
       result = result.filter((inv) => {
         if (inv.code.toLowerCase().includes(q)) return true;
+        if (inv.address?.toLowerCase().includes(q)) return true;
         return inv.guests.some(
           (g) =>
             g.name.toLowerCase().includes(q) ||
@@ -209,7 +212,7 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
       {/* Search + Filter button */}
       <div className="flex gap-2">
         <Input
-          placeholder="Search guests, codes, emails, phone..."
+          placeholder="Search guests, codes, address, email, phone..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="flex-1"
@@ -314,7 +317,7 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
       </p>
 
       <div className="overflow-x-auto scrollbar-none">
-      <Table className="min-w-[700px]">
+      <Table className="min-w-[680px]">
         <TableHeader>
           <TableRow>
             <TableHead
@@ -331,9 +334,8 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
             </TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Hotel</TableHead>
-            <TableHead>Addr</TableHead>
             <TableHead>Contact</TableHead>
-            <TableHead></TableHead>
+            <TableHead>Links</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -360,6 +362,11 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
                       )}
                     </div>
                   ))}
+                  <AddressControl
+                    inviteId={invite.id}
+                    code={invite.code}
+                    address={invite.address}
+                  />
                 </div>
               </TableCell>
               <TableCell>
@@ -416,24 +423,6 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
                 )}
               </TableCell>
               <TableCell>
-                {invite.address ? (
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <Badge variant="secondary" className="text-xs">
-                        Yes
-                      </Badge>
-                    </TooltipTrigger>
-                    <TooltipContent side="top" className="text-xs max-w-xs">
-                      {invite.address}
-                    </TooltipContent>
-                  </Tooltip>
-                ) : (
-                  <span className="text-xs text-muted-foreground">
-                    &mdash;
-                  </span>
-                )}
-              </TableCell>
-              <TableCell>
                 <div className="space-y-0.5">
                   {invite.guests.map((g) => (
                     <div
@@ -453,9 +442,18 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
                 </div>
               </TableCell>
               <TableCell>
-                <CopyButton
-                  url={`https://makeemilyaragsdale.com/rsvp/${invite.code}`}
-                />
+                <div className="flex items-center gap-1 text-[10px] uppercase tracking-wide text-muted-foreground">
+                  <span>Addr</span>
+                  <CopyButton
+                    label="Address link"
+                    url={`https://makeemilyaragsdale.com/address/${invite.code}`}
+                  />
+                  <span>RSVP</span>
+                  <CopyButton
+                    label="RSVP link"
+                    url={`https://makeemilyaragsdale.com/rsvp/${invite.code}`}
+                  />
+                </div>
               </TableCell>
             </TableRow>
           ))}
@@ -463,6 +461,79 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
       </Table>
       </div>
     </div>
+  );
+}
+
+function AddressControl({
+  inviteId,
+  code,
+  address,
+}: {
+  inviteId: string;
+  code: string;
+  address: string | null;
+}) {
+  const router = useRouter();
+  const [value, setValue] = useState(address ?? "");
+  const [savedAddress, setSavedAddress] = useState(address ?? "");
+  const [saving, setSaving] = useState(false);
+
+  async function handleSave() {
+    setSaving(true);
+    const nextAddress = value.trim();
+    await updateInvite(inviteId, {
+      address: nextAddress || null,
+    });
+    setSavedAddress(nextAddress);
+    setSaving(false);
+    router.refresh();
+  }
+
+  return (
+    <Popover>
+      <PopoverTrigger
+        className={`mt-1 text-[11px] underline underline-offset-4 decoration-muted-foreground/40 transition-colors cursor-pointer ${
+          savedAddress
+            ? "text-muted-foreground hover:text-foreground"
+            : "text-destructive/80 hover:text-destructive"
+        }`}
+      >
+        {savedAddress ? "address saved" : "missing address"}
+      </PopoverTrigger>
+      <PopoverContent align="start" className="w-80 space-y-3">
+        <div className="space-y-1">
+          <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground">
+            {code}
+          </p>
+          <p className="text-sm font-medium">Mailing address</p>
+        </div>
+        <textarea
+          value={value}
+          onChange={(event) => setValue(event.target.value)}
+          placeholder={"123 Main St\nApartment 4B\nCity, State ZIP"}
+          rows={4}
+          className="min-h-24 w-full rounded-lg border border-input bg-transparent px-2.5 py-2 text-sm transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+        />
+        <div className="flex items-center justify-between gap-3">
+          <Button
+            type="button"
+            size="sm"
+            onClick={handleSave}
+            disabled={saving}
+            className="h-8"
+          >
+            {saving ? "Saving..." : "Save"}
+          </Button>
+          <div className="flex items-center gap-1 text-[10px] uppercase tracking-wide text-muted-foreground">
+            <span>Text</span>
+            <CopyButton
+              label="Address link"
+              url={`https://makeemilyaragsdale.com/address/${code}`}
+            />
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }
 

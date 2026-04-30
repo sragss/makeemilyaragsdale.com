@@ -7,68 +7,30 @@ import { Label } from "@/components/ui/label";
 import { NoiseBackground } from "@/components/ui/noise-background";
 import { NOISE_GRADIENT_COLORS } from "@/lib/constants";
 
-const BASE_OPTIONS = ["Vegetarian", "Vegan", "Gluten Free"] as const;
-const PHIL_OPTIONS = [...BASE_OPTIONS, "Ass only", "I am gay"] as const;
-type DietaryOption = (typeof PHIL_OPTIONS)[number];
+const OPTIONS = ["he/him", "she/her", "they/them", "daddy/sir"] as const;
 
-function parseDietary(
-  value: string,
-  options: readonly DietaryOption[]
-): { tags: string[]; custom: string } {
-  if (!value) return { tags: [], custom: "" };
-  const parts = value
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
-  const tags: string[] = [];
-  const custom: string[] = [];
-  for (const p of parts) {
-    if ((options as readonly string[]).includes(p)) {
-      tags.push(p);
-    } else {
-      custom.push(p);
+export function PronounPicker({ id }: { id: string }) {
+  const [selected, setSelected] = useState<string>("");
+  const [showCustom, setShowCustom] = useState(false);
+  const [custom, setCustom] = useState("");
+
+  const allOptions = [...OPTIONS, "Other" as const];
+
+  function pick(opt: string) {
+    if (opt === "Other") {
+      setShowCustom((s) => !s);
+      if (showCustom) setSelected("");
+      return;
     }
+    setSelected((cur) => (cur === opt ? "" : opt));
+    setShowCustom(false);
   }
-  return { tags, custom: custom.join(", ") };
-}
-
-function serializeDietary(tags: string[], custom: string): string {
-  const parts = [...tags];
-  if (custom.trim()) parts.push(custom.trim());
-  return parts.join(", ");
-}
-
-export function DietaryPicker({
-  value,
-  onChange,
-  id,
-  philMode = false,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-  id: string;
-  philMode?: boolean;
-}) {
-  const dietaryOptions = philMode ? PHIL_OPTIONS : BASE_OPTIONS;
-  const { tags, custom } = parseDietary(value, dietaryOptions);
-  const [showCustom, setShowCustom] = useState(custom.length > 0);
-
-  function toggleTag(tag: string) {
-    const next = tags.includes(tag)
-      ? tags.filter((t) => t !== tag)
-      : [...tags, tag];
-    onChange(serializeDietary(next, custom));
-  }
-
-  function updateCustom(v: string) {
-    onChange(serializeDietary(tags, v));
-  }
-
-  const allOptions = [...dietaryOptions, "Other" as const];
 
   return (
     <div className="space-y-2">
-      <Label>Dietary needs</Label>
+      <Label>
+        Pronouns <span className="text-destructive">*</span>
+      </Label>
       <div className="relative rounded-sm overflow-hidden">
         <NoiseBackground
           containerClassName="absolute inset-0"
@@ -83,18 +45,16 @@ export function DietaryPicker({
           <div className="flex flex-wrap gap-[3px]">
             {allOptions.map((opt) => {
               const isOther = opt === "Other";
-              const selected = isOther ? showCustom : tags.includes(opt);
+              const isSelected = isOther ? showCustom : selected === opt;
               return (
                 <button
                   key={opt}
                   type="button"
-                  onClick={() =>
-                    isOther ? setShowCustom(!showCustom) : toggleTag(opt)
-                  }
+                  onClick={() => pick(opt)}
                   className="relative px-3 py-1.5 text-xs cursor-pointer bg-transparent"
                 >
                   <AnimatePresence>
-                    {selected && (
+                    {isSelected && (
                       <motion.div
                         initial={{ scale: 0.85, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
@@ -109,7 +69,7 @@ export function DietaryPicker({
                     )}
                   </AnimatePresence>
                   <span
-                    className={`relative z-10 ${selected ? "text-primary-foreground font-medium" : "text-foreground/70 hover:text-foreground"} transition-colors`}
+                    className={`relative z-10 ${isSelected ? "text-primary-foreground font-medium" : "text-foreground/70 hover:text-foreground"} transition-colors`}
                   >
                     {opt}
                   </span>
@@ -128,9 +88,9 @@ export function DietaryPicker({
               >
                 <Input
                   id={id}
-                  placeholder="e.g. can only eat goose meat"
+                  placeholder="e.g. twink/queen"
                   value={custom}
-                  onChange={(e) => updateCustom(e.target.value)}
+                  onChange={(e) => setCustom(e.target.value)}
                   className="bg-transparent border-0 shadow-none focus-visible:ring-0 placeholder:text-foreground/25"
                 />
               </motion.div>

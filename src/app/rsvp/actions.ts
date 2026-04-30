@@ -23,6 +23,7 @@ export async function lookupInvite(code: string) {
     code: invite.code,
     hotelEligible: invite.hotelEligible,
     maxGuests: invite.maxGuests,
+    philMode: invite.philMode,
     guests: invite.guests.map((g) => ({
       id: g.id,
       name: g.name,

@@ -232,6 +232,8 @@ const spec = {
                     success: { type: "boolean", const: true },
                     code: { type: "string" },
                     url: { type: "string" },
+                    addressUrl: { type: "string" },
+                    rsvpUrl: { type: "string" },
                     id: { type: "string", format: "uuid" },
                     guestId: { type: "string", format: "uuid" },
                     deleted: { type: "boolean" },

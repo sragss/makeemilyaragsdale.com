@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef } from "react";
 
 // Light, bright greens — cartoon hand-drawn roses
 const COLORS = [
@@ -187,8 +187,16 @@ export function BotanicalConfetti({
   const startRef = useRef<number>(0);
   const spawnedRef = useRef(false);
 
-  const animate = useCallback(
-    (time: number) => {
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+
+    const animate = (time: number) => {
       const canvas = canvasRef.current;
       if (!canvas) return;
       const ctx = canvas.getContext("2d");
@@ -242,18 +250,8 @@ export function BotanicalConfetti({
       if (elapsed < duration) {
         frameRef.current = requestAnimationFrame(animate);
       }
-    },
-    [duration]
-  );
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
     };
+
     resize();
     window.addEventListener("resize", resize);
 
@@ -263,7 +261,7 @@ export function BotanicalConfetti({
       window.removeEventListener("resize", resize);
       cancelAnimationFrame(frameRef.current);
     };
-  }, [animate]);
+  }, [duration]);
 
   return (
     <canvas

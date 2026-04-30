@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/db";
-import { invites, guests, hotelBookings, inviteEvents } from "@/db/schema";
+import { invites, guests, hotelBookings } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { generateCode } from "@/lib/codes";
 
@@ -41,6 +41,7 @@ export async function GET(req: NextRequest) {
         maxGuests: inv.maxGuests,
         address: inv.address,
         notes: inv.notes,
+        philMode: inv.philMode,
         guests: inv.guests.map((g) => ({
           id: g.id,
           name: g.name,
@@ -85,6 +86,7 @@ export async function GET(req: NextRequest) {
       maxGuests: invite.maxGuests,
       address: invite.address,
       notes: invite.notes,
+      philMode: invite.philMode,
       guests: invite.guests.map((g) => ({
         id: g.id,
         name: g.name,
@@ -177,6 +179,7 @@ export async function POST(req: NextRequest) {
         maxGuests: trimmed.length,
         address: (body.address as string) || null,
         notes: (body.notes as string) || null,
+        philMode: body.philMode === true,
       })
       .returning();
 
@@ -191,7 +194,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       code,
-      url: `https://makeemilyaragsdale.com/rsvp/${code}`,
+      url: `https://makeemilyaragsdale.com/address/${code}`,
+      addressUrl: `https://makeemilyaragsdale.com/address/${code}`,
+      rsvpUrl: `https://makeemilyaragsdale.com/rsvp/${code}`,
       id: inserted.id,
     });
   }
@@ -211,6 +216,7 @@ export async function POST(req: NextRequest) {
     if ("maxGuests" in body) updates.maxGuests = Number(body.maxGuests);
     if ("address" in body) updates.address = (body.address as string) || null;
     if ("notes" in body) updates.notes = (body.notes as string) || null;
+    if ("philMode" in body) updates.philMode = body.philMode === true;
 
     if (Object.keys(updates).length === 0)
       return badRequest(
