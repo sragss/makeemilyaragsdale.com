@@ -20,7 +20,6 @@ import { AttendToggle } from "./attend-toggle";
 import { DietaryPicker } from "./dietary-picker";
 import { NoiseInput } from "./noise-input";
 import { ShyButton } from "./shy-button";
-import { PronounPicker } from "./pronoun-picker";
 import { SamHeadTrail } from "@/components/sam-head-trail";
 
 // ── Main flow: code entry → form → done ──
@@ -272,9 +271,6 @@ function RsvpForm({
                       id={`dietary-${i}`}
                       philMode={invite.philMode}
                     />
-                    {invite.philMode && (
-                      <PronounPicker id={`pronouns-${i}`} />
-                    )}
                   </div>
                 </motion.div>
               )}
