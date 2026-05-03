@@ -88,3 +88,17 @@ export const hotelBookingRelations = relations(hotelBookings, ({ one }) => ({
     references: [invites.id],
   }),
 }));
+
+export const addressSubmissions = pgTable("address_submissions", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone").notNull(),
+  addressLine1: text("address_line_1").notNull(),
+  addressLine2: text("address_line_2"),
+  city: text("city").notNull(),
+  region: text("region").notNull(),
+  postalCode: text("postal_code").notNull(),
+  country: text("country").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});

@@ -12,13 +12,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function AddressPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ code?: string }>;
-}) {
-  const { code } = await searchParams;
-
+export default function AddressPage() {
   return (
     <main className="flex flex-1 flex-col items-center px-6 py-16 sm:py-24">
       <div className="max-w-lg w-full space-y-8">
@@ -34,7 +28,7 @@ export default async function AddressPage({
           </h1>
         </header>
 
-        <AddressFlow initialCode={code} />
+        <AddressFlow />
       </div>
     </main>
   );

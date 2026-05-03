@@ -1,74 +1,62 @@
 "use server";
 
 import { getDb } from "@/db";
-import { invites } from "@/db/schema";
-import { eq } from "drizzle-orm";
-import { trackEvent } from "@/app/rsvp/track";
+import { addressSubmissions } from "@/db/schema";
 
-function normalizeCode(code: string) {
-  return code.trim().toUpperCase();
+export interface AddressSubmissionInput {
+  name: string;
+  email: string;
+  phone: string;
+  addressLine1: string;
+  addressLine2: string;
+  city: string;
+  region: string;
+  postalCode: string;
+  country: string;
 }
 
-export async function lookupAddressInvite(code: string) {
-  const db = getDb();
-  const normalized = normalizeCode(code);
-  if (!normalized) return null;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  const invite = await db.query.invites.findFirst({
-    where: eq(invites.code, normalized),
-    with: {
-      guests: true,
-    },
-  });
-
-  if (!invite || invite.deleted) return null;
-
-  await trackEvent(invite.id, "address_view");
-
+function trimAll(input: AddressSubmissionInput) {
   return {
-    code: invite.code,
-    address: invite.address,
-    guestNames: invite.guests.map((guest) => guest.name),
+    name: input.name.trim(),
+    email: input.email.trim(),
+    phone: input.phone.trim(),
+    addressLine1: input.addressLine1.trim(),
+    addressLine2: input.addressLine2.trim(),
+    city: input.city.trim(),
+    region: input.region.trim(),
+    postalCode: input.postalCode.trim(),
+    country: input.country.trim(),
   };
 }
 
-export type AddressInviteData = NonNullable<
-  Awaited<ReturnType<typeof lookupAddressInvite>>
->;
+export async function submitAddressEntry(input: AddressSubmissionInput) {
+  const data = trimAll(input);
 
-export async function submitAddress(data: { code: string; address: string }) {
+  if (!data.name) throw new Error("Name is required");
+  if (!data.email || !EMAIL_REGEX.test(data.email)) {
+    throw new Error("A valid email is required");
+  }
+  if (!data.phone) throw new Error("Phone is required");
+  if (!data.addressLine1) throw new Error("Street address is required");
+  if (!data.city) throw new Error("City is required");
+  if (!data.region) throw new Error("State / region is required");
+  if (!data.postalCode) throw new Error("Postal code is required");
+  if (!data.country) throw new Error("Country is required");
+
   const db = getDb();
-  const code = normalizeCode(data.code);
-  const address = data.address.trim();
-
-  if (!code) {
-    throw new Error("Missing invite code");
-  }
-
-  if (!address) {
-    throw new Error("Mailing address is required");
-  }
-
-  if (address.length > 800) {
-    throw new Error("Mailing address is too long");
-  }
-
-  const invite = await db.query.invites.findFirst({
-    where: eq(invites.code, code),
+  await db.insert(addressSubmissions).values({
+    name: data.name,
+    email: data.email,
+    phone: data.phone,
+    addressLine1: data.addressLine1,
+    addressLine2: data.addressLine2 || null,
+    city: data.city,
+    region: data.region,
+    postalCode: data.postalCode,
+    country: data.country,
   });
-
-  if (!invite || invite.deleted) {
-    throw new Error("Invite not found");
-  }
-
-  await db
-    .update(invites)
-    .set({
-      address,
-    })
-    .where(eq(invites.id, invite.id));
-
-  await trackEvent(invite.id, "address_submit");
 
   return { success: true };
 }

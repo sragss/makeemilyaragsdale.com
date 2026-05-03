@@ -1,4 +1,7 @@
+import Link from "next/link";
 import { getDb } from "@/db";
+import { addressSubmissions } from "@/db/schema";
+import { count } from "drizzle-orm";
 import { Separator } from "@/components/ui/separator";
 import { isAdminAuthenticated } from "./actions";
 import { LoginForm } from "./login-form";
@@ -33,6 +36,10 @@ export default async function AdminPage() {
   });
 
   const allInvites = allInvitesRaw.filter((i) => !i.deleted);
+
+  const [{ value: addressCount }] = await db
+    .select({ value: count() })
+    .from(addressSubmissions);
   const totalGuests = allInvites.flatMap((i) => i.guests);
   const declined = totalGuests.filter(
     (g) => g.attendingFriday === false && g.attendingSaturday === false
@@ -70,7 +77,15 @@ export default async function AdminPage() {
   return (
     <main className="flex flex-1 flex-col items-center px-6 py-16">
       <div className="max-w-5xl w-full space-y-8">
-        <h1 className="font-serif text-3xl font-light">Admin</h1>
+        <div className="flex items-baseline justify-between gap-4">
+          <h1 className="font-serif text-3xl font-light">Admin</h1>
+          <Link
+            href="/admin/addresses"
+            className="text-xs uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Addresses ({addressCount})
+          </Link>
+        </div>
 
         <AgentPrompt />
 

@@ -51,6 +51,7 @@ export default function Schedule() {
               title: "Pool Party at the Belmond",
               detail:
                 "Drinks, music and sunshine to kick off the weekend festivities.",
+              note: "Resort wear",
             },
             {
               time: "Sunset",
