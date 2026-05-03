@@ -1,11 +1,7 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { NoiseBackground } from "@/components/ui/noise-background";
-import { NOISE_GRADIENT_COLORS } from "@/lib/constants";
 import { submitAddressEntry } from "./actions";
 
 interface FormState {
@@ -83,186 +79,197 @@ export function AddressFlow() {
     }
   }
 
-  if (done) {
-    return (
-      <div className="text-center space-y-4 py-10">
-        <p className="font-serif text-3xl font-light">Got it, thank you</p>
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          We&apos;ll be in touch with details for the wedding weekend.
-        </p>
-      </div>
-    );
-  }
-
   const canSubmit = isFormComplete(form);
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <p className="text-sm text-muted-foreground leading-relaxed text-center">
-        Share your contact details so we can send you further information
-        about the wedding weekend.
-      </p>
+    <InvitationCard>
+      {done ? (
+        <div className="space-y-5 py-12 text-center">
+          <p className="font-serif text-3xl font-light leading-tight text-garden-cream">
+            With gratitude
+          </p>
+          <p className="text-sm leading-relaxed text-garden-cream/75">
+            We&apos;ll be in touch with details for the wedding weekend.
+          </p>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-7">
+          <FieldGroup label="Name">
+            <InvitationInput
+              id="contact-name"
+              autoComplete="name"
+              value={form.name}
+              onChange={(v) => updateField("name", v)}
+              placeholder="Jane Doe"
+            />
+          </FieldGroup>
 
-      <ContactSection form={form} onChange={updateField} />
-      <AddressSection form={form} onChange={updateField} />
+          <FieldGroup label="Email">
+            <InvitationInput
+              id="contact-email"
+              type="email"
+              autoComplete="email"
+              value={form.email}
+              onChange={(v) => updateField("email", v)}
+              placeholder="jane@example.com"
+            />
+          </FieldGroup>
 
-      {submitError && (
-        <p className="text-sm text-destructive text-center">{submitError}</p>
+          <FieldGroup label="Phone">
+            <InvitationInput
+              id="contact-phone"
+              type="tel"
+              autoComplete="tel"
+              value={form.phone}
+              onChange={(v) => updateField("phone", v)}
+              placeholder="+1 555 123 4567"
+            />
+          </FieldGroup>
+
+          <FieldGroup label="Address">
+            <div className="space-y-4">
+              <InvitationInput
+                id="address-line-1"
+                autoComplete="address-line1"
+                value={form.addressLine1}
+                onChange={(v) => updateField("addressLine1", v)}
+                placeholder="Street address"
+              />
+              <InvitationInput
+                id="address-line-2"
+                autoComplete="address-line2"
+                value={form.addressLine2}
+                onChange={(v) => updateField("addressLine2", v)}
+                placeholder="Apt, suite (optional)"
+              />
+              <div className="grid grid-cols-[1fr_3rem_4rem] gap-3 sm:gap-4">
+                <InvitationInput
+                  id="address-city"
+                  autoComplete="address-level2"
+                  value={form.city}
+                  onChange={(v) => updateField("city", v)}
+                  placeholder="City"
+                />
+                <InvitationInput
+                  id="address-region"
+                  autoComplete="address-level1"
+                  value={form.region}
+                  onChange={(v) => updateField("region", v)}
+                  placeholder="State"
+                />
+                <InvitationInput
+                  id="address-postal"
+                  autoComplete="postal-code"
+                  value={form.postalCode}
+                  onChange={(v) => updateField("postalCode", v)}
+                  placeholder="ZIP"
+                />
+              </div>
+              <InvitationInput
+                id="address-country"
+                autoComplete="country-name"
+                value={form.country}
+                onChange={(v) => updateField("country", v)}
+                placeholder="Country"
+              />
+            </div>
+          </FieldGroup>
+
+          {submitError && (
+            <p className="text-center text-sm text-garden-cream/90">
+              {submitError}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={saving || !canSubmit}
+            className="mt-2 w-full border border-garden-cream/80 bg-garden-cream py-4 font-serif text-xs uppercase tracking-[0.45em] text-garden-olive transition-opacity disabled:opacity-40"
+          >
+            {saving ? "Sending" : "Share"}
+          </button>
+        </form>
       )}
-
-      <Button type="submit" disabled={saving || !canSubmit} className="w-full">
-        {saving ? "Sending..." : "Send"}
-      </Button>
-    </form>
+    </InvitationCard>
   );
 }
 
-function ContactSection({
-  form,
-  onChange,
-}: {
-  form: FormState;
-  onChange: (field: FormField, value: string) => void;
-}) {
+function InvitationCard({ children }: { children: React.ReactNode }) {
   return (
-    <div className="space-y-3">
-      <Label htmlFor="contact-name">Your details</Label>
-      <NoiseBackground
-        containerClassName="rounded-sm"
-        gradientColors={[...NOISE_GRADIENT_COLORS]}
-        noiseIntensity={0.1}
-        speed={0.03}
-      >
-        <div className="absolute inset-0 z-[5] shadow-[inset_0_1px_4px_rgba(0,0,0,0.1),inset_0_0_8px_rgba(0,0,0,0.04)] pointer-events-none rounded-sm" />
-        <div className="relative z-10 grid gap-[3px] bg-background p-[3px]">
-          <FieldInput
-            id="contact-name"
-            label="Name"
-            placeholder="Jane Doe"
-            value={form.name}
-            onChange={(v) => onChange("name", v)}
+    <div className="relative w-full overflow-hidden rounded-sm bg-garden-olive shadow-[0_30px_80px_-30px_rgba(0,0,0,0.35)]">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-[0.07] mix-blend-overlay"
+        style={{
+          backgroundImage: "url(/images/noise.webp)",
+          backgroundSize: "200px 200px",
+        }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-3 rounded-sm border border-garden-cream/25"
+      />
+      <div className="relative px-7 py-12 sm:px-12 sm:py-14">
+        <div className="mb-10 flex flex-col items-center gap-5">
+          <Image
+            src="/images/se-logo.png"
+            alt="S & E"
+            width={88}
+            height={120}
+            priority
+            className="h-auto w-[68px] sm:w-[78px]"
           />
-          <FieldInput
-            id="contact-email"
-            label="Email"
-            placeholder="jane@example.com"
-            type="email"
-            value={form.email}
-            onChange={(v) => onChange("email", v)}
-          />
-          <FieldInput
-            id="contact-phone"
-            label="Phone"
-            placeholder="+1 555 123 4567"
-            type="tel"
-            value={form.phone}
-            onChange={(v) => onChange("phone", v)}
-          />
+          <p className="font-serif text-[10px] uppercase tracking-[0.45em] text-garden-cream/70">
+            February 27 · 2027
+          </p>
         </div>
-      </NoiseBackground>
+        {children}
+      </div>
     </div>
   );
 }
 
-function AddressSection({
-  form,
-  onChange,
-}: {
-  form: FormState;
-  onChange: (field: FormField, value: string) => void;
-}) {
-  return (
-    <div className="space-y-3">
-      <Label htmlFor="address-line-1">Mailing address</Label>
-      <NoiseBackground
-        containerClassName="rounded-sm"
-        gradientColors={[...NOISE_GRADIENT_COLORS]}
-        noiseIntensity={0.1}
-        speed={0.03}
-      >
-        <div className="absolute inset-0 z-[5] shadow-[inset_0_1px_4px_rgba(0,0,0,0.1),inset_0_0_8px_rgba(0,0,0,0.04)] pointer-events-none rounded-sm" />
-        <div className="relative z-10 grid gap-[3px] bg-background p-[3px]">
-          <FieldInput
-            id="address-line-1"
-            label="Street address"
-            placeholder="123 Main St"
-            value={form.addressLine1}
-            onChange={(v) => onChange("addressLine1", v)}
-          />
-          <FieldInput
-            id="address-line-2"
-            label="Apt, suite, etc."
-            placeholder="Apartment 4B"
-            value={form.addressLine2}
-            onChange={(v) => onChange("addressLine2", v)}
-          />
-          <div className="grid gap-[3px] sm:grid-cols-[1fr_5.5rem_7rem]">
-            <FieldInput
-              id="address-city"
-              label="City"
-              placeholder="New York"
-              value={form.city}
-              onChange={(v) => onChange("city", v)}
-            />
-            <FieldInput
-              id="address-region"
-              label="State"
-              placeholder="NY"
-              value={form.region}
-              onChange={(v) => onChange("region", v)}
-            />
-            <FieldInput
-              id="address-postal"
-              label="ZIP"
-              placeholder="10001"
-              value={form.postalCode}
-              onChange={(v) => onChange("postalCode", v)}
-            />
-          </div>
-          <FieldInput
-            id="address-country"
-            label="Country"
-            placeholder="United States"
-            value={form.country}
-            onChange={(v) => onChange("country", v)}
-          />
-        </div>
-      </NoiseBackground>
-    </div>
-  );
-}
-
-function FieldInput({
-  id,
+function FieldGroup({
   label,
-  placeholder,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="space-y-2.5">
+      <p className="font-serif text-[10px] uppercase tracking-[0.42em] text-garden-cream/70">
+        {label}
+      </p>
+      {children}
+    </div>
+  );
+}
+
+function InvitationInput({
+  id,
   value,
-  type,
   onChange,
+  placeholder,
+  type,
+  autoComplete,
 }: {
   id: string;
-  label: string;
-  placeholder: string;
   value: string;
-  type?: string;
   onChange: (value: string) => void;
+  placeholder?: string;
+  type?: string;
+  autoComplete?: string;
 }) {
   return (
-    <div className="space-y-1 bg-background/95 px-3 py-2">
-      <Label
-        htmlFor={id}
-        className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground"
-      >
-        {label}
-      </Label>
-      <Input
-        id={id}
-        type={type}
-        value={value}
-        placeholder={placeholder}
-        onChange={(event) => onChange(event.target.value)}
-        className="h-7 rounded-none border-0 bg-transparent px-0 py-0 shadow-none focus-visible:ring-0 placeholder:text-foreground/25"
-      />
-    </div>
+    <input
+      id={id}
+      type={type ?? "text"}
+      autoComplete={autoComplete}
+      value={value}
+      placeholder={placeholder}
+      onChange={(event) => onChange(event.target.value)}
+      className="w-full border-b border-garden-cream/40 bg-transparent py-2 font-serif text-base text-garden-cream placeholder:text-garden-cream/35 focus:border-garden-cream focus:outline-none"
+    />
   );
 }
