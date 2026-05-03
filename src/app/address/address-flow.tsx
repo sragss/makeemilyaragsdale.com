@@ -89,7 +89,9 @@ export function AddressFlow() {
             Thank you
           </p>
           <p className="font-serif text-base italic leading-relaxed text-garden-cream/80">
-            We&apos;ll be in touch with details for the wedding weekend soon.
+            We&apos;ll be in touch with details for the
+            <br />
+            wedding weekend soon.
           </p>
         </div>
       ) : (
