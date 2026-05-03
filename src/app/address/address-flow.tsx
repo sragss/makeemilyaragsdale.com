@@ -209,7 +209,7 @@ function InvitationCard({ children }: { children: React.ReactNode }) {
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-3 rounded-sm border border-garden-cream/25"
+        className="pointer-events-none absolute inset-3 rounded-sm border-2 border-garden-cream/40"
       />
       <div className="relative px-7 py-12 sm:px-12 sm:py-14">
         <div className="mb-10 flex flex-col items-center">
