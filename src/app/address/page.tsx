@@ -7,7 +7,6 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Mailing Address - Emily & Sam",
     description: "Tell us where to send your invitation.",
-    images: [{ url: "/images/og-rsvp.jpg", width: 1536, height: 1024 }],
   },
 };
 
