@@ -93,7 +93,7 @@ export function AddressFlow() {
             priority
             className="h-auto w-[58px] sm:w-[66px]"
           />
-          <p className="mt-4 font-serif text-4xl font-light uppercase tracking-[0.18em] text-garden-cream">
+          <p className="mt-4 font-serif text-3xl font-light uppercase tracking-[0.12em] text-garden-cream">
             Thank you
           </p>
           <p className="mt-5 font-serif text-base italic leading-[1.25] text-garden-cream/80">
