@@ -14,6 +14,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { isAdminAuthenticated } from "../actions";
 import { CopyButton } from "../copy-button";
+import { DeleteSubmissionButton } from "./delete-button";
 
 export const dynamic = "force-dynamic";
 
@@ -86,6 +87,7 @@ export default async function AdminAddressesPage() {
                 <TableHead>Phone</TableHead>
                 <TableHead>Address</TableHead>
                 <TableHead className="w-10"></TableHead>
+                <TableHead className="w-10"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -113,6 +115,9 @@ export default async function AdminAddressesPage() {
                     </TableCell>
                     <TableCell>
                       <CopyButton url={address} label="Address" />
+                    </TableCell>
+                    <TableCell>
+                      <DeleteSubmissionButton id={row.id} name={row.name} />
                     </TableCell>
                   </TableRow>
                 );
