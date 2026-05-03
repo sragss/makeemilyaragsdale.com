@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Mailing Address - Make Emily a Ragsdale",
   robots: { index: false },
   openGraph: {
-    title: "Mailing Address - Emily & Sam",
+    title: "Mailing Address",
     description: "Tell us where to send your invitation.",
   },
 };
