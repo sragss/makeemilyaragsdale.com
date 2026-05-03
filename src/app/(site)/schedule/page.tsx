@@ -9,6 +9,7 @@ type Item = {
   time: string;
   title: string;
   detail?: string;
+  note?: string;
 };
 
 function Timeline({ items }: { items: Item[] }) {
@@ -25,6 +26,11 @@ function Timeline({ items }: { items: Item[] }) {
               {item.detail}
             </p>
           )}
+          {item.note && (
+            <p className="font-serif text-base italic leading-relaxed text-muted-foreground">
+              {item.note}
+            </p>
+          )}
         </li>
       ))}
     </ol>
@@ -36,7 +42,6 @@ export default function Schedule() {
     <PageShell
       eyebrow="February 26 & 27, 2027"
       title="Schedule"
-      intro="Two days, two distinct moods. Friday eases everyone in. Saturday is the wedding."
     >
       <Section label="Friday, February 26">
         <Timeline
@@ -45,18 +50,14 @@ export default function Schedule() {
               time: "Afternoon",
               title: "Pool Party at the Belmond",
               detail:
-                "Drinks, music, and a slow start at our home base for the weekend.",
-            },
-            {
-              time: "Late Afternoon",
-              title: "Break to Change",
-              detail: "Head back to your room and put on white linens.",
+                "Drinks, music and sunshine to kick off the weekend festivities.",
             },
             {
               time: "Sunset",
               title: "Callejoneada Parade",
               detail:
-                "A traditional procession through town with a brass band and mezcal. Wear shoes you can walk cobblestone in.",
+                "A traditional procession through town with Mariachi and Mezcal.",
+              note: "Suitable footwear for cobblestone.",
             },
             {
               time: "Evening",

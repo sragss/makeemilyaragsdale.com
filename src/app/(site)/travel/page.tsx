@@ -47,10 +47,42 @@ const HOTELS = [
 export default function Travel() {
   return (
     <PageShell
-      eyebrow="Getting There & Around"
+      eyebrow="Where to Stay & How to Get There"
       title="Travel & Stay"
-      intro="Three airports work, depending on where you fly from. The town itself is walkable and small. Below is everything you need to plan."
+      intro="The Belmond is our home base. Below is where to stay, how to get to San Miguel, and how to get around once you arrive."
     >
+      <Section label="The Belmond, Casa de Sierra Nevada">
+        <p className="text-muted-foreground">
+          We have reserved the Belmond as our home base for the weekend, and we
+          would love for as many of you as possible to stay with us. Friday's
+          pool party and the Callejoneada both begin here, so staying at the
+          Belmond means you are in the middle of everything. With 37 rooms, the
+          block will fill up. Please book early to secure a spot.
+        </p>
+        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+          Booking link, room block code, and deadline to come.
+        </p>
+      </Section>
+
+      <Section label="Other Hotels We Recommend">
+        <p className="text-muted-foreground">
+          For guests who are not able to stay at the Belmond, here are a few
+          hotels we love nearby. All are walkable to the center of town.
+        </p>
+        <ul className="space-y-5">
+          {HOTELS.map((h) => (
+            <li key={h.name} className="space-y-1">
+              <p className="font-serif text-lg font-light">{h.name}</p>
+              <p className="text-sm text-muted-foreground">{h.note}</p>
+            </li>
+          ))}
+        </ul>
+        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+          San Miguel fills up quickly in February. Book early and confirm rates
+          directly with the hotel.
+        </p>
+      </Section>
+
       <Section label="Airports">
         <ul className="space-y-5">
           {AIRPORTS.map((a) => (
@@ -98,6 +130,15 @@ export default function Travel() {
         </div>
       </Section>
 
+      <Section label="Wedding Day Transportation">
+        <p className="text-muted-foreground">
+          The venue is fifteen minutes from the Belmond and downtown San Miguel.
+          We will run a shuttle between a central pickup point in town and the
+          venue. Return shuttles will run from 11pm to 2am. Specific timing and
+          pickup details to come closer to the date.
+        </p>
+      </Section>
+
       <Section label="Getting Around San Miguel">
         <p className="text-muted-foreground">
           San Miguel is small and walkable. You can cross the old town in about
@@ -109,47 +150,6 @@ export default function Travel() {
           and the cobblestones are real. Bring walking shoes for the day, and
           pack flats or block heels for evenings. The town sits at 6,200 feet,
           so drink water and take it slow your first day.
-        </p>
-      </Section>
-
-      <Section label="Wedding Day Transportation">
-        <p className="text-muted-foreground">
-          The venue is fifteen minutes from the Belmond and downtown San Miguel.
-          We will run a shuttle between a central pickup point in town and the
-          venue. Return shuttles will run from 11pm to 2am. Specific timing and
-          pickup details to come closer to the date.
-        </p>
-      </Section>
-
-      <Section label="The Belmond, Casa de Sierra Nevada">
-        <p className="text-muted-foreground">
-          We have reserved the Belmond as our home base for the weekend, and we
-          would love for as many of you as possible to stay with us. Friday's
-          pool party and the Callejoneada both begin here, so staying at the
-          Belmond means you are in the middle of everything. With 37 rooms, the
-          block will fill up. Please book early to secure a spot.
-        </p>
-        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-          Booking link, room block code, and deadline to come.
-        </p>
-      </Section>
-
-      <Section label="Other Hotels We Recommend">
-        <p className="text-muted-foreground">
-          For guests who are not able to stay at the Belmond, here are a few
-          hotels we love nearby. All are walkable to the center of town.
-        </p>
-        <ul className="space-y-5">
-          {HOTELS.map((h) => (
-            <li key={h.name} className="space-y-1">
-              <p className="font-serif text-lg font-light">{h.name}</p>
-              <p className="text-sm text-muted-foreground">{h.note}</p>
-            </li>
-          ))}
-        </ul>
-        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-          San Miguel fills up quickly in February. Book early and confirm rates
-          directly with the hotel.
         </p>
       </Section>
     </PageShell>

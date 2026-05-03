@@ -4,6 +4,15 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+  --color-garden-green: #aab537;
+  --color-garden-olive: #898834;
+  --color-garden-moss: #514f22;
+  --color-garden-cream: #f2e4bc;
+  --color-garden-ink: #1c1109;
+  --color-garden-terracotta: #d38057;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
