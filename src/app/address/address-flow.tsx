@@ -211,7 +211,7 @@ function InvitationCard({ children }: { children: React.ReactNode }) {
         aria-hidden
         className="pointer-events-none absolute inset-3 rounded-sm border-[5px] border-double border-garden-cream/45"
       />
-      <div className="relative px-7 py-12 sm:px-12 sm:py-14">
+      <div className="relative px-10 py-12 sm:px-16 sm:py-14">
         <div className="mb-10 flex flex-col items-center">
           <Image
             src="/images/se-logo.png"
