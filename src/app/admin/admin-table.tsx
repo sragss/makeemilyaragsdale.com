@@ -27,6 +27,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { CopyButton } from "./copy-button";
+import { InviteTrashButton } from "./invite-trash-button";
 import { updateInvite } from "./rsvp/[code]/actions";
 
 interface InviteRow {
@@ -336,6 +337,7 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
             <TableHead>Hotel</TableHead>
             <TableHead>Contact</TableHead>
             <TableHead>Links</TableHead>
+            <TableHead className="w-10"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -454,6 +456,9 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
                     url={`https://makeemilyaragsdale.com/rsvp/${invite.code}`}
                   />
                 </div>
+              </TableCell>
+              <TableCell>
+                <InviteTrashButton inviteId={invite.id} code={invite.code} />
               </TableCell>
             </TableRow>
           ))}

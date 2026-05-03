@@ -3,6 +3,7 @@
 import { getDb } from "@/db";
 import { invites, guests } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 import { upsertHotelBooking } from "@/lib/hotel";
 
 export async function updateGuest(
@@ -48,5 +49,6 @@ export async function deleteInvite(inviteId: string) {
     .update(invites)
     .set({ deleted: true })
     .where(eq(invites.id, inviteId));
+  revalidatePath("/admin");
   return { success: true };
 }
