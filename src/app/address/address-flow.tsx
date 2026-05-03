@@ -82,13 +82,21 @@ export function AddressFlow() {
   const canSubmit = isFormComplete(form);
 
   return (
-    <InvitationCard>
+    <InvitationCard hideLogo={done}>
       {done ? (
-        <div className="space-y-5 py-12 text-center">
-          <p className="font-serif text-3xl font-light leading-tight text-garden-cream">
+        <div className="flex flex-col items-center py-10 text-center">
+          <Image
+            src="/images/se-logo.png"
+            alt="S & E"
+            width={88}
+            height={120}
+            priority
+            className="h-auto w-[58px] sm:w-[66px]"
+          />
+          <p className="mt-4 font-serif text-4xl font-light uppercase tracking-[0.18em] text-garden-cream">
             Thank you
           </p>
-          <p className="font-serif text-base italic leading-relaxed text-garden-cream/80">
+          <p className="mt-5 font-serif text-base italic leading-[1.25] text-garden-cream/80">
             We&apos;ll be in touch with details for the
             <br />
             wedding weekend soon.
@@ -198,7 +206,13 @@ export function AddressFlow() {
   );
 }
 
-function InvitationCard({ children }: { children: React.ReactNode }) {
+function InvitationCard({
+  children,
+  hideLogo = false,
+}: {
+  children: React.ReactNode;
+  hideLogo?: boolean;
+}) {
   return (
     <div className="relative w-full overflow-hidden rounded-sm bg-garden-olive shadow-[0_2px_6px_rgba(0,0,0,0.12),0_30px_60px_-15px_rgba(0,0,0,0.45)]">
       <div
@@ -214,16 +228,18 @@ function InvitationCard({ children }: { children: React.ReactNode }) {
         className="pointer-events-none absolute inset-3 rounded-sm border-[5px] border-double border-garden-cream/45"
       />
       <div className="relative px-10 py-12 sm:px-16 sm:py-14">
-        <div className="mb-10 flex flex-col items-center">
-          <Image
-            src="/images/se-logo.png"
-            alt="S & E"
-            width={88}
-            height={120}
-            priority
-            className="h-auto w-[68px] sm:w-[78px]"
-          />
-        </div>
+        {!hideLogo && (
+          <div className="mb-10 flex flex-col items-center">
+            <Image
+              src="/images/se-logo.png"
+              alt="S & E"
+              width={88}
+              height={120}
+              priority
+              className="h-auto w-[68px] sm:w-[78px]"
+            />
+          </div>
+        )}
         {children}
       </div>
     </div>
