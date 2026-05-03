@@ -184,7 +184,7 @@ export function AddressFlow() {
           <button
             type="submit"
             disabled={saving || !canSubmit}
-            className="mt-2 w-full border border-garden-cream/80 bg-garden-cream py-4 font-serif text-xs uppercase tracking-[0.45em] text-garden-olive transition-opacity disabled:opacity-40"
+            className="mt-2 w-full border border-garden-cream/80 bg-garden-cream py-6 font-serif text-sm font-semibold uppercase tracking-[0.45em] text-garden-olive transition-opacity disabled:opacity-40"
           >
             {saving ? "Sending" : "Share"}
           </button>
