@@ -86,10 +86,10 @@ export function AddressFlow() {
       {done ? (
         <div className="space-y-5 py-12 text-center">
           <p className="font-serif text-3xl font-light leading-tight text-garden-cream">
-            With gratitude
+            Thank you
           </p>
-          <p className="text-sm leading-relaxed text-garden-cream/75">
-            We&apos;ll be in touch with details for the wedding weekend.
+          <p className="font-serif text-base italic leading-relaxed text-garden-cream/80">
+            We&apos;ll be in touch with details for the wedding weekend soon.
           </p>
         </div>
       ) : (
