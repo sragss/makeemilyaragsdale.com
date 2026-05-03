@@ -210,7 +210,7 @@ function InvitationCard({ children }: { children: React.ReactNode }) {
         className="pointer-events-none absolute inset-3 rounded-sm border border-garden-cream/25"
       />
       <div className="relative px-7 py-12 sm:px-12 sm:py-14">
-        <div className="mb-10 flex flex-col items-center gap-5">
+        <div className="mb-10 flex flex-col items-center">
           <Image
             src="/images/se-logo.png"
             alt="S & E"
@@ -219,9 +219,6 @@ function InvitationCard({ children }: { children: React.ReactNode }) {
             priority
             className="h-auto w-[68px] sm:w-[78px]"
           />
-          <p className="font-serif text-[10px] uppercase tracking-[0.45em] text-garden-cream/70">
-            February 27 · 2027
-          </p>
         </div>
         {children}
       </div>
@@ -238,7 +235,7 @@ function FieldGroup({
 }) {
   return (
     <div className="space-y-2.5">
-      <p className="font-serif text-[10px] uppercase tracking-[0.42em] text-garden-cream/70">
+      <p className="font-serif text-[11px] font-medium uppercase tracking-[0.42em] text-garden-cream">
         {label}
       </p>
       {children}
