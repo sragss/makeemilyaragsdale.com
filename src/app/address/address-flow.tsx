@@ -96,7 +96,7 @@ export function AddressFlow() {
           <p className="mt-4 font-serif text-3xl font-light uppercase tracking-[0.12em] text-garden-cream">
             Thank you
           </p>
-          <p className="mt-5 font-serif text-base italic leading-[1.25] text-garden-cream/80">
+          <p className="mt-5 font-serif text-base italic leading-[1.25] text-garden-cream">
             We&apos;ll be in touch with details for the
             <br />
             wedding weekend soon.
