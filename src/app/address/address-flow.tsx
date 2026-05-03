@@ -198,7 +198,7 @@ export function AddressFlow() {
 
 function InvitationCard({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative w-full overflow-hidden rounded-sm bg-garden-olive shadow-[0_30px_80px_-30px_rgba(0,0,0,0.35)]">
+    <div className="relative w-full overflow-hidden rounded-sm bg-garden-olive shadow-[0_2px_6px_rgba(0,0,0,0.12),0_30px_60px_-15px_rgba(0,0,0,0.45)]">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 opacity-[0.07] mix-blend-overlay"
