@@ -1,20 +1,25 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export function SiteFooter() {
   return (
-    <footer className="mt-24 border-t border-border/60">
-      <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-4 px-4 py-10 text-center sm:flex-row sm:justify-between sm:text-left sm:px-6">
-        <div className="space-y-1">
-          <p className="font-serif text-lg font-light tracking-tight">
-            Emily &amp; Sam
-          </p>
-          <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">
-            February 27, 2027 &middot; San Miguel de Allende
-          </p>
+    <footer className="bg-[#f5e9c8] text-[#493932]">
+      <div className="relative mx-auto grid w-full max-w-6xl grid-cols-3 items-center gap-4 px-4 py-10 sm:px-6">
+        <p className="font-edict text-sm font-medium tracking-[0.12em] justify-self-start">
+          02-27-2027
+        </p>
+        <div className="justify-self-center">
+          <Image
+            src="/images/sandelogo.png"
+            alt="S & E"
+            width={160}
+            height={80}
+            className="h-12 w-auto object-contain"
+          />
         </div>
         <Link
           href="/rsvp"
-          className="rounded-full border border-foreground/80 px-5 py-2 text-xs uppercase tracking-[0.22em] text-foreground transition-colors hover:bg-foreground hover:text-background"
+          className="justify-self-end border border-[#493932]/80 px-5 py-2 text-xs uppercase tracking-[0.22em] transition-colors hover:bg-[#493932] hover:text-[#f5e9c8]"
         >
           RSVP
         </Link>
