@@ -1,157 +1,222 @@
-import { PageShell, Section } from "@/components/page-shell";
+import Image from "next/image";
+import { BelmondCarousel } from "./belmond-carousel";
 
 export const metadata = {
   title: "Travel & Stay — Emily & Sam",
 };
 
-const AIRPORTS = [
-  {
-    code: "BJX",
-    name: "Bajío International",
-    distance: "~1.5 hours by car",
-    note: "Often the easiest option.",
-  },
-  {
-    code: "QRO",
-    name: "Querétaro",
-    distance: "~1 hour by car",
-    note: "Closest, fewer flights.",
-  },
-  {
-    code: "MEX",
-    name: "Mexico City",
-    distance: "~3.5 hours by car",
-    note: "The most flight options.",
-  },
-];
-
 const HOTELS = [
   {
-    name: "Numu Boutique Hotel",
-    note: "One block from the Jardín. Tasteful design, intimate scale, an excellent restaurant and bar. The closest in feel to the Belmond.",
+    name: "Numu",
+    src: "/images/Numu.png",
+    note: "One block from the Jardín. Tasteful, intimate, an excellent bar.",
+    href: "https://www.hyatt.com/unbound-collection/en-US/bjxub-numu",
+  },
+  {
+    name: "Live Aqua",
+    src: "/images/Live Aqua.png",
+    note: "Larger urban resort with spa, pool, and full amenities.",
+    href: "https://www.fiestamericanatravelty.com/en/live-aqua/hotels/live-aqua-san-miguel-de-allende",
   },
   {
     name: "Hacienda El Santuario",
-    note: "A characterful boutique in Centro with whitewashed walls, four-poster beds, and a rooftop garden looking onto the Parroquia. Traditional San Miguel charm.",
+    src: "/images/Hacienda el santurario.png",
+    note: "Whitewashed boutique in Centro with a rooftop onto the Parroquia.",
+    href: "https://www.haciendaelsantuario.com/es/",
   },
   {
     name: "Casa Carmen",
-    note: "A warm, longtime B&B with a courtyard and included breakfast. Walking distance to the Jardín. A more affordable option with real local character.",
+    src: "/images/Casa Carmen.png",
+    note: "Longtime B&B with a courtyard and included breakfast.",
+    href: "https://casa-carmen.san-miguel-de-allendehotels.com/en/",
   },
-  {
-    name: "Live Aqua San Miguel de Allende",
-    note: "A larger urban resort with a spa, pool, and full amenities. A good fit for guests who want a more resort-style stay.",
-  },
+];
+
+const AIRPORTS = [
+  { code: "QRO", name: "Querétaro", distance: "~1 hour by car." },
+  { code: "MEX", name: "Mexico City", distance: "~3 hours by car." },
+  { code: "BJX", name: "Bajío", distance: "~1.5 hours by car." },
 ];
 
 export default function Travel() {
   return (
-    <PageShell
-      eyebrow="Where to Stay & How to Get There"
-      title="Travel & Stay"
-      intro="The Belmond is our home base. Below is where to stay, how to get to San Miguel, and how to get around once you arrive."
-    >
-      <Section label="The Belmond, Casa de Sierra Nevada">
-        <p className="text-muted-foreground">
-          We have reserved the Belmond as our home base for the weekend, and we
-          would love for as many of you as possible to stay with us. Friday's
-          pool party and the Callejoneada both begin here, so staying at the
-          Belmond means you are in the middle of everything. With 37 rooms, the
-          block will fill up. Please book early to secure a spot.
-        </p>
-        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-          Booking link, room block code, and deadline to come.
-        </p>
-      </Section>
+    <div data-snap-stack className="relative -mt-10 w-full">
+      {/* Hero */}
+      <section className="sticky top-0 h-screen w-full overflow-hidden">
+        <Image
+          src="/images/TravelandStay-Hero.png"
+          alt="San Miguel de Allende skyline at golden hour"
+          fill
+          priority
+          sizes="100vw"
+          className="scale-110 object-cover"
+        />
+        <div className="absolute inset-0 bg-black/10" />
+        <div className="absolute inset-0 flex items-center justify-center px-6">
+          <h1 className="font-eros text-[clamp(5.07rem,18.59vw,15.21rem)] font-normal uppercase leading-[0.85] tracking-[-0.01em] text-[#f5e9c8] drop-shadow-[0_4px_24px_rgba(0,0,0,0.35)]">
+            Travel &amp; Stay
+          </h1>
+        </div>
+      </section>
 
-      <Section label="Other Hotels We Recommend">
-        <p className="text-muted-foreground">
-          For guests who are not able to stay at the Belmond, here are a few
-          hotels we love nearby. All are walkable to the center of town.
-        </p>
-        <ul className="space-y-5">
-          {HOTELS.map((h) => (
-            <li key={h.name} className="space-y-1">
-              <p className="font-serif text-lg font-light">{h.name}</p>
-              <p className="text-sm text-muted-foreground">{h.note}</p>
-            </li>
-          ))}
-        </ul>
-        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-          San Miguel fills up quickly in February. Book early and confirm rates
-          directly with the hotel.
-        </p>
-      </Section>
+      {/* Belmond intro — cream */}
+      <section className="sticky top-0 flex h-screen items-center justify-center overflow-hidden bg-[#f5e9c8] px-6 pb-[14vh] text-[#493932]">
+        <div className="mx-auto max-w-3xl space-y-6 text-center">
+          <h2 className="font-edict text-[2.25rem] font-medium uppercase tracking-[0.08em] sm:text-[2.7rem]">
+            The Belmond
+          </h2>
+          <p className="font-edict text-[1.44rem] italic font-normal sm:text-[1.73rem]">
+            Casa de Sierra Nevada
+          </p>
+          <p className="font-inter mx-auto max-w-2xl text-[15px] leading-relaxed sm:text-base">
+            We have reserved the Belmond as our home base for the weekend, and
+            we would love for as many of you as possible to stay with us.
+            Friday&apos;s pool party and the Callejoneada both begin here, so
+            staying at the Belmond means you are in the middle of everything.
+            With 37 rooms, the block will fill up. Please book early to secure a
+            spot.
+          </p>
+        </div>
+      </section>
 
-      <Section label="Airports">
-        <ul className="space-y-5">
-          {AIRPORTS.map((a) => (
-            <li key={a.code} className="space-y-1">
-              <p className="font-serif text-lg font-light">
-                {a.name}{" "}
-                <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-                  {a.code}
-                </span>
-              </p>
-              <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-                {a.distance}
-              </p>
-              <p className="text-sm text-muted-foreground">{a.note}</p>
-            </li>
-          ))}
-        </ul>
-      </Section>
+      {/* Belmond carousel */}
+      <section className="sticky top-0 h-screen overflow-hidden">
+        <BelmondCarousel />
+      </section>
 
-      <Section label="Ground Transportation">
-        <p className="text-muted-foreground">
-          We recommend pre-booking a car from the airport. Two services we
-          trust:
-        </p>
-        <div className="space-y-3 text-muted-foreground">
-          <div>
-            <p className="font-serif text-base font-light text-foreground">
-              TransportArte Mexico
+      {/* Other hotels — cream */}
+      <section className="sticky top-0 flex h-screen flex-col overflow-hidden bg-[#f5e9c8] text-[#493932]">
+        <div className="flex flex-1 items-center justify-center px-6">
+          <div className="mx-auto max-w-2xl space-y-4 text-center">
+            <h2 className="font-edict text-3xl font-light italic sm:text-4xl">
+              Other hotels we recommend
+            </h2>
+            <p className="font-inter text-[15px] leading-relaxed text-[#493932]/80 sm:text-base">
+              For guests who are not able to stay at the Belmond, here are a few
+              hotels we&apos;d recommend nearby. All are walkable to the center
+              of town.
             </p>
-            <p>+52 415 105 5196</p>
-          </div>
-          <div>
-            <p className="font-serif text-base font-light text-foreground">
-              Transportes Turísticos Allende
-            </p>
-            <a
-              className="underline underline-offset-4"
-              href="https://transportesturisticosallende.com/contacto.html"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              transportesturisticosallende.com
-            </a>
           </div>
         </div>
-      </Section>
 
-      <Section label="Wedding Day Transportation">
-        <p className="text-muted-foreground">
-          The venue is fifteen minutes from the Belmond and downtown San Miguel.
-          We will run a shuttle between a central pickup point in town and the
-          venue. Return shuttles will run from 11pm to 2am. Specific timing and
-          pickup details to come closer to the date.
-        </p>
-      </Section>
+        <ul className="grid w-full grid-cols-2 gap-y-6 pb-12 sm:grid-cols-4">
+          {HOTELS.map((h) => (
+            <li key={h.name} className="space-y-4">
+              <a
+                href={h.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative block aspect-[3/2] w-full overflow-hidden"
+                aria-label={`${h.name} — opens in a new tab`}
+              >
+                <Image
+                  src={h.src}
+                  alt={h.name}
+                  fill
+                  sizes="(min-width: 640px) 25vw, 50vw"
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                />
+              </a>
+              <p className="text-center font-edict text-[0.975rem] uppercase tracking-[0.22em] text-[#493932]">
+                {h.name}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </section>
 
-      <Section label="Getting Around San Miguel">
-        <p className="text-muted-foreground">
-          San Miguel is small and walkable. You can cross the old town in about
-          twenty minutes on foot. Ubers are easy to find and run around five
-          dollars a ride.
-        </p>
-        <p className="text-muted-foreground">
-          A note on the streets: this is a 16th-century Spanish colonial town,
-          and the cobblestones are real. Bring walking shoes for the day, and
-          pack flats or block heels for evenings. The town sits at 6,200 feet,
-          so drink water and take it slow your first day.
-        </p>
-      </Section>
-    </PageShell>
+      {/* Transportation — olive */}
+      <section className="sticky top-0 flex h-screen items-center justify-center overflow-hidden bg-[#888834] px-6 text-[#f5e9c8] sm:px-10">
+        <div className="mx-auto w-full max-w-5xl">
+          <header className="mb-10 text-center sm:mb-14">
+            <p className="font-inter text-[10px] uppercase tracking-[0.45em] text-[#f5e9c8]/65">
+              Getting to &amp; around San Miguel
+            </p>
+            <h2 className="mt-3 font-edict text-4xl uppercase tracking-[0.18em] sm:text-5xl">
+              Transportation
+            </h2>
+          </header>
+
+          <div className="grid grid-cols-1 gap-x-16 gap-y-12 sm:grid-cols-2 lg:gap-x-24">
+            {/* I. Airports */}
+            <div>
+              <header className="mb-5 border-b border-[#f5e9c8]/35 pb-3">
+                <h3 className="font-edict text-xl italic font-normal sm:text-2xl">
+                  Airports
+                </h3>
+              </header>
+              <ul>
+                {AIRPORTS.map((a, i) => (
+                  <li
+                    key={a.code}
+                    className={`flex items-baseline justify-between gap-4 py-3 ${
+                      i < AIRPORTS.length - 1
+                        ? "border-b border-[#f5e9c8]/15"
+                        : ""
+                    }`}
+                  >
+                    <div>
+                      <p className="font-edict text-[15px] uppercase tracking-[0.18em] sm:text-base">
+                        {a.name}
+                      </p>
+                      <p className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.3em] text-[#f5e9c8]/60">
+                        {a.code}
+                      </p>
+                    </div>
+                    <p className="font-inter text-[12px] italic text-[#f5e9c8]/85 sm:text-[13px]">
+                      {a.distance}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* II. Ground transportation */}
+            <div>
+              <header className="mb-5 border-b border-[#f5e9c8]/35 pb-3">
+                <h3 className="font-edict text-xl italic font-normal sm:text-2xl">
+                  Ground
+                </h3>
+              </header>
+
+              <p className="font-inter text-[13px] leading-relaxed text-[#f5e9c8]/85 sm:text-sm">
+                We recommend pre-booking a car for arrival. Two services we
+                trust:
+              </p>
+
+              <ul className="mt-4">
+                <li className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-[#f5e9c8]/15 py-3">
+                  <p className="font-edict text-[15px] uppercase tracking-[0.18em]">
+                    TransportArte Mexico
+                  </p>
+                  <p className="font-mono text-[11px] tracking-wider text-[#f5e9c8]/85">
+                    +52 415 105 5196
+                  </p>
+                </li>
+                <li className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-3">
+                  <p className="font-edict text-[15px] uppercase tracking-[0.18em]">
+                    Transportes Turísticos Allende
+                  </p>
+                  <a
+                    className="font-mono text-[11px] tracking-wider text-[#f5e9c8]/85 underline underline-offset-4 hover:text-[#f5e9c8]"
+                    href="https://transportesturisticosallende.com/contacto.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    visit website
+                  </a>
+                </li>
+              </ul>
+
+              <p className="mt-5 font-edict text-[15px] italic leading-relaxed text-[#f5e9c8]/90 sm:text-base">
+                A shuttle will run between central pickup in town and Luna
+                Escondida on Saturday evening, with returns from 11 pm to 2 am.
+                San Miguel itself is walkable, and Uber is around $5 a ride.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
   );
 }
