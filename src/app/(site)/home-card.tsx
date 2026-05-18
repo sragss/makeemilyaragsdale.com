@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useRef } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { SAndELogo, SamAndEmilyLogo } from "@/components/logos";
 
 export function HomeCard() {
   const ref = useRef<HTMLDivElement>(null);
@@ -63,27 +63,13 @@ export function HomeCard() {
       </svg>
 
       <div className="absolute inset-0 flex flex-col items-center justify-center px-10 text-center sm:px-20">
-        <Image
-          src="/images/sandelogo.png"
-          alt="S&E monogram"
-          width={80}
-          height={100}
-          className="h-16 w-auto sm:h-20"
-          priority
-        />
+        <SAndELogo className="h-16 w-auto text-[#888834] sm:h-20" />
 
         <p className="mt-5 font-edict text-[12px] font-medium uppercase tracking-[0.34em] text-[#2a2a10] sm:mt-6 sm:text-[13px]">
           February 27, 2027
         </p>
 
-        <Image
-          src="/images/samandemilylogo.png"
-          alt="Sam & Emily"
-          width={1400}
-          height={280}
-          className="mt-5 h-auto w-full max-w-[620px] sm:mt-6"
-          priority
-        />
+        <SamAndEmilyLogo className="mt-5 h-auto w-full max-w-[620px] text-[#3f3e19] sm:mt-6" />
 
         <p className="mt-4 font-edict text-lg italic text-[#2a2a10] sm:mt-5 sm:text-xl">
           San Miguel De Allende, Mexico

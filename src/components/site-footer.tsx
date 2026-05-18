@@ -1,5 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
+import { SAndELogo } from "@/components/logos";
 
 export function SiteFooter() {
   return (
@@ -9,13 +9,7 @@ export function SiteFooter() {
           02-27-2027
         </p>
         <div className="justify-self-center">
-          <Image
-            src="/images/sandelogo.png"
-            alt="S & E"
-            width={160}
-            height={80}
-            className="h-12 w-auto object-contain"
-          />
+          <SAndELogo className="h-12 w-auto text-[#888834]" />
         </div>
         <Link
           href="/rsvp"

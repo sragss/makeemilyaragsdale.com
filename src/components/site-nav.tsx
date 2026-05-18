@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
+import { SamAndEmilyLogo } from "@/components/logos";
 
 const TABS = [
   { href: "/", label: "Home" },
@@ -31,14 +31,7 @@ export function SiteNav() {
           aria-label="Sam & Emily — Home"
           className="flex w-28 shrink-0 items-center"
         >
-          <Image
-            src="/images/samandemilylogo.png"
-            alt="Sam & Emily"
-            width={224}
-            height={80}
-            priority
-            className="h-7 w-auto object-contain"
-          />
+          <SamAndEmilyLogo className="h-7 w-auto text-[#3f3e19]" />
         </Link>
 
         <nav className="relative flex-1 overflow-x-auto scrollbar-none">
