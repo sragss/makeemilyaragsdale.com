@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { SamAndEmilyLogo } from "@/components/logos";
-import { useControlHaptics } from "@/lib/use-control-haptics";
 
 const TABS = [
   { href: "/", label: "Home" },
@@ -25,7 +24,6 @@ function isActive(pathname: string, href: string) {
 
 export function SiteNav() {
   const pathname = usePathname();
-  const triggerHeaderHaptic = useControlHaptics<HTMLElement>();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -49,7 +47,6 @@ export function SiteNav() {
 
   return (
     <header
-      onPointerDownCapture={triggerHeaderHaptic}
       className="sticky top-0 z-50 border-b border-garden-moss/20 bg-garden-cream/85 shadow-[0_1px_18px_rgba(28,17,9,0.08),inset_0_1px_0_rgba(255,255,255,0.45)] backdrop-blur-xl backdrop-saturate-150 supports-[backdrop-filter]:bg-garden-cream/70"
     >
       <div className="mx-auto flex h-10 w-full max-w-6xl items-stretch gap-6 px-4 sm:px-6">
