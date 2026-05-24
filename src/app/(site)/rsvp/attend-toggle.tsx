@@ -39,7 +39,7 @@ function ReplyChoice({
       type="button"
       aria-pressed={selected}
       onClick={onClick}
-      className={`relative overflow-hidden border px-4 py-3 text-left transition-colors ${
+      className={`relative min-h-14 overflow-hidden border px-4 py-4 text-left transition-colors sm:py-3 ${
         selected
           ? "border-garden-cream bg-garden-cream text-garden-olive"
           : "border-garden-cream/35 text-garden-cream hover:border-garden-cream/70 hover:bg-garden-cream/10"
@@ -56,7 +56,7 @@ function ReplyChoice({
           />
         )}
       </AnimatePresence>
-      <span className="relative block font-edict text-[12px] uppercase tracking-[0.24em]">
+      <span className="relative block font-edict text-[13px] uppercase tracking-[0.2em] sm:text-[12px] sm:tracking-[0.24em]">
         {label}
       </span>
     </button>

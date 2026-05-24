@@ -3,7 +3,7 @@ import { HomeCard } from "./home-card";
 
 export default function Home() {
   return (
-    <section className="relative -mt-10 h-screen w-full overflow-hidden">
+    <section className="relative -mt-12 h-screen w-full overflow-hidden md:-mt-10">
       <Image
         src="/images/Home.png"
         alt="Emily & Sam — San Miguel de Allende"

@@ -49,13 +49,13 @@ export function SiteNav() {
     <header
       className="sticky top-0 z-50 border-b border-garden-moss/20 bg-garden-cream/85 shadow-[0_1px_18px_rgba(28,17,9,0.08),inset_0_1px_0_rgba(255,255,255,0.45)] backdrop-blur-xl backdrop-saturate-150 supports-[backdrop-filter]:bg-garden-cream/70"
     >
-      <div className="mx-auto flex h-10 w-full max-w-6xl items-stretch gap-6 px-4 sm:px-6">
+      <div className="mx-auto flex h-12 w-full max-w-6xl items-stretch gap-6 px-4 sm:px-6 md:h-10">
         <Link
           href="/"
           aria-label="Sam & Emily — Home"
           className="flex w-28 shrink-0 items-center"
         >
-          <SamAndEmilyLogo className="h-7 w-auto text-[#3f3e19]" />
+          <SamAndEmilyLogo className="h-8 w-auto text-[#3f3e19] md:h-7" />
         </Link>
 
         <nav className="relative hidden flex-1 overflow-x-auto scrollbar-none md:block">
@@ -97,7 +97,7 @@ export function SiteNav() {
           aria-controls="mobile-site-nav"
           aria-expanded={mobileMenuOpen}
           onClick={() => setMobileMenuOpen((open) => !open)}
-          className="ml-auto inline-flex h-10 w-10 items-center justify-center text-garden-moss transition-colors hover:text-garden-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-garden-green md:hidden"
+          className="ml-auto inline-flex h-12 w-12 items-center justify-center text-garden-moss transition-colors hover:text-garden-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-garden-green md:hidden"
         >
           {mobileMenuOpen ? (
             <X aria-hidden className="h-5 w-5" strokeWidth={1.7} />
@@ -111,7 +111,7 @@ export function SiteNav() {
         {mobileMenuOpen && (
           <motion.div
             id="mobile-site-nav"
-            className="absolute inset-x-0 top-full z-40 h-[calc(100dvh-2.5rem)] overflow-y-auto border-t border-garden-moss/10 bg-garden-cream/96 shadow-[0_30px_80px_rgba(28,17,9,0.18)] md:hidden"
+            className="absolute inset-x-0 top-full z-40 h-[calc(100dvh-3rem)] overflow-y-auto border-t border-garden-moss/10 bg-garden-cream/96 shadow-[0_30px_80px_rgba(28,17,9,0.18)] md:hidden"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
@@ -119,7 +119,7 @@ export function SiteNav() {
           >
             <nav
               aria-label="Mobile navigation"
-              className="mx-auto flex min-h-[calc(100dvh-2.5rem)] max-w-6xl flex-col justify-center px-5 py-9"
+              className="mx-auto flex min-h-[calc(100dvh-3rem)] max-w-6xl flex-col justify-center px-5 py-9"
             >
               <ul className="border-y border-garden-moss/18">
                 {TABS.map((tab) => {

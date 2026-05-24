@@ -398,7 +398,7 @@ export default function ScheduleStack() {
   return (
     <ScrollStage
       frames={SCHEDULE_SCROLL_FRAMES}
-      className="relative -mt-10 w-full bg-[#3f3e19]"
+      className="relative -mt-12 w-full bg-[#3f3e19] md:-mt-10"
       mobile={
         <div className="flex flex-col gap-8 px-4 py-12">
           {CARDS.map((Card, i) => (
