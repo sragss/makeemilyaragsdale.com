@@ -4,9 +4,9 @@ import { useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { CheckIcon, PlusIcon, XIcon } from "lucide-react";
+import { useWebHaptics } from "web-haptics/react";
 import { BotanicalConfetti } from "@/components/botanicals";
 import { SAndELogo } from "@/components/logos";
-import { useControlHaptics } from "@/lib/use-control-haptics";
 import { submitRsvp } from "./actions";
 import { AttendToggle } from "./attend-toggle";
 import { DietaryPicker } from "./dietary-picker";
@@ -77,9 +77,7 @@ export function RsvpFlow() {
 }
 
 function RsvpForm({ onComplete }: { onComplete: (attending: boolean) => void }) {
-  const triggerFormHaptic = useControlHaptics<HTMLFormElement>({
-    includeCheckboxLabels: true,
-  });
+  const haptics = useWebHaptics();
   const [guestData, setGuestData] = useState<GuestFormData[]>([
     createGuest(1),
   ]);
@@ -163,8 +161,10 @@ function RsvpForm({ onComplete }: { onComplete: (attending: boolean) => void }) 
         hotelAcknowledged:
           acceptedGuests.length > 0 ? hotelAcknowledged : undefined,
       });
+      void haptics.trigger("success");
       onComplete(acceptedGuests.length > 0);
     } catch {
+      void haptics.trigger("error");
       setSubmitError("Something went wrong. Please try again.");
     } finally {
       setSubmitting(false);
@@ -196,7 +196,6 @@ function RsvpForm({ onComplete }: { onComplete: (attending: boolean) => void }) 
 
         <form
           onSubmit={handleSubmit}
-          onPointerDownCapture={triggerFormHaptic}
           className="space-y-9"
         >
           <EventSummary />

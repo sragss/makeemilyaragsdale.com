@@ -1,15 +1,18 @@
 "use client";
 
-import { useCallback, type PointerEvent } from "react";
+import { useCallback, type MouseEvent } from "react";
 import { useWebHaptics } from "web-haptics/react";
+
+type ControlHaptic = "light" | "medium" | "selection";
 
 export function useControlHaptics<TElement extends HTMLElement>({
   includeCheckboxLabels = false,
-}: { includeCheckboxLabels?: boolean } = {}) {
-  const { trigger } = useWebHaptics();
+  cooldownMs = 80,
+}: { includeCheckboxLabels?: boolean; cooldownMs?: number } = {}) {
+  const haptics = useWebHaptics();
 
   return useCallback(
-    (event: PointerEvent<TElement>) => {
+    (event: MouseEvent<TElement>) => {
       const target = event.target;
       if (!(target instanceof HTMLElement)) return;
 
@@ -25,8 +28,38 @@ export function useControlHaptics<TElement extends HTMLElement>({
         return;
       }
 
-      void trigger("nudge", { intensity: 0.9 });
+      const preset = getControlPreset(control);
+      const now =
+        typeof performance === "undefined" ? Date.now() : performance.now();
+
+      if (now - lastHapticAt < cooldownMs) return;
+      lastHapticAt = now;
+
+      void haptics.trigger(preset);
     },
-    [includeCheckboxLabels, trigger]
+    [cooldownMs, haptics, includeCheckboxLabels]
   );
+}
+
+let lastHapticAt = 0;
+
+function getControlPreset(control: Element): ControlHaptic {
+  if (control instanceof HTMLAnchorElement) return "selection";
+  if (control.getAttribute("aria-pressed") !== null) return "selection";
+
+  if (
+    control instanceof HTMLLabelElement &&
+    control.querySelector('input[type="checkbox"]')
+  ) {
+    return "selection";
+  }
+
+  if (
+    control instanceof HTMLButtonElement &&
+    control.type === "submit"
+  ) {
+    return "medium";
+  }
+
+  return "light";
 }
