@@ -1,7 +1,7 @@
 import { TravelScroll } from "./travel-scroll";
 
 export const metadata = {
-  title: "Travel & Stay — Emily & Sam",
+  title: "Emily & Sam -- Travel",
 };
 
 export default function Travel() {

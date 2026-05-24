@@ -22,6 +22,39 @@ interface GuestFormData {
   dietaryRestrictions: string;
 }
 
+const RSVP_STEPS = [
+  {
+    id: "details",
+    label: "Details",
+    eyebrow: "Weekend",
+    title: "The weekend",
+  },
+  { id: "party", label: "Party", eyebrow: "Your party", title: "Who's coming?" },
+  { id: "contact", label: "Contact", eyebrow: "Follow-up", title: "Contact" },
+  { id: "meal", label: "Meal", eyebrow: "Dinner", title: "Meal preferences" },
+  { id: "stay", label: "Stay", eyebrow: "Stay", title: "Belmond" },
+] as const;
+
+type RsvpStep = (typeof RSVP_STEPS)[number]["id"];
+
+const panelVariants = {
+  initial: (direction: number) => ({
+    opacity: 0,
+    x: direction >= 0 ? 28 : -28,
+    filter: "blur(2px)",
+  }),
+  animate: {
+    opacity: 1,
+    x: 0,
+    filter: "blur(0px)",
+  },
+  exit: (direction: number) => ({
+    opacity: 0,
+    x: direction >= 0 ? -28 : 28,
+    filter: "blur(2px)",
+  }),
+};
+
 function createGuest(index: number): GuestFormData {
   return {
     clientId: `guest-${index}`,
@@ -78,6 +111,8 @@ export function RsvpFlow() {
 
 function RsvpForm({ onComplete }: { onComplete: (attending: boolean) => void }) {
   const haptics = useWebHaptics();
+  const [currentStep, setCurrentStep] = useState<RsvpStep>("details");
+  const [stepDirection, setStepDirection] = useState(1);
   const [guestData, setGuestData] = useState<GuestFormData[]>([
     createGuest(1),
   ]);
@@ -91,12 +126,10 @@ function RsvpForm({ onComplete }: { onComplete: (attending: boolean) => void }) 
 
   const namedGuests = guestData.filter((guest) => guest.name.trim());
   const acceptedGuests = namedGuests.filter((guest) => guest.coming);
+  const hasPotentialAcceptedGuests = guestData.some((guest) => guest.coming);
   const acceptedGuestEntries = guestData
     .map((guest, index) => ({ guest, index }))
     .filter(({ guest }) => guest.name.trim() && guest.coming);
-  const missingContact = acceptedGuests.some(
-    (guest) => !guest.email.trim() || !guest.phone.trim()
-  );
   const missingEventSelection =
     acceptedGuests.length > 0 && !attendingFriday && !attendingSaturday;
   const missingMainCourse = acceptedGuests.some(
@@ -105,9 +138,42 @@ function RsvpForm({ onComplete }: { onComplete: (attending: boolean) => void }) 
   const missingHotel = acceptedGuests.length > 0 && hotelWillBook === undefined;
   const missingHotelAcknowledgement =
     acceptedGuests.length > 0 && hotelWillBook === true && !hotelAcknowledged;
+  const hasAcceptedGuests = acceptedGuests.length > 0;
+  const partyComplete =
+    namedGuests.length > 0 && (!hasAcceptedGuests || !missingEventSelection);
+  const contactComplete = true;
+  const mealComplete = !hasAcceptedGuests || !missingMainCourse;
+  const stayComplete =
+    !hasAcceptedGuests || (!missingHotel && !missingHotelAcknowledgement);
+  const stepComplete: Record<RsvpStep, boolean> = {
+    details: true,
+    party: partyComplete,
+    contact: contactComplete,
+    meal: mealComplete,
+    stay: stayComplete,
+  };
+  const currentStepIndex = RSVP_STEPS.findIndex(
+    (step) => step.id === currentStep
+  );
+  const furthestStepIndex = getFurthestStepIndex({
+    hasAcceptedGuests,
+    partyComplete,
+    mealComplete,
+  });
+  const currentStepIsFinal =
+    currentStep === "stay" ||
+    (currentStep === "party" && namedGuests.length > 0 && !hasAcceptedGuests);
+  const currentStepHint = getStepHint({
+    currentStep,
+    namedGuestCount: namedGuests.length,
+    hasAcceptedGuests,
+    missingEventSelection,
+    missingMainCourse,
+    missingHotel,
+    missingHotelAcknowledgement,
+  });
   const canSubmit =
     namedGuests.length > 0 &&
-    !missingContact &&
     !missingEventSelection &&
     !missingMainCourse &&
     !missingHotel &&
@@ -135,6 +201,27 @@ function RsvpForm({ onComplete }: { onComplete: (attending: boolean) => void }) 
 
   function removeGuest(index: number) {
     setGuestData((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function goToStep(nextStep: RsvpStep) {
+    const nextStepIndex = RSVP_STEPS.findIndex((step) => step.id === nextStep);
+    if (nextStepIndex < 0 || nextStepIndex > furthestStepIndex) return;
+
+    setSubmitError("");
+    setStepDirection(nextStepIndex >= currentStepIndex ? 1 : -1);
+    setCurrentStep(nextStep);
+  }
+
+  function goBack() {
+    const previousStep = RSVP_STEPS[currentStepIndex - 1];
+    if (!previousStep) return;
+    goToStep(previousStep.id);
+  }
+
+  function goNext() {
+    const nextStep = RSVP_STEPS[currentStepIndex + 1];
+    if (!nextStep) return;
+    goToStep(nextStep.id);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -194,77 +281,135 @@ function RsvpForm({ onComplete }: { onComplete: (attending: boolean) => void }) 
           </p>
         </header>
 
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-10 sm:space-y-9"
-        >
-          <EventSummary />
+        <form onSubmit={handleSubmit} className="space-y-7 sm:space-y-8">
+          <StepProgress
+            currentStep={currentStep}
+            furthestStepIndex={furthestStepIndex}
+            onStepChange={goToStep}
+          />
 
-          <section className="space-y-6">
-            <SectionHeading eyebrow="Your party" title="Who's coming?" />
+          <motion.div
+            layout
+            transition={{ layout: { duration: 0.28, ease: [0.22, 1, 0.36, 1] } }}
+            className="overflow-hidden"
+          >
+            <AnimatePresence mode="wait" initial={false} custom={stepDirection}>
+              {currentStep === "details" && (
+                <StepPanel
+                  key="details"
+                  step="details"
+                  direction={stepDirection}
+                >
+                  <WeekendDetails />
+                </StepPanel>
+              )}
 
-            {guestData.map((guest, index) => (
-              <GuestAttendance
-                key={guest.clientId}
-                guest={guest}
-                index={index}
-                canRemove={guestData.length > 1}
-                onRemove={() => removeGuest(index)}
-                onUpdate={updateGuest}
-              />
-            ))}
+              {currentStep === "party" && (
+                <StepPanel
+                  key="party"
+                  step="party"
+                  direction={stepDirection}
+                >
+                  <div className="space-y-6">
+                    {guestData.map((guest, index) => (
+                      <GuestAttendance
+                        key={guest.clientId}
+                        guest={guest}
+                        index={index}
+                        canRemove={guestData.length > 1}
+                        onRemove={() => removeGuest(index)}
+                        onUpdate={updateGuest}
+                      />
+                    ))}
 
-            <button
-              type="button"
-              onClick={addGuest}
-              className="flex min-h-14 w-full items-center justify-center gap-2 border border-dashed border-garden-cream/45 px-4 py-4 font-edict text-[13px] uppercase tracking-[0.2em] text-garden-cream transition-colors hover:border-garden-cream hover:bg-garden-cream/10 sm:text-[12px] sm:tracking-[0.24em]"
-            >
-              <PlusIcon aria-hidden className="size-4" />
-              Add another guest
-            </button>
-          </section>
+                    <button
+                      type="button"
+                      onClick={addGuest}
+                      className="flex min-h-14 w-full items-center justify-center gap-2 border border-dashed border-garden-cream/45 px-4 py-4 font-edict text-[13px] uppercase tracking-[0.2em] text-garden-cream transition-colors hover:border-garden-cream hover:bg-garden-cream/10 sm:text-[12px] sm:tracking-[0.24em]"
+                    >
+                      <PlusIcon aria-hidden className="size-4" />
+                      Add another guest
+                    </button>
+                  </div>
 
-          {acceptedGuestEntries.length > 0 && (
-            <section className="space-y-6 border-t border-garden-cream/25 pt-8">
-              <SectionHeading eyebrow="Details" title="Meal & contact" />
-              {acceptedGuestEntries.map(({ guest, index }) => (
-                <GuestDetails
-                  key={guest.clientId}
-                  guest={guest}
-                  index={index}
-                  onUpdate={updateGuest}
-                />
-              ))}
-            </section>
-          )}
+                  <AnimatePresence initial={false}>
+                    {hasPotentialAcceptedGuests && (
+                      <motion.div
+                        key="event-attendance"
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+                        className="overflow-hidden"
+                      >
+                        <div className="border-t border-garden-cream/25 pt-6">
+                          <EventCheckboxes
+                            attendingFriday={attendingFriday}
+                            attendingSaturday={attendingSaturday}
+                            showError={missingEventSelection}
+                            onFridayChange={setAttendingFriday}
+                            onSaturdayChange={setAttendingSaturday}
+                          />
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </StepPanel>
+              )}
 
-          {acceptedGuests.length > 0 && (
-            <section className="border-t border-garden-cream/25 pt-8">
-              <EventCheckboxes
-                attendingFriday={attendingFriday}
-                attendingSaturday={attendingSaturday}
-                showError={missingEventSelection}
-                onFridayChange={setAttendingFriday}
-                onSaturdayChange={setAttendingSaturday}
-              />
-            </section>
-          )}
+              {currentStep === "contact" && (
+                <StepPanel
+                  key="contact"
+                  step="contact"
+                  direction={stepDirection}
+                >
+                  <div className="space-y-6">
+                    {acceptedGuestEntries.map(({ guest, index }) => (
+                      <GuestContactDetails
+                        key={guest.clientId}
+                        guest={guest}
+                        index={index}
+                        onUpdate={updateGuest}
+                      />
+                    ))}
+                  </div>
+                </StepPanel>
+              )}
 
-          {acceptedGuests.length > 0 && (
-            <HotelSection
-              hotelWillBook={hotelWillBook}
-              hotelAcknowledged={hotelAcknowledged}
-              onWillBookChange={(value) => {
-                setHotelWillBook(value);
-                if (value) {
-                  setShowHotelConfetti(true);
-                } else {
-                  setHotelAcknowledged(false);
-                }
-              }}
-              onAcknowledgedChange={setHotelAcknowledged}
-            />
-          )}
+              {currentStep === "meal" && (
+                <StepPanel key="meal" step="meal" direction={stepDirection}>
+                  <div className="space-y-6">
+                    {acceptedGuestEntries.map(({ guest, index }) => (
+                      <GuestMealDetails
+                        key={guest.clientId}
+                        guest={guest}
+                        index={index}
+                        onUpdate={updateGuest}
+                      />
+                    ))}
+                  </div>
+                </StepPanel>
+              )}
+
+              {currentStep === "stay" && (
+                <StepPanel key="stay" step="stay" direction={stepDirection}>
+                  <HotelSection
+                    hotelWillBook={hotelWillBook}
+                    hotelAcknowledged={hotelAcknowledged}
+                    onWillBookChange={(value) => {
+                      setHotelWillBook(value);
+                      if (value) {
+                        setShowHotelConfetti(true);
+                      } else {
+                        setHotelAcknowledged(false);
+                      }
+                    }}
+                    onAcknowledgedChange={setHotelAcknowledged}
+                  />
+                </StepPanel>
+              )}
+            </AnimatePresence>
+          </motion.div>
 
           {submitError && (
             <p className="text-center font-serif text-sm italic text-[#ffe0d6]">
@@ -272,17 +417,79 @@ function RsvpForm({ onComplete }: { onComplete: (attending: boolean) => void }) 
             </p>
           )}
 
-          <button
-            type="submit"
-            disabled={!canSubmit}
-            className="min-h-14 w-full border border-garden-cream bg-garden-cream px-6 py-3.5 font-edict text-[13px] font-medium uppercase tracking-[0.24em] text-garden-olive transition-colors hover:bg-transparent hover:text-garden-cream disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:bg-garden-cream disabled:hover:text-garden-olive sm:px-8 sm:text-[12px] sm:tracking-[0.34em]"
-          >
-            {submitting ? "Submitting" : "Send reply"}
-          </button>
+          <StepControls
+            currentStep={currentStep}
+            currentStepComplete={stepComplete[currentStep]}
+            currentStepIsFinal={currentStepIsFinal}
+            currentStepHint={currentStepHint}
+            canSubmit={canSubmit}
+            submitting={submitting}
+            onBack={goBack}
+            onNext={goNext}
+          />
         </form>
       </InvitationCard>
     </>
   );
+}
+
+function getFurthestStepIndex({
+  hasAcceptedGuests,
+  partyComplete,
+  mealComplete,
+}: {
+  hasAcceptedGuests: boolean;
+  partyComplete: boolean;
+  mealComplete: boolean;
+}) {
+  if (!partyComplete) return 1;
+  if (!hasAcceptedGuests) return 1;
+  if (!mealComplete) return 3;
+  return 4;
+}
+
+function getStepHint({
+  currentStep,
+  namedGuestCount,
+  hasAcceptedGuests,
+  missingEventSelection,
+  missingMainCourse,
+  missingHotel,
+  missingHotelAcknowledgement,
+}: {
+  currentStep: RsvpStep;
+  namedGuestCount: number;
+  hasAcceptedGuests: boolean;
+  missingEventSelection: boolean;
+  missingMainCourse: boolean;
+  missingHotel: boolean;
+  missingHotelAcknowledgement: boolean;
+}) {
+  if (currentStep === "details") {
+    return "";
+  }
+
+  if (currentStep === "party") {
+    if (namedGuestCount === 0) return "Add at least one guest name.";
+    if (hasAcceptedGuests && missingEventSelection) {
+      return "Choose at least one weekend event, or mark each guest as declining.";
+    }
+  }
+
+  if (currentStep === "contact") {
+    return "Add an email or phone if direct follow-up would be helpful.";
+  }
+
+  if (currentStep === "meal" && missingMainCourse) {
+    return "Choose a main course for each attending guest.";
+  }
+
+  if (currentStep === "stay") {
+    if (missingHotel) return "Choose whether you would like room-block details.";
+    if (missingHotelAcknowledgement) return "Confirm that follow-up is okay.";
+  }
+
+  return "";
 }
 
 function InvitationCard({ children }: { children: React.ReactNode }) {
@@ -310,12 +517,163 @@ function InvitationCard({ children }: { children: React.ReactNode }) {
   );
 }
 
-function EventSummary() {
+function StepProgress({
+  currentStep,
+  furthestStepIndex,
+  onStepChange,
+}: {
+  currentStep: RsvpStep;
+  furthestStepIndex: number;
+  onStepChange: (step: RsvpStep) => void;
+}) {
+  return (
+    <ol className="grid grid-cols-5 gap-1 border-y border-garden-cream/25 py-3">
+      {RSVP_STEPS.map((step, index) => {
+        const active = step.id === currentStep;
+        const accessible = index <= furthestStepIndex;
+
+        return (
+          <li key={step.id}>
+            <button
+              type="button"
+              aria-current={active ? "step" : undefined}
+              disabled={!accessible}
+              onClick={() => onStepChange(step.id)}
+              className={`flex min-h-12 w-full flex-col items-center justify-center gap-1 px-1 text-center transition-colors disabled:cursor-not-allowed ${
+                active
+                  ? "text-garden-cream"
+                  : accessible
+                    ? "text-garden-cream/58 hover:text-garden-cream"
+                    : "text-garden-cream/25"
+              }`}
+            >
+              <span
+                className={`flex size-6 items-center justify-center border font-inter text-[11px] leading-none ${
+                  active
+                    ? "border-garden-cream bg-garden-cream text-garden-olive"
+                    : accessible
+                      ? "border-garden-cream/40"
+                      : "border-garden-cream/18"
+                }`}
+              >
+                {index + 1}
+              </span>
+              <span className="font-edict text-[8px] uppercase tracking-[0.08em] sm:text-[10px] sm:tracking-[0.18em]">
+                {step.label}
+              </span>
+            </button>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+function StepPanel({
+  step,
+  direction,
+  children,
+}: {
+  step: RsvpStep;
+  direction: number;
+  children: React.ReactNode;
+}) {
+  const stepDetails = RSVP_STEPS.find((item) => item.id === step);
+
+  if (!stepDetails) return null;
+
+  return (
+    <motion.section
+      custom={direction}
+      variants={panelVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+      className="space-y-6"
+    >
+      <SectionHeading
+        eyebrow={stepDetails.eyebrow}
+        title={stepDetails.title}
+      />
+      {children}
+    </motion.section>
+  );
+}
+
+function StepControls({
+  currentStep,
+  currentStepComplete,
+  currentStepIsFinal,
+  currentStepHint,
+  canSubmit,
+  submitting,
+  onBack,
+  onNext,
+}: {
+  currentStep: RsvpStep;
+  currentStepComplete: boolean;
+  currentStepIsFinal: boolean;
+  currentStepHint: string;
+  canSubmit: boolean;
+  submitting: boolean;
+  onBack: () => void;
+  onNext: () => void;
+}) {
+  const isFirstStep = currentStep === "details";
+  const primaryDisabled = currentStepIsFinal
+    ? !canSubmit
+    : !currentStepComplete;
+
+  return (
+    <div className="space-y-3 border-t border-garden-cream/25 pt-6">
+      <p
+        aria-live="polite"
+        className={`min-h-[2.4em] text-center font-serif text-sm italic leading-snug text-garden-cream/68 transition-opacity duration-200 sm:min-h-[1.2em] ${
+          currentStepHint ? "opacity-100" : "opacity-0"
+        }`}
+      >
+        {currentStepHint}
+      </p>
+      <div
+        className={`grid gap-2 ${
+          isFirstStep ? "grid-cols-1" : "grid-cols-[0.72fr_1fr]"
+        }`}
+      >
+        {!isFirstStep && (
+          <button
+            type="button"
+            onClick={onBack}
+            disabled={submitting}
+            className="min-h-14 border border-garden-cream/45 px-4 py-3 font-edict text-[12px] uppercase tracking-[0.24em] text-garden-cream transition-colors hover:border-garden-cream hover:bg-garden-cream/10 disabled:cursor-not-allowed disabled:opacity-35"
+          >
+            Back
+          </button>
+        )}
+        <button
+          type={currentStepIsFinal ? "submit" : "button"}
+          onClick={currentStepIsFinal ? undefined : onNext}
+          disabled={primaryDisabled}
+          className="min-h-14 border border-garden-cream bg-garden-cream px-5 py-3 font-edict text-[13px] font-medium uppercase tracking-[0.24em] text-garden-olive transition-colors hover:bg-transparent hover:text-garden-cream disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:bg-garden-cream disabled:hover:text-garden-olive sm:text-[12px]"
+        >
+          {currentStepIsFinal
+            ? submitting
+              ? "Submitting"
+              : "Send reply"
+            : "Continue"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function WeekendDetails() {
   const rows = [
     ["Welcome party", "Friday, February 26, 3-8 PM"],
     ["Ceremony & reception", "Saturday, February 27, 2027"],
     ["Venue", "Luna Escondida"],
     ["Location", "San Miguel de Allende, MX"],
+    ["Stay", "Belmond Casa de Sierra Nevada room block available"],
     ["Dress", "Enchanted Garden"],
   ] as const;
 
@@ -394,7 +752,36 @@ function GuestAttendance({
   );
 }
 
-function GuestDetails({
+function GuestContactDetails({
+  guest,
+  index,
+  onUpdate,
+}: {
+  guest: GuestFormData;
+  index: number;
+  onUpdate: (
+    index: number,
+    field: keyof GuestFormData,
+    value: string | boolean
+  ) => void;
+}) {
+  return (
+    <section className="space-y-5 border-l border-garden-cream/25 pl-5">
+      <p className="font-edict text-[11px] uppercase tracking-[0.28em] text-garden-cream/58 sm:text-[10px] sm:tracking-[0.32em]">
+        For {guest.name.trim()}
+      </p>
+      <ContactFields
+        guestId={guest.clientId}
+        email={guest.email}
+        phone={guest.phone}
+        onEmailChange={(value) => onUpdate(index, "email", value)}
+        onPhoneChange={(value) => onUpdate(index, "phone", value)}
+      />
+    </section>
+  );
+}
+
+function GuestMealDetails({
   guest,
   index,
   onUpdate,
@@ -421,14 +808,6 @@ function GuestDetails({
         value={guest.dietaryRestrictions}
         onChange={(value) => onUpdate(index, "dietaryRestrictions", value)}
         id={`dietary-${guest.clientId}`}
-      />
-      <ContactFields
-        guestId={guest.clientId}
-        email={guest.email}
-        phone={guest.phone}
-        required={guest.coming}
-        onEmailChange={(value) => onUpdate(index, "email", value)}
-        onPhoneChange={(value) => onUpdate(index, "phone", value)}
       />
     </section>
   );
@@ -477,14 +856,14 @@ function ContactFields({
   guestId,
   email,
   phone,
-  required,
+  required = false,
   onEmailChange,
   onPhoneChange,
 }: {
   guestId: string;
   email: string;
   phone: string;
-  required: boolean;
+  required?: boolean;
   onEmailChange: (value: string) => void;
   onPhoneChange: (value: string) => void;
 }) {
@@ -534,8 +913,10 @@ function HotelSection({
   onAcknowledgedChange: (value: boolean) => void;
 }) {
   return (
-    <section className="space-y-5 border-t border-garden-cream/25 pt-8">
-      <SectionHeading eyebrow="Stay" title="Belmond Casa de Sierra Nevada" />
+    <section className="space-y-5">
+      <p className="font-serif text-[1.35rem] font-light leading-tight text-garden-cream sm:text-[1.2rem]">
+        Casa de Sierra Nevada
+      </p>
       <p className="font-serif text-[1.08rem] leading-relaxed text-garden-cream/82 sm:text-base">
         Planning to stay at the Belmond? We can send room-block details.
       </p>

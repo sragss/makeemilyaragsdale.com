@@ -1,7 +1,7 @@
 import { PageShell, Section } from "@/components/page-shell";
 
 export const metadata = {
-  title: "Explore — Emily & Sam",
+  title: "Emily & Sam -- Explore",
 };
 
 const ACTIVITIES = [
