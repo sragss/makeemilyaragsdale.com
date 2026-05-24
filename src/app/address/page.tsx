@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import { AddressFlow } from "./address-flow";
 
 export const metadata: Metadata = {
-  title: "Mailing Address - Make Emily a Ragsdale",
+  title: "Emily & Sam — Mailing Address",
   robots: { index: false },
   openGraph: {
-    title: "Mailing Address",
+    title: "Emily & Sam — Mailing Address",
     description: "Tell us where to send your invitation.",
   },
 };

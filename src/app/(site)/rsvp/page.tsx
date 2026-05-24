@@ -3,9 +3,9 @@ import Image from "next/image";
 import { RsvpFlow } from "./rsvp-flow";
 
 export const metadata: Metadata = {
-  title: "Emily & Sam -- RSVP",
+  title: "Emily & Sam — RSVP",
   openGraph: {
-    title: "Emily & Sam -- RSVP",
+    title: "Emily & Sam — RSVP",
     description: "Join us in San Miguel de Allende — February 27, 2027",
     images: [{ url: "/images/og-rsvp.jpg", width: 1536, height: 1024 }],
   },
