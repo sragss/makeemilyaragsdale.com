@@ -1,8 +1,8 @@
+import { randomUUID } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
-import { getDb } from "@/db";
-import { invites, guests, hotelBookings } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { generateCode } from "@/lib/codes";
+import { getDb } from "@/db";
+import { guests, hotelBookings, invites } from "@/db/schema";
 
 function unauthorized() {
   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -19,7 +19,7 @@ function checkAuth(req: NextRequest): boolean {
   return token === process.env.ADMIN_PASSWORD;
 }
 
-// GET /api/admin?action=list|get&code=XXX
+// GET /api/admin?action=list|get|stats
 export async function GET(req: NextRequest) {
   if (!checkAuth(req)) return unauthorized();
 
@@ -30,73 +30,70 @@ export async function GET(req: NextRequest) {
   if (action === "list") {
     const all = await db.query.invites.findMany({
       with: { guests: true, hotelBookings: true },
-      orderBy: (invites, { asc }) => [asc(invites.code)],
+      orderBy: (invites, { desc }) => [desc(invites.createdAt)],
     });
     const result = all
-      .filter((i) => !i.deleted)
-      .map((inv) => ({
-        id: inv.id,
-        code: inv.code,
-        hotelEligible: inv.hotelEligible,
-        maxGuests: inv.maxGuests,
-        address: inv.address,
-        notes: inv.notes,
-        philMode: inv.philMode,
-        guests: inv.guests.map((g) => ({
-          id: g.id,
-          name: g.name,
-          isPrimary: g.isPrimary,
-          attendingFriday: g.attendingFriday,
-          attendingSaturday: g.attendingSaturday,
-          email: g.email,
-          phone: g.phone,
-          dietaryRestrictions: g.dietaryRestrictions,
-          plusOneName: g.plusOneName,
+      .filter((invite) => !invite.deleted)
+      .map((invite) => ({
+        id: invite.id,
+        maxGuests: invite.maxGuests,
+        address: invite.address,
+        notes: invite.notes,
+        guests: invite.guests.map((guest) => ({
+          id: guest.id,
+          name: guest.name,
+          isPrimary: guest.isPrimary,
+          attendingFriday: guest.attendingFriday,
+          attendingSaturday: guest.attendingSaturday,
+          email: guest.email,
+          phone: guest.phone,
+          mainCoursePreference: guest.mainCoursePreference,
+          dietaryRestrictions: guest.dietaryRestrictions,
+          plusOneName: guest.plusOneName,
         })),
-        hotel: inv.hotelBookings
+        hotel: invite.hotelBookings
           ? {
-              willBook: inv.hotelBookings.willBook,
-              bookingComplete: inv.hotelBookings.bookingComplete,
-              bookingValue: inv.hotelBookings.bookingValue,
+              willBook: invite.hotelBookings.willBook,
+              bookingComplete: invite.hotelBookings.bookingComplete,
+              bookingValue: invite.hotelBookings.bookingValue,
             }
           : null,
       }));
-    return NextResponse.json({ invites: result, count: result.length });
+    return NextResponse.json({ rsvps: result, count: result.length });
   }
 
   if (action === "get") {
-    const code = searchParams.get("code");
-    if (!code) return badRequest("Missing ?code= parameter");
+    const id = searchParams.get("id");
+    if (!id) return badRequest("Missing ?id= parameter");
 
     const invite = await db.query.invites.findFirst({
-      where: eq(invites.code, code.toUpperCase()),
+      where: eq(invites.id, id),
       with: {
         guests: true,
         hotelBookings: true,
         events: { orderBy: (events, { desc }) => [desc(events.createdAt)] },
       },
     });
-    if (!invite || invite.deleted)
+    if (!invite || invite.deleted) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
 
     return NextResponse.json({
       id: invite.id,
-      code: invite.code,
-      hotelEligible: invite.hotelEligible,
       maxGuests: invite.maxGuests,
       address: invite.address,
       notes: invite.notes,
-      philMode: invite.philMode,
-      guests: invite.guests.map((g) => ({
-        id: g.id,
-        name: g.name,
-        isPrimary: g.isPrimary,
-        attendingFriday: g.attendingFriday,
-        attendingSaturday: g.attendingSaturday,
-        email: g.email,
-        phone: g.phone,
-        dietaryRestrictions: g.dietaryRestrictions,
-        plusOneName: g.plusOneName,
+      guests: invite.guests.map((guest) => ({
+        id: guest.id,
+        name: guest.name,
+        isPrimary: guest.isPrimary,
+        attendingFriday: guest.attendingFriday,
+        attendingSaturday: guest.attendingSaturday,
+        email: guest.email,
+        phone: guest.phone,
+        mainCoursePreference: guest.mainCoursePreference,
+        dietaryRestrictions: guest.dietaryRestrictions,
+        plusOneName: guest.plusOneName,
       })),
       hotel: invite.hotelBookings
         ? {
@@ -105,10 +102,10 @@ export async function GET(req: NextRequest) {
             bookingValue: invite.hotelBookings.bookingValue,
           }
         : null,
-      events: invite.events.map((e) => ({
-        type: e.type,
-        ip: e.ip,
-        createdAt: e.createdAt.toISOString(),
+      events: invite.events.map((event) => ({
+        type: event.type,
+        ip: event.ip,
+        createdAt: event.createdAt.toISOString(),
       })),
     });
   }
@@ -117,32 +114,41 @@ export async function GET(req: NextRequest) {
     const all = await db.query.invites.findMany({
       with: { guests: true, hotelBookings: true },
     });
-    const active = all.filter((i) => !i.deleted);
-    const allGuests = active.flatMap((i) => i.guests);
+    const active = all.filter((invite) => !invite.deleted);
+    const allGuests = active.flatMap((invite) => invite.guests);
     return NextResponse.json({
-      invites: active.length,
+      rsvps: active.length,
       guests: allGuests.length,
-      attendingFriday: allGuests.filter((g) => g.attendingFriday === true).length,
-      attendingSaturday: allGuests.filter((g) => g.attendingSaturday === true).length,
-      attending: allGuests.filter((g) => g.attendingFriday || g.attendingSaturday).length,
-      declined: allGuests.filter((g) => g.attendingFriday === false && g.attendingSaturday === false).length,
-      pending: allGuests.filter((g) => g.attendingFriday === null && g.attendingSaturday === null).length,
-      hotelEligible: active.filter((i) => i.hotelEligible).length,
-      hotelBooking: active.filter((i) => i.hotelBookings?.willBook === true)
+      attendingFriday: allGuests.filter((guest) => guest.attendingFriday === true)
         .length,
+      attendingSaturday: allGuests.filter(
+        (guest) => guest.attendingSaturday === true
+      ).length,
+      attending: allGuests.filter(
+        (guest) => guest.attendingFriday || guest.attendingSaturday
+      ).length,
+      declined: allGuests.filter(
+        (guest) =>
+          guest.attendingFriday === false && guest.attendingSaturday === false
+      ).length,
+      pending: allGuests.filter(
+        (guest) =>
+          guest.attendingFriday === null && guest.attendingSaturday === null
+      ).length,
+      hotelBooking: active.filter(
+        (invite) => invite.hotelBookings?.willBook === true
+      ).length,
       hotelComplete: active.filter(
-        (i) => i.hotelBookings?.bookingComplete === true
+        (invite) => invite.hotelBookings?.bookingComplete === true
       ).length,
     });
   }
 
-  return badRequest(
-    'Unknown action. Use ?action=list, ?action=get&code=XXX, or ?action=stats'
-  );
+  return badRequest("Unknown action. Use ?action=list, ?action=get&id=ID, or ?action=stats");
 }
 
 // POST /api/admin
-// Body: { action: "create" | "update_invite" | "update_guest" | "update_hotel" | "delete", ... }
+// Body: { action: "create" | "update_rsvp" | "update_guest" | "update_hotel" | "delete", ... }
 export async function POST(req: NextRequest) {
   if (!checkAuth(req)) return unauthorized();
 
@@ -158,7 +164,6 @@ export async function POST(req: NextRequest) {
 
   const db = getDb();
 
-  // ── CREATE ──
   if (action === "create") {
     const guestNames = body.guestNames as string[] | undefined;
     if (!guestNames || !Array.isArray(guestNames) || guestNames.length === 0) {
@@ -166,95 +171,86 @@ export async function POST(req: NextRequest) {
         "create requires 'guestNames': string[] with at least one name"
       );
     }
-    const trimmed = guestNames.map((n) => String(n).trim()).filter(Boolean);
-    if (trimmed.length === 0)
-      return badRequest("All guest names are empty");
+    const trimmed = guestNames.map((name) => String(name).trim()).filter(Boolean);
+    if (trimmed.length === 0) return badRequest("All guest names are empty");
 
-    const code = generateCode();
     const [inserted] = await db
       .insert(invites)
       .values({
-        code,
-        hotelEligible: body.hotelEligible === true,
+        internalKey: `ADMIN-${randomUUID()}`,
         maxGuests: trimmed.length,
         address: (body.address as string) || null,
         notes: (body.notes as string) || null,
-        philMode: body.philMode === true,
       })
       .returning();
 
     await db.insert(guests).values(
-      trimmed.map((name, i) => ({
+      trimmed.map((name, index) => ({
         inviteId: inserted.id,
         name,
-        isPrimary: i === 0,
+        isPrimary: index === 0,
       }))
     );
 
     return NextResponse.json({
       success: true,
-      code,
-      url: `https://makeemilyaragsdale.com/address/${code}`,
-      addressUrl: `https://makeemilyaragsdale.com/address/${code}`,
-      rsvpUrl: `https://makeemilyaragsdale.com/rsvp/${code}`,
       id: inserted.id,
+      rsvpUrl: "https://makeemilyaragsdale.com/rsvp",
     });
   }
 
-  // ── UPDATE INVITE ──
-  if (action === "update_invite") {
-    const code = body.code as string;
-    if (!code) return badRequest("update_invite requires 'code'");
+  if (action === "update_rsvp") {
+    const id = body.id as string;
+    if (!id) return badRequest("update_rsvp requires 'id'");
 
     const invite = await db.query.invites.findFirst({
-      where: eq(invites.code, code.toUpperCase()),
+      where: eq(invites.id, id),
     });
     if (!invite) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
     const updates: Record<string, unknown> = {};
-    if ("hotelEligible" in body) updates.hotelEligible = body.hotelEligible === true;
     if ("maxGuests" in body) updates.maxGuests = Number(body.maxGuests);
     if ("address" in body) updates.address = (body.address as string) || null;
     if ("notes" in body) updates.notes = (body.notes as string) || null;
-    if ("philMode" in body) updates.philMode = body.philMode === true;
 
-    if (Object.keys(updates).length === 0)
+    if (Object.keys(updates).length === 0) {
       return badRequest(
-        "No fields to update. Provide hotelEligible, maxGuests, address, or notes"
+        "No fields to update. Provide maxGuests, address, or notes"
       );
+    }
 
     await db.update(invites).set(updates).where(eq(invites.id, invite.id));
-    return NextResponse.json({ success: true, code: invite.code });
+    return NextResponse.json({ success: true, id: invite.id });
   }
 
-  // ── UPDATE GUEST ──
   if (action === "update_guest") {
     const guestId = body.guestId as string;
-    const code = body.code as string;
+    const inviteId = body.inviteId as string;
     const guestName = body.guestName as string;
 
-    // Look up by guestId OR by code + guestName
     let guest;
     if (guestId) {
       guest = await db.query.guests.findFirst({
         where: eq(guests.id, guestId),
       });
-    } else if (code && guestName) {
+    } else if (inviteId && guestName) {
       const invite = await db.query.invites.findFirst({
-        where: eq(invites.code, code.toUpperCase()),
+        where: eq(invites.id, inviteId),
         with: { guests: true },
       });
       if (invite) {
         guest = invite.guests.find(
-          (g) => g.name.toLowerCase() === guestName.toLowerCase()
+          (candidate) =>
+            candidate.name.toLowerCase() === guestName.toLowerCase()
         );
       }
     }
 
-    if (!guest)
+    if (!guest) {
       return badRequest(
-        "Guest not found. Provide 'guestId' or both 'code' and 'guestName'"
+        "Guest not found. Provide 'guestId' or both 'inviteId' and 'guestName'"
       );
+    }
 
     const updates: Record<string, unknown> = {};
     if ("name" in body) {
@@ -262,57 +258,72 @@ export async function POST(req: NextRequest) {
       if (!name) return badRequest("Guest name cannot be empty");
       updates.name = name;
     }
-    if ("attendingFriday" in body)
-      updates.attendingFriday = body.attendingFriday === null ? null : body.attendingFriday === true;
-    if ("attendingSaturday" in body)
-      updates.attendingSaturday = body.attendingSaturday === null ? null : body.attendingSaturday === true;
+    if ("attendingFriday" in body) {
+      updates.attendingFriday =
+        body.attendingFriday === null ? null : body.attendingFriday === true;
+    }
+    if ("attendingSaturday" in body) {
+      updates.attendingSaturday =
+        body.attendingSaturday === null
+          ? null
+          : body.attendingSaturday === true;
+    }
     if ("email" in body) {
       const email = (body.email as string) || null;
-      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         return badRequest(`Invalid email format: ${email}`);
+      }
       updates.email = email;
     }
     if ("phone" in body) updates.phone = (body.phone as string) || null;
-    if ("dietaryRestrictions" in body)
+    if ("mainCoursePreference" in body) {
+      updates.mainCoursePreference =
+        (body.mainCoursePreference as string) || null;
+    }
+    if ("dietaryRestrictions" in body) {
       updates.dietaryRestrictions =
         (body.dietaryRestrictions as string) || null;
-    if ("plusOneName" in body)
+    }
+    if ("plusOneName" in body) {
       updates.plusOneName = (body.plusOneName as string) || null;
+    }
 
-    if (Object.keys(updates).length === 0)
+    if (Object.keys(updates).length === 0) {
       return badRequest(
-        "No fields to update. Provide name, attendingFriday, attendingSaturday, email, phone, dietaryRestrictions, or plusOneName"
+        "No fields to update. Provide name, attendingFriday, attendingSaturday, email, phone, mainCoursePreference, dietaryRestrictions, or plusOneName"
       );
+    }
 
     updates.updatedAt = new Date();
     await db.update(guests).set(updates).where(eq(guests.id, guest.id));
     return NextResponse.json({ success: true, guestId: guest.id });
   }
 
-  // ── UPDATE HOTEL ──
   if (action === "update_hotel") {
-    const code = body.code as string;
-    if (!code) return badRequest("update_hotel requires 'code'");
+    const id = body.id as string;
+    if (!id) return badRequest("update_hotel requires 'id'");
 
     const invite = await db.query.invites.findFirst({
-      where: eq(invites.code, code.toUpperCase()),
+      where: eq(invites.id, id),
     });
     if (!invite) return NextResponse.json({ error: "Not found" }, { status: 404 });
-    if (!invite.hotelEligible)
-      return badRequest(`Invite ${invite.code} is not hotel-eligible`);
 
     const updates: Record<string, unknown> = {};
-    if ("willBook" in body)
+    if ("willBook" in body) {
       updates.willBook = body.willBook === null ? null : body.willBook === true;
-    if ("bookingComplete" in body)
+    }
+    if ("bookingComplete" in body) {
       updates.bookingComplete = body.bookingComplete === true;
-    if ("bookingValue" in body)
+    }
+    if ("bookingValue" in body) {
       updates.bookingValue = (body.bookingValue as string) || null;
+    }
 
-    if (Object.keys(updates).length === 0)
+    if (Object.keys(updates).length === 0) {
       return badRequest(
         "No fields to update. Provide willBook, bookingComplete, or bookingValue"
       );
+    }
 
     const existing = await db.query.hotelBookings.findFirst({
       where: eq(hotelBookings.inviteId, invite.id),
@@ -326,37 +337,37 @@ export async function POST(req: NextRequest) {
     } else {
       await db.insert(hotelBookings).values({
         inviteId: invite.id,
-        willBook: (updates.willBook as boolean) ?? null,
+        willBook: (updates.willBook as boolean | null) ?? null,
         bookingComplete: (updates.bookingComplete as boolean) ?? false,
         bookingValue: (updates.bookingValue as string) ?? null,
       });
     }
-    return NextResponse.json({ success: true, code: invite.code });
+    return NextResponse.json({ success: true, id: invite.id });
   }
 
-  // ── DELETE (soft) ──
   if (action === "delete") {
-    const code = body.code as string;
-    if (!code) return badRequest("delete requires 'code'");
+    const id = body.id as string;
+    if (!id) return badRequest("delete requires 'id'");
 
     const invite = await db.query.invites.findFirst({
-      where: eq(invites.code, code.toUpperCase()),
+      where: eq(invites.id, id),
     });
     if (!invite) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-    if (body.confirm !== true)
+    if (body.confirm !== true) {
       return badRequest(
-        `This will soft-delete invite ${invite.code} and hide it from the admin. Pass "confirm": true to proceed.`
+        'This will soft-delete the RSVP and hide it from the admin. Pass "confirm": true to proceed.'
       );
+    }
 
     await db
       .update(invites)
       .set({ deleted: true })
       .where(eq(invites.id, invite.id));
-    return NextResponse.json({ success: true, code: invite.code, deleted: true });
+    return NextResponse.json({ success: true, id: invite.id, deleted: true });
   }
 
   return badRequest(
-    "Unknown action. Use: create, update_invite, update_guest, update_hotel, delete"
+    "Unknown action. Use: create, update_rsvp, update_guest, update_hotel, delete"
   );
 }

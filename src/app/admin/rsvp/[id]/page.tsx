@@ -14,16 +14,16 @@ export const dynamic = "force-dynamic";
 export default async function AdminRsvpDetail({
   params,
 }: {
-  params: Promise<{ code: string }>;
+  params: Promise<{ id: string }>;
 }) {
   const authed = await isAdminAuthenticated();
   if (!authed) redirect("/admin");
 
-  const { code } = await params;
+  const { id } = await params;
   const db = getDb();
 
   const invite = await db.query.invites.findFirst({
-    where: eq(invites.code, code.toUpperCase()),
+    where: eq(invites.id, id),
     with: {
       guests: true,
       hotelBookings: true,
@@ -37,21 +37,19 @@ export default async function AdminRsvpDetail({
     return (
       <main className="flex flex-1 flex-col items-center justify-center px-6 py-24">
         <p className="text-muted-foreground">
-          Invite <span className="font-mono">{code.toUpperCase()}</span> not
-          found.
+          RSVP not found.
         </p>
       </main>
     );
   }
 
+  const guestNames = invite.guests.map((guest) => guest.name).join(" & ");
+
   const data = {
     id: invite.id,
-    code: invite.code,
-    hotelEligible: invite.hotelEligible,
     maxGuests: invite.maxGuests,
     notes: invite.notes,
     address: invite.address,
-    philMode: invite.philMode,
     guests: invite.guests.map((g) => ({
       id: g.id,
       name: g.name,
@@ -59,6 +57,7 @@ export default async function AdminRsvpDetail({
       attendingSaturday: g.attendingSaturday,
       email: g.email,
       phone: g.phone,
+      mainCoursePreference: g.mainCoursePreference,
       dietaryRestrictions: g.dietaryRestrictions,
       plusOneName: g.plusOneName,
     })),
@@ -92,16 +91,16 @@ export default async function AdminRsvpDetail({
               &larr; Back
             </Link>
             <h1 className="font-serif text-3xl font-light">
-              {invite.code}
+              {guestNames || "RSVP"}
             </h1>
           </div>
           <a
-            href={`/rsvp/${invite.code}`}
+            href="/rsvp"
             target="_blank"
             rel="noopener noreferrer"
             className="text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground transition-colors"
           >
-            View RSVP page
+            View RSVP form
           </a>
         </div>
 
@@ -115,7 +114,7 @@ export default async function AdminRsvpDetail({
 
         <Separator />
 
-        <DeleteButton inviteId={invite.id} code={invite.code} />
+        <DeleteButton inviteId={invite.id} label={guestNames || "this RSVP"} />
       </div>
     </main>
   );

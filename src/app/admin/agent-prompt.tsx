@@ -11,28 +11,27 @@ Base URL: https://makeemilyaragsdale.com/api/admin
 Auth: Bearer emily-ragsdale (pass as Authorization header)
 OpenAPI spec: https://makeemilyaragsdale.com/api/admin/openapi.json
 
-This API manages wedding invites for Emily Devery & Sam Ragsdale's wedding (Feb 27, 2027, San Miguel de Allende, Mexico).
+This API manages wedding RSVPs for Emily Devery & Sam Ragsdale's wedding (Feb 27, 2027, San Miguel de Allende, Mexico).
 
 READING:
-  GET /api/admin?action=list          — all invites with guests & hotel status
-  GET /api/admin?action=get&code=XXX  — single invite with activity events
+  GET /api/admin?action=list       — all RSVPs with guests & hotel status
+  GET /api/admin?action=get&id=ID  — single RSVP with activity events
   GET /api/admin?action=stats         — aggregate counts (attending, pending, etc.)
 
 WRITING (POST /api/admin with JSON body):
-  {"action":"create", "guestNames":["Name1","Name2"], "hotelEligible":false, "address":"...", "notes":"..."}
-  {"action":"update_invite", "code":"EBR-XXX", "hotelEligible":true, "address":"..."}
-  {"action":"update_guest", "code":"EBR-XXX", "guestName":"Name", "attendingFriday":true, "attendingSaturday":true, "email":"...", "phone":"..."}
-  {"action":"update_hotel", "code":"EBR-XXX", "willBook":true, "bookingComplete":true, "bookingValue":"4500.00"}
-  {"action":"delete", "code":"EBR-XXX", "confirm":true}
+  {"action":"create", "guestNames":["Name1","Name2"], "address":"...", "notes":"..."}
+  {"action":"update_rsvp", "id":"...", "address":"..."}
+  {"action":"update_guest", "inviteId":"...", "guestName":"Name", "attendingFriday":true, "attendingSaturday":true, "email":"...", "phone":"...", "mainCoursePreference":"Steak"}
+  {"action":"update_hotel", "id":"...", "willBook":true, "bookingComplete":true, "bookingValue":"4500.00"}
+  {"action":"delete", "id":"...", "confirm":true}
 
 EVENTS: Two events — Friday pool party (Feb 26) and Saturday wedding (Feb 27). Each guest has attendingFriday and attendingSaturday (true/false/null).
+MAIN COURSE: mainCoursePreference is a string such as Steak, Chicken, Fish, Vegetarian, Vegan, or a custom value.
 
 SAFETY:
 - Delete requires "confirm":true — it soft-deletes only (recoverable)
-- Hotel updates only work on hotel-eligible invites
-- Guest lookup: use "code"+"guestName" (case-insensitive) or "guestId"
-- Codes are auto-generated (EBR-XXXXX format). Never create custom codes.
-- All codes are uppercase. API normalizes automatically.
+- Everyone can book the hotel; there is no hotel eligibility flag
+- Guest lookup: use "inviteId"+"guestName" (case-insensitive) or "guestId"
 - attendingFriday/attendingSaturday accept true, false, or null (pending)`;
 
 export function AgentPrompt() {

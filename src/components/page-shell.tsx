@@ -12,23 +12,23 @@ export function PageShell({
   children: ReactNode;
 }) {
   return (
-    <div className="mx-auto w-full max-w-2xl px-4 py-16 sm:px-6 sm:py-24">
-      <header className="mb-14 space-y-4 text-center">
+    <div className="mx-auto w-full max-w-3xl px-4 py-16 sm:px-6 sm:py-24">
+      <header className="mb-14 border-b border-garden-moss/20 pb-10 text-center sm:mb-16">
         {eyebrow && (
-          <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
+          <p className="font-edict text-[10px] uppercase tracking-[0.45em] text-garden-olive">
             {eyebrow}
           </p>
         )}
-        <h1 className="font-serif text-4xl font-light tracking-tight sm:text-5xl">
+        <h1 className="mt-4 font-eros text-[clamp(3.75rem,14vw,7rem)] font-normal uppercase leading-[0.88] text-garden-moss">
           {title}
         </h1>
         {intro && (
-          <div className="mx-auto max-w-xl text-sm leading-relaxed text-muted-foreground">
+          <div className="mx-auto mt-5 max-w-2xl font-serif text-lg italic leading-snug text-[#493932]/78 sm:text-xl">
             {intro}
           </div>
         )}
       </header>
-      <div className="space-y-14">{children}</div>
+      <div className="space-y-16">{children}</div>
     </div>
   );
 }
@@ -41,13 +41,13 @@ export function Section({
   children: ReactNode;
 }) {
   return (
-    <section className="space-y-5">
+    <section className="grid gap-5 border-t border-garden-moss/20 pt-7 sm:grid-cols-[12rem_1fr] sm:gap-8">
       {label && (
-        <h2 className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
+        <h2 className="font-edict text-[10px] uppercase leading-relaxed tracking-[0.36em] text-garden-olive">
           {label}
         </h2>
       )}
-      <div className="space-y-4 text-sm leading-relaxed">{children}</div>
+      <div className="space-y-4 text-[15px] leading-relaxed">{children}</div>
     </section>
   );
 }

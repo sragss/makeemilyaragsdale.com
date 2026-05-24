@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PageShell } from "@/components/page-shell";
+import { HiddenContactNumbers } from "./hidden-contact-numbers";
 
 export const metadata = {
   title: "FAQ — Emily & Sam",
@@ -99,10 +100,7 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
       <>
         You can reach out to either of us directly, or once the WhatsApp group
         is live, ask there.
-        <br />
-        Emily: 303.408.4160
-        <br />
-        Sam: 914.819.2831
+        <HiddenContactNumbers />
       </>
     ),
   },
@@ -115,18 +113,26 @@ export default function FAQ() {
       title="FAQ"
       intro="A catch-all for the questions we hear most. If we missed yours, reach out."
     >
-      <ul className="space-y-10">
-        {FAQS.map((item) => (
-          <li key={item.q} className="space-y-3">
-            <h2 className="font-serif text-xl font-light tracking-tight">
-              {item.q}
-            </h2>
-            <div className="text-sm leading-relaxed text-muted-foreground">
-              {item.a}
+      <ol className="divide-y divide-garden-moss/15 border-y border-garden-moss/15">
+        {FAQS.map((item, index) => (
+          <li
+            key={item.q}
+            className="grid gap-3 py-6 sm:grid-cols-[3rem_1fr] sm:gap-6"
+          >
+            <p className="font-edict text-[10px] uppercase tracking-[0.32em] text-garden-olive">
+              {String(index + 1).padStart(2, "0")}
+            </p>
+            <div className="space-y-3">
+              <h2 className="font-serif text-xl font-light leading-tight text-garden-moss sm:text-2xl">
+                {item.q}
+              </h2>
+              <div className="text-[15px] leading-relaxed text-muted-foreground">
+                {item.a}
+              </div>
             </div>
           </li>
         ))}
-      </ul>
+      </ol>
     </PageShell>
   );
 }

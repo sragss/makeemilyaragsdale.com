@@ -168,16 +168,6 @@ body:has([data-route="schedule"]) footer a:hover {
 }
 
 @layer utilities {
-  /* Sticky-stack pages: keep scroll smooth in both directions.
-     Note: we intentionally do NOT use scroll-snap here because
-     `scroll-snap-align` on `position: sticky` elements computes the
-     snap point off the element's visible top-0 position rather than
-     its natural offset, which traps the user inside the current panel
-     when they try to scroll backward. */
-  html:has([data-snap-stack]) {
-    scroll-behavior: smooth;
-  }
-
   .scrollbar-none {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -267,4 +257,3 @@ body:has([data-route="schedule"]) footer a:hover {
     -webkit-mask-composite: xor, xor, xor, xor, source-over;
   }
 }
-

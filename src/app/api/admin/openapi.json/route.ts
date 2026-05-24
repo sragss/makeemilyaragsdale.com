@@ -6,7 +6,7 @@ const spec = {
     title: "MakeEmilyARagsdale Admin API",
     version: "1.0.0",
     description:
-      "Manage wedding invites, guests, hotel bookings, and track RSVP activity. Auth: Bearer token using ADMIN_PASSWORD.",
+      "Manage wedding RSVPs, guests, hotel bookings, and RSVP activity. Auth: Bearer token using ADMIN_PASSWORD.",
   },
   servers: [
     { url: "https://makeemilyaragsdale.com", description: "Production" },
@@ -32,6 +32,7 @@ const spec = {
           attendingSaturday: { type: ["boolean", "null"], description: "Attending Saturday wedding (Feb 27)" },
           email: { type: ["string", "null"] },
           phone: { type: ["string", "null"] },
+          mainCoursePreference: { type: ["string", "null"] },
           dietaryRestrictions: { type: ["string", "null"] },
           plusOneName: { type: ["string", "null"] },
         },
@@ -52,12 +53,10 @@ const spec = {
           createdAt: { type: "string", format: "date-time" },
         },
       },
-      Invite: {
+      Rsvp: {
         type: "object",
         properties: {
           id: { type: "string", format: "uuid" },
-          code: { type: "string", example: "EBR-TOVIK" },
-          hotelEligible: { type: "boolean" },
           maxGuests: { type: "integer" },
           address: { type: ["string", "null"] },
           notes: { type: ["string", "null"] },
@@ -65,9 +64,9 @@ const spec = {
           hotel: { oneOf: [{ $ref: "#/components/schemas/HotelBooking" }, { type: "null" }] },
         },
       },
-      InviteWithEvents: {
+      RsvpWithEvents: {
         allOf: [
-          { $ref: "#/components/schemas/Invite" },
+          { $ref: "#/components/schemas/Rsvp" },
           {
             type: "object",
             properties: {
@@ -86,21 +85,21 @@ const spec = {
   paths: {
     "/api/admin": {
       get: {
-        summary: "Query invites and stats",
+        summary: "Query RSVPs and stats",
         parameters: [
           {
             name: "action",
             in: "query",
             required: true,
             schema: { type: "string", enum: ["list", "get", "stats"] },
-            description: "list: all invites. get: single invite (requires code). stats: aggregate counts.",
+            description: "list: all RSVPs. get: single RSVP (requires id). stats: aggregate counts.",
           },
           {
-            name: "code",
+            name: "id",
             in: "query",
             required: false,
-            schema: { type: "string" },
-            description: "Invite code (required for action=get)",
+            schema: { type: "string", format: "uuid" },
+            description: "RSVP id (required for action=get)",
           },
         ],
         responses: {
@@ -113,23 +112,22 @@ const spec = {
                     {
                       type: "object",
                       properties: {
-                        invites: { type: "array", items: { $ref: "#/components/schemas/Invite" } },
+                        rsvps: { type: "array", items: { $ref: "#/components/schemas/Rsvp" } },
                         count: { type: "integer" },
                       },
                       description: "action=list response",
                     },
-                    { $ref: "#/components/schemas/InviteWithEvents", description: "action=get response" },
+                    { $ref: "#/components/schemas/RsvpWithEvents", description: "action=get response" },
                     {
                       type: "object",
                       properties: {
-                        invites: { type: "integer" },
+                        rsvps: { type: "integer" },
                         guests: { type: "integer" },
                         attending: { type: "integer", description: "Guests attending either event" },
                         attendingFriday: { type: "integer" },
                         attendingSaturday: { type: "integer" },
                         declined: { type: "integer" },
                         pending: { type: "integer" },
-                        hotelEligible: { type: "integer" },
                         hotelBooking: { type: "integer" },
                         hotelComplete: { type: "integer" },
                       },
@@ -144,7 +142,7 @@ const spec = {
         },
       },
       post: {
-        summary: "Create, update, or delete invites/guests/hotel bookings",
+        summary: "Create, update, or delete RSVPs/guests/hotel bookings",
         requestBody: {
           required: true,
           content: {
@@ -157,24 +155,22 @@ const spec = {
                     properties: {
                       action: { type: "string", const: "create" },
                       guestNames: { type: "array", items: { type: "string" }, minItems: 1 },
-                      hotelEligible: { type: "boolean", default: false },
                       address: { type: "string" },
                       notes: { type: "string" },
                     },
-                    description: "Create a new invite with auto-generated code",
+                    description: "Create a new RSVP",
                   },
                   {
                     type: "object",
-                    required: ["action", "code"],
+                    required: ["action", "id"],
                     properties: {
-                      action: { type: "string", const: "update_invite" },
-                      code: { type: "string" },
-                      hotelEligible: { type: "boolean" },
+                      action: { type: "string", const: "update_rsvp" },
+                      id: { type: "string", format: "uuid" },
                       maxGuests: { type: "integer" },
                       address: { type: ["string", "null"] },
                       notes: { type: ["string", "null"] },
                     },
-                    description: "Update invite settings",
+                    description: "Update RSVP settings",
                   },
                   {
                     type: "object",
@@ -182,39 +178,40 @@ const spec = {
                     properties: {
                       action: { type: "string", const: "update_guest" },
                       guestId: { type: "string", format: "uuid" },
-                      code: { type: "string" },
+                      inviteId: { type: "string", format: "uuid" },
                       guestName: { type: "string" },
                       name: { type: "string" },
                       attendingFriday: { type: ["boolean", "null"], description: "Attending Friday pool party" },
                       attendingSaturday: { type: ["boolean", "null"], description: "Attending Saturday wedding" },
                       email: { type: ["string", "null"] },
                       phone: { type: ["string", "null"] },
+                      mainCoursePreference: { type: ["string", "null"] },
                       dietaryRestrictions: { type: ["string", "null"] },
                       plusOneName: { type: ["string", "null"] },
                     },
-                    description: "Update a guest. Identify by guestId OR code+guestName.",
+                    description: "Update a guest. Identify by guestId OR inviteId+guestName.",
                   },
                   {
                     type: "object",
-                    required: ["action", "code"],
+                    required: ["action", "id"],
                     properties: {
                       action: { type: "string", const: "update_hotel" },
-                      code: { type: "string" },
+                      id: { type: "string", format: "uuid" },
                       willBook: { type: ["boolean", "null"] },
                       bookingComplete: { type: "boolean" },
                       bookingValue: { type: ["string", "null"] },
                     },
-                    description: "Update hotel booking. Invite must be hotel-eligible.",
+                    description: "Update hotel booking.",
                   },
                   {
                     type: "object",
-                    required: ["action", "code", "confirm"],
+                    required: ["action", "id", "confirm"],
                     properties: {
                       action: { type: "string", const: "delete" },
-                      code: { type: "string" },
+                      id: { type: "string", format: "uuid" },
                       confirm: { type: "boolean", const: true },
                     },
-                    description: "Soft-delete an invite. Requires confirm:true.",
+                    description: "Soft-delete an RSVP. Requires confirm:true.",
                   },
                 ],
               },
@@ -230,9 +227,6 @@ const spec = {
                   type: "object",
                   properties: {
                     success: { type: "boolean", const: true },
-                    code: { type: "string" },
-                    url: { type: "string" },
-                    addressUrl: { type: "string" },
                     rsvpUrl: { type: "string" },
                     id: { type: "string", format: "uuid" },
                     guestId: { type: "string", format: "uuid" },
