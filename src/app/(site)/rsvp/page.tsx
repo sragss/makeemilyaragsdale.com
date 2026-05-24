@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function RsvpPage() {
   return (
-    <div className="relative -mt-10 overflow-hidden bg-[#f5e9c8] text-[#493932]">
+    <div className="relative -mt-12 overflow-hidden bg-[#f5e9c8] text-[#493932] md:-mt-10">
       <div className="absolute inset-x-0 top-0 h-[46vh] overflow-hidden sm:h-[58vh]">
         <Image
           src="/images/Home.png"

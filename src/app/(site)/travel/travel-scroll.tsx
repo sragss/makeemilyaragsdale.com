@@ -39,7 +39,7 @@ const AIRPORTS = [
 
 export function TravelScroll() {
   return (
-    <ScrollStackPanels className="relative -mt-10 w-full">
+    <ScrollStackPanels className="relative -mt-12 w-full md:-mt-10">
       <HeroPanel />
       <BelmondIntroPanel />
       <BelmondCarousel />

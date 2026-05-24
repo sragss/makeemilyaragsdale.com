@@ -47,15 +47,15 @@ export function RsvpFlow() {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className="py-8 text-center"
+            className="py-9 text-center"
           >
-            <p className="font-edict text-[10px] uppercase tracking-[0.45em] text-garden-cream/70">
+            <p className="font-edict text-[11px] uppercase tracking-[0.38em] text-garden-cream/70 sm:text-[10px] sm:tracking-[0.45em]">
               Reply received
             </p>
-            <h2 className="mt-4 font-eros text-5xl font-normal uppercase leading-none text-garden-cream sm:text-6xl">
+            <h2 className="mt-4 font-eros text-[3.35rem] font-normal uppercase leading-none text-garden-cream sm:text-6xl">
               {completedAttending ? "See you there" : "We'll miss you"}
             </h2>
-            <p className="mx-auto mt-6 max-w-sm font-serif text-lg italic leading-snug text-garden-cream/88">
+            <p className="mx-auto mt-6 max-w-sm font-serif text-xl italic leading-snug text-garden-cream/88 sm:text-lg">
               {completedAttending
                 ? "We can't wait to celebrate with you in San Miguel."
                 : "Thanks for letting us know. We'll be thinking of you."}
@@ -180,14 +180,14 @@ function RsvpForm({ onComplete }: { onComplete: (attending: boolean) => void }) 
         />
       )}
       <InvitationCard>
-        <header className="mb-9 text-center">
-          <p className="font-edict text-[10px] uppercase tracking-[0.45em] text-garden-cream/70">
+        <header className="mb-10 text-center sm:mb-9">
+          <p className="font-edict text-[11px] uppercase tracking-[0.38em] text-garden-cream/70 sm:text-[10px] sm:tracking-[0.45em]">
             Emily & Sam
           </p>
-          <h2 className="mt-3 font-eros text-4xl font-normal uppercase leading-none text-garden-cream sm:text-6xl">
+          <h2 className="mt-3 font-eros text-5xl font-normal uppercase leading-none text-garden-cream sm:text-6xl">
             RSVP
           </h2>
-          <p className="mx-auto mt-4 max-w-sm font-serif text-base italic leading-snug text-garden-cream/82">
+          <p className="mx-auto mt-4 max-w-sm font-serif text-[1.08rem] italic leading-snug text-garden-cream/82 sm:text-base">
             San Miguel de Allende
             <br />
             February 26-27, 2027
@@ -196,7 +196,7 @@ function RsvpForm({ onComplete }: { onComplete: (attending: boolean) => void }) 
 
         <form
           onSubmit={handleSubmit}
-          className="space-y-9"
+          className="space-y-10 sm:space-y-9"
         >
           <EventSummary />
 
@@ -217,7 +217,7 @@ function RsvpForm({ onComplete }: { onComplete: (attending: boolean) => void }) 
             <button
               type="button"
               onClick={addGuest}
-              className="flex min-h-14 w-full items-center justify-center gap-2 border border-dashed border-garden-cream/45 px-4 py-4 font-edict text-[12px] uppercase tracking-[0.24em] text-garden-cream transition-colors hover:border-garden-cream hover:bg-garden-cream/10"
+              className="flex min-h-14 w-full items-center justify-center gap-2 border border-dashed border-garden-cream/45 px-4 py-4 font-edict text-[13px] uppercase tracking-[0.2em] text-garden-cream transition-colors hover:border-garden-cream hover:bg-garden-cream/10 sm:text-[12px] sm:tracking-[0.24em]"
             >
               <PlusIcon aria-hidden className="size-4" />
               Add another guest
@@ -275,7 +275,7 @@ function RsvpForm({ onComplete }: { onComplete: (attending: boolean) => void }) 
           <button
             type="submit"
             disabled={!canSubmit}
-            className="w-full border border-garden-cream bg-garden-cream px-6 py-3.5 font-edict text-[12px] font-medium uppercase tracking-[0.28em] text-garden-olive transition-colors hover:bg-transparent hover:text-garden-cream disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:bg-garden-cream disabled:hover:text-garden-olive sm:px-8 sm:tracking-[0.34em]"
+            className="min-h-14 w-full border border-garden-cream bg-garden-cream px-6 py-3.5 font-edict text-[13px] font-medium uppercase tracking-[0.24em] text-garden-olive transition-colors hover:bg-transparent hover:text-garden-cream disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:bg-garden-cream disabled:hover:text-garden-olive sm:px-8 sm:text-[12px] sm:tracking-[0.34em]"
           >
             {submitting ? "Submitting" : "Send reply"}
           </button>
@@ -300,9 +300,9 @@ function InvitationCard({ children }: { children: React.ReactNode }) {
         aria-hidden
         className="pointer-events-none absolute inset-2 border-[4px] border-double border-garden-cream/45 sm:inset-3 sm:border-[5px]"
       />
-      <div className="relative px-5 py-9 sm:px-10 sm:py-12 lg:px-12">
-        <div className="mb-7 flex justify-center sm:mb-8">
-          <SAndELogo className="h-14 w-auto text-garden-cream sm:h-20" />
+      <div className="relative px-6 py-10 sm:px-10 sm:py-12 lg:px-12">
+        <div className="mb-8 flex justify-center">
+          <SAndELogo className="h-16 w-auto text-garden-cream sm:h-20" />
         </div>
         {children}
       </div>
@@ -326,10 +326,10 @@ function EventSummary() {
           key={label}
           className="grid grid-cols-1 gap-1 border-b border-garden-cream/15 py-3 last:border-b-0 sm:grid-cols-[11rem_1fr] sm:gap-4"
         >
-          <dt className="font-edict text-[10px] uppercase tracking-[0.34em] text-garden-cream/58">
+          <dt className="font-edict text-[11px] uppercase tracking-[0.28em] text-garden-cream/58 sm:text-[10px] sm:tracking-[0.34em]">
             {label}
           </dt>
-          <dd className="font-serif text-base leading-snug text-garden-cream">
+          <dd className="font-serif text-[1.08rem] leading-snug text-garden-cream sm:text-base">
             {value}
           </dd>
         </div>
@@ -379,7 +379,7 @@ function GuestAttendance({
             type="button"
             onClick={onRemove}
             aria-label={`Remove ${name || "guest"}`}
-            className="mb-1 flex size-9 shrink-0 items-center justify-center border border-garden-cream/35 text-garden-cream/75 transition-colors hover:border-garden-cream hover:bg-garden-cream hover:text-garden-olive focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-garden-cream"
+            className="flex size-11 shrink-0 items-center justify-center border border-garden-cream/35 text-garden-cream/75 transition-colors hover:border-garden-cream hover:bg-garden-cream hover:text-garden-olive focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-garden-cream sm:mb-1 sm:size-9"
           >
             <XIcon aria-hidden className="size-4" />
           </button>
@@ -408,8 +408,8 @@ function GuestDetails({
   ) => void;
 }) {
   return (
-    <section className="space-y-5 border-l border-garden-cream/25 pl-4 sm:pl-5">
-      <p className="font-edict text-[10px] uppercase tracking-[0.32em] text-garden-cream/58">
+    <section className="space-y-5 border-l border-garden-cream/25 pl-5">
+      <p className="font-edict text-[11px] uppercase tracking-[0.28em] text-garden-cream/58 sm:text-[10px] sm:tracking-[0.32em]">
         For {guest.name.trim()}
       </p>
       <MainCoursePicker
@@ -536,7 +536,7 @@ function HotelSection({
   return (
     <section className="space-y-5 border-t border-garden-cream/25 pt-8">
       <SectionHeading eyebrow="Stay" title="Belmond Casa de Sierra Nevada" />
-      <p className="font-serif text-base leading-relaxed text-garden-cream/82">
+      <p className="font-serif text-[1.08rem] leading-relaxed text-garden-cream/82 sm:text-base">
         Planning to stay at the Belmond? We can send room-block details.
       </p>
 
@@ -565,7 +565,7 @@ function HotelSection({
         href="https://www.belmond.com/hotels/north-america/mexico/san-miguel-de-allende/belmond-casa-de-sierra-nevada/"
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-block border border-garden-cream/55 px-4 py-2 font-edict text-[10px] uppercase tracking-[0.28em] text-garden-cream transition-colors hover:bg-garden-cream hover:text-garden-olive"
+        className="inline-flex min-h-11 items-center border border-garden-cream/55 px-4 py-2 font-edict text-[11px] uppercase tracking-[0.24em] text-garden-cream transition-colors hover:bg-garden-cream hover:text-garden-olive sm:text-[10px] sm:tracking-[0.28em]"
       >
         View the Belmond
       </a>
@@ -598,7 +598,7 @@ function HotelSection({
             className="overflow-hidden"
           >
             <label
-              className={`flex w-full cursor-pointer items-start gap-3 border px-4 py-3 text-left transition-colors ${
+              className={`flex min-h-14 w-full cursor-pointer items-start gap-3 border px-4 py-4 text-left transition-colors sm:py-3 ${
                 hotelAcknowledged
                   ? "border-garden-cream bg-garden-cream/10"
                   : "border-garden-cream/30 hover:border-garden-cream/60"
@@ -612,20 +612,20 @@ function HotelSection({
               />
               <span
                 aria-hidden
-                className={`mt-0.5 flex size-5 shrink-0 items-center justify-center border border-garden-cream/60 transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-garden-cream/55 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-garden-olive ${
+                className={`mt-0.5 flex size-6 shrink-0 items-center justify-center border border-garden-cream/60 transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-garden-cream/55 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-garden-olive sm:size-5 ${
                   hotelAcknowledged
                     ? "bg-garden-cream text-garden-olive"
                     : "text-transparent"
                 }`}
               >
-                <CheckIcon aria-hidden className="size-3.5" />
+                <CheckIcon aria-hidden className="size-4 sm:size-3.5" />
               </span>
               <span className="space-y-1">
-                <span className="block font-edict text-[10px] uppercase tracking-[0.28em] text-garden-cream">
+                <span className="block font-edict text-[11px] uppercase tracking-[0.24em] text-garden-cream sm:text-[10px] sm:tracking-[0.28em]">
                   Follow-up okay
                   <span className="ml-1 text-garden-cream/70">*</span>
                 </span>
-                <span className="block font-serif text-sm leading-relaxed text-garden-cream/82">
+                <span className="block font-serif text-[15px] leading-relaxed text-garden-cream/82 sm:text-sm">
                   I understand the room block is limited.
                 </span>
               </span>
@@ -646,10 +646,10 @@ function SectionHeading({
 }) {
   return (
     <div className="space-y-1">
-      <p className="font-edict text-[10px] uppercase tracking-[0.42em] text-garden-cream/55">
+      <p className="font-edict text-[11px] uppercase tracking-[0.34em] text-garden-cream/55 sm:text-[10px] sm:tracking-[0.42em]">
         {eyebrow}
       </p>
-      <h3 className="font-serif text-[1.65rem] font-light leading-tight text-garden-cream sm:text-2xl">
+      <h3 className="font-serif text-[1.85rem] font-light leading-tight text-garden-cream sm:text-2xl">
         {title}
       </h3>
     </div>
@@ -691,7 +691,7 @@ function FieldLabel({
   children: React.ReactNode;
 }) {
   const className =
-    "font-edict text-[10px] font-medium uppercase tracking-[0.36em] text-garden-cream";
+    "font-edict text-[11px] font-medium uppercase tracking-[0.28em] text-garden-cream sm:text-[10px] sm:tracking-[0.36em]";
 
   if (htmlFor) {
     return (
@@ -727,7 +727,7 @@ function InvitationInput({
   return (
     <input
       {...props}
-      className={`w-full border-b border-garden-cream/40 bg-transparent py-2 font-serif text-base text-garden-cream placeholder:text-garden-cream/35 focus:border-garden-cream focus:outline-none ${className}`}
+      className={`w-full border-b border-garden-cream/40 bg-transparent py-3 font-serif text-[17px] text-garden-cream placeholder:text-garden-cream/35 focus:border-garden-cream focus:outline-none sm:py-2 sm:text-base ${className}`}
     />
   );
 }
@@ -746,7 +746,7 @@ function ChoiceButton({
       type="button"
       aria-pressed={selected}
       onClick={onClick}
-      className={`flex min-h-14 items-center gap-3 border px-4 py-3 text-left font-serif text-base leading-snug transition-colors ${
+      className={`flex min-h-16 items-center gap-3 border px-4 py-3 text-left font-serif text-[1.08rem] leading-snug transition-colors sm:min-h-14 sm:text-base ${
         selected
           ? "border-garden-cream bg-garden-cream text-garden-olive"
           : "border-garden-cream/35 text-garden-cream hover:border-garden-cream/70 hover:bg-garden-cream/10"
@@ -780,7 +780,7 @@ function ChecklistChoice({
       aria-pressed={selected}
       aria-label={`${selected ? "Remove" : "Add"} ${title}`}
       onClick={onClick}
-      className={`flex min-h-16 w-full items-start gap-3 border px-3.5 py-3 text-left transition-colors ${
+      className={`flex min-h-[4.5rem] w-full items-start gap-3 border px-4 py-3.5 text-left transition-colors sm:min-h-16 sm:px-3.5 sm:py-3 ${
         selected
           ? "border-garden-cream bg-garden-cream text-garden-olive"
           : "border-garden-cream/35 text-garden-cream hover:border-garden-cream/70 hover:bg-garden-cream/10"
@@ -795,10 +795,10 @@ function ChecklistChoice({
         {selected && <CheckIcon className="size-3.5" />}
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block font-edict text-[11px] uppercase leading-snug tracking-[0.22em]">
+        <span className="block font-edict text-[12px] uppercase leading-snug tracking-[0.18em] sm:text-[11px] sm:tracking-[0.22em]">
           {title}
         </span>
-        <span className="mt-1 block font-serif text-sm italic leading-snug opacity-80">
+        <span className="mt-1 block font-serif text-[15px] italic leading-snug opacity-80 sm:text-sm">
           {detail}
         </span>
       </span>
