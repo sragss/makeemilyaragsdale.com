@@ -5,28 +5,20 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { createInvite } from "./create-actions";
+import { createRsvp } from "./create-actions";
 import { useRouter } from "next/navigation";
 
-export function CreateInviteForm() {
+export function CreateRsvpForm() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [guestNames, setGuestNames] = useState(["", ""]);
-  const [hotelEligible, setHotelEligible] = useState(false);
   const [address, setAddress] = useState("");
   const [notes, setNotes] = useState("");
   const [result, setResult] = useState<{
-    code: string;
-    addressUrl: string;
-    rsvpUrl: string;
+    id: string;
+    guestNames: string[];
   } | null>(null);
 
   function addGuest() {
@@ -47,26 +39,23 @@ export function CreateInviteForm() {
     if (names.length === 0) return;
 
     setSaving(true);
-    const res = await createInvite({
+    const res = await createRsvp({
       guestNames: names,
-      hotelEligible,
       address: address.trim() || null,
       notes: notes.trim() || null,
     });
     setSaving(false);
 
-    if (res.code) {
+    if (res.id) {
       setResult({
-        code: res.code,
-        addressUrl: `/address/${res.code}`,
-        rsvpUrl: `/rsvp/${res.code}`,
+        id: res.id,
+        guestNames: names,
       });
     }
   }
 
   function handleReset() {
     setGuestNames(["", ""]);
-    setHotelEligible(false);
     setAddress("");
     setNotes("");
     setResult(null);
@@ -76,7 +65,7 @@ export function CreateInviteForm() {
     <>
       {!open && (
         <Button variant="outline" onClick={() => setOpen(true)}>
-          + New Invite
+          + New RSVP
         </Button>
       )}
 
@@ -92,19 +81,9 @@ export function CreateInviteForm() {
             {result ? (
               <div className="space-y-4 border border-border rounded-sm p-4">
                 <p className="text-sm">
-                  Created{" "}
-                  <span className="font-mono font-medium">{result.code}</span>
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Text this address link:{" "}
-                  <span className="font-mono">
-                    makeemilyaragsdale.com{result.addressUrl}
-                  </span>
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Print on invite: makeemilyaragsdale.com with code{" "}
-                  <span className="font-mono">
-                    {result.code}
+                  Created RSVP for{" "}
+                  <span className="font-medium">
+                    {result.guestNames.join(" & ")}
                   </span>
                 </p>
                 <div className="flex gap-2">
@@ -112,23 +91,10 @@ export function CreateInviteForm() {
                     variant="outline"
                     size="sm"
                     onClick={() => {
-                      navigator.clipboard.writeText(
-                        `https://makeemilyaragsdale.com${result.addressUrl}`
-                      );
+                      router.push(`/admin/rsvp/${result.id}`);
                     }}
                   >
-                    Copy address link
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      navigator.clipboard.writeText(
-                        `https://makeemilyaragsdale.com${result.rsvpUrl}`
-                      );
-                    }}
-                  >
-                    Copy RSVP link
+                    Open
                   </Button>
                   <Button
                     variant="outline"
@@ -154,7 +120,7 @@ export function CreateInviteForm() {
               <div className="space-y-4 border border-border rounded-sm p-4">
                 <div className="flex items-center justify-between">
                   <h2 className="text-xs tracking-[0.3em] uppercase text-muted-foreground">
-                    New Invite
+                    New RSVP
                   </h2>
                   <button
                     onClick={() => {
@@ -207,25 +173,6 @@ export function CreateInviteForm() {
                   />
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id="new-hotel"
-                    checked={hotelEligible}
-                    onCheckedChange={(v) => setHotelEligible(v === true)}
-                  />
-                  <Tooltip>
-                    <TooltipTrigger className="underline decoration-dotted underline-offset-4 decoration-muted-foreground/50 cursor-help text-sm font-medium">
-                      Hotel eligible
-                    </TooltipTrigger>
-                    <TooltipContent side="top" className="max-w-xs text-xs">
-                      Invite this guest to book at the Belmond (3 nights,
-                      Thu-Sat). Reserved for close friends and family. Rooms are
-                      scarce — we need bookings promptly as funds are held until
-                      the block fills.
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-
                 <div className="space-y-2">
                   <Label>Notes (optional)</Label>
                   <Input
@@ -240,7 +187,7 @@ export function CreateInviteForm() {
                   disabled={saving || guestNames.every((n) => !n.trim())}
                   className="w-full"
                 >
-                  {saving ? "Creating..." : "Create Invite"}
+                  {saving ? "Creating..." : "Create RSVP"}
                 </Button>
               </div>
             )}

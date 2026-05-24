@@ -12,7 +12,7 @@ export default function DressCode() {
       intro="Three events, three looks. Evenings get cool, so plan a layer for after sunset. Cobblestones are charming and unforgiving, so bring shoes that can handle them."
     >
       <Section label="Friday Afternoon, Pool Party at the Belmond">
-        <p className="font-serif text-2xl font-light text-foreground">
+        <p className="font-edict text-2xl font-light uppercase tracking-[0.08em] text-garden-moss">
           Resort Casual
         </p>
         <p className="text-muted-foreground">
@@ -22,7 +22,7 @@ export default function DressCode() {
       </Section>
 
       <Section label="Friday Evening, Callejoneada and Tunki Rooftop">
-        <p className="font-serif text-2xl font-light text-foreground">
+        <p className="font-edict text-2xl font-light uppercase tracking-[0.08em] text-garden-moss">
           White Linens
         </p>
         <p className="text-muted-foreground">
@@ -32,7 +32,7 @@ export default function DressCode() {
       </Section>
 
       <Section label="Saturday, Wedding at Luna Escondida">
-        <p className="font-serif text-2xl font-light text-foreground">
+        <p className="font-edict text-2xl font-light uppercase tracking-[0.08em] text-garden-moss">
           Enchanted Garden
         </p>
         <p className="text-muted-foreground">

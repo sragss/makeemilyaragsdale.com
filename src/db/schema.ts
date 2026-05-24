@@ -11,12 +11,10 @@ import { relations } from "drizzle-orm";
 
 export const invites = pgTable("invites", {
   id: uuid("id").defaultRandom().primaryKey(),
-  code: text("code").notNull().unique(),
-  hotelEligible: boolean("hotel_eligible").notNull().default(false),
+  internalKey: text("code").notNull().unique(),
   maxGuests: integer("max_guests").notNull().default(2),
   notes: text("notes"),
   address: text("address"),
-  philMode: boolean("phil_mode").notNull().default(false),
   deleted: boolean("deleted").notNull().default(false),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
@@ -32,6 +30,7 @@ export const guests = pgTable("guests", {
   phone: text("phone"),
   attendingFriday: boolean("attending_friday"),
   attendingSaturday: boolean("attending_saturday"),
+  mainCoursePreference: text("main_course_preference"),
   dietaryRestrictions: text("dietary_restrictions"),
   plusOneName: text("plus_one_name"),
   createdAt: timestamp("created_at").defaultNow().notNull(),

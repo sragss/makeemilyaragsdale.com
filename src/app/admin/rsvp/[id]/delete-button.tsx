@@ -2,15 +2,15 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { deleteInvite } from "./actions";
+import { deleteRsvp } from "./actions";
 import { useRouter } from "next/navigation";
 
 export function DeleteButton({
   inviteId,
-  code,
+  label,
 }: {
   inviteId: string;
-  code: string;
+  label: string;
 }) {
   const router = useRouter();
   const [confirming, setConfirming] = useState(false);
@@ -23,7 +23,7 @@ export function DeleteButton({
         className="w-full text-destructive hover:text-destructive"
         onClick={() => setConfirming(true)}
       >
-        Delete Invite
+        Delete RSVP
       </Button>
     );
   }
@@ -32,8 +32,8 @@ export function DeleteButton({
     <div className="space-y-2 border border-destructive/30 rounded-sm p-4">
       <p className="text-sm">
         Are you sure you want to delete{" "}
-        <span className="font-mono font-medium">{code}</span>? This will hide
-        the invite from the admin table. It can be recovered from the database.
+        <span className="font-medium">{label}</span>? This will hide
+        the RSVP from the admin table. It can be recovered from the database.
       </p>
       <div className="flex gap-2">
         <Button
@@ -42,7 +42,7 @@ export function DeleteButton({
           disabled={deleting}
           onClick={async () => {
             setDeleting(true);
-            await deleteInvite(inviteId);
+            await deleteRsvp(inviteId);
             router.push("/admin");
           }}
         >

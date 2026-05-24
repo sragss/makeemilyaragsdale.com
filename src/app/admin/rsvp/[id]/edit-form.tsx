@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
-import { updateGuest, updateInvite, updateHotelBooking } from "./actions";
+import { updateGuest, updateHotelBooking, updateRsvp } from "./actions";
 import { useRouter } from "next/navigation";
 
 interface GuestData {
@@ -16,6 +16,7 @@ interface GuestData {
   attendingSaturday: boolean | null;
   email: string | null;
   phone: string | null;
+  mainCoursePreference: string | null;
   dietaryRestrictions: string | null;
   plusOneName: string | null;
 }
@@ -27,30 +28,25 @@ interface HotelData {
   bookingValue: string | null;
 }
 
-interface InviteData {
+interface RsvpData {
   id: string;
-  code: string;
-  hotelEligible: boolean;
   maxGuests: number;
   notes: string | null;
   address: string | null;
-  philMode: boolean;
   guests: GuestData[];
   hotelBooking: HotelData | null;
 }
 
-export function EditForm({ invite }: { invite: InviteData }) {
+export function EditForm({ invite }: { invite: RsvpData }) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [guestForms, setGuestForms] = useState(
     invite.guests.map((g) => ({ ...g }))
   );
   const [inviteForm, setInviteForm] = useState({
-    hotelEligible: invite.hotelEligible,
     maxGuests: invite.maxGuests,
     notes: invite.notes ?? "",
     address: invite.address ?? "",
-    philMode: invite.philMode,
   });
   const [hotelForm, setHotelForm] = useState({
     willBook: invite.hotelBooking?.willBook ?? null,
@@ -71,12 +67,10 @@ export function EditForm({ invite }: { invite: InviteData }) {
   async function handleSave() {
     setSaving(true);
 
-    await updateInvite(invite.id, {
-      hotelEligible: inviteForm.hotelEligible,
+    await updateRsvp(invite.id, {
       maxGuests: inviteForm.maxGuests,
       notes: inviteForm.notes || null,
       address: inviteForm.address || null,
-      philMode: inviteForm.philMode,
     });
 
     for (const g of guestForms) {
@@ -86,18 +80,17 @@ export function EditForm({ invite }: { invite: InviteData }) {
         attendingSaturday: g.attendingSaturday,
         email: g.email || null,
         phone: g.phone || null,
+        mainCoursePreference: g.mainCoursePreference || null,
         dietaryRestrictions: g.dietaryRestrictions || null,
         plusOneName: g.plusOneName || null,
       });
     }
 
-    if (inviteForm.hotelEligible) {
-      await updateHotelBooking(invite.id, {
-        willBook: hotelForm.willBook,
-        bookingComplete: hotelForm.bookingComplete,
-        bookingValue: hotelForm.bookingValue || null,
-      });
-    }
+    await updateHotelBooking(invite.id, {
+      willBook: hotelForm.willBook,
+      bookingComplete: hotelForm.bookingComplete,
+      bookingValue: hotelForm.bookingValue || null,
+    });
 
     setSaving(false);
     router.refresh();
@@ -105,10 +98,10 @@ export function EditForm({ invite }: { invite: InviteData }) {
 
   return (
     <div className="space-y-8">
-      {/* Invite settings */}
+      {/* RSVP settings */}
       <section className="space-y-4">
         <h2 className="text-xs tracking-[0.3em] uppercase text-muted-foreground">
-          Invite Settings
+          RSVP Settings
         </h2>
         <Separator />
         <div className="grid grid-cols-2 gap-4">
@@ -124,34 +117,6 @@ export function EditForm({ invite }: { invite: InviteData }) {
                 }))
               }
             />
-          </div>
-          <div className="space-y-2 flex items-end gap-2">
-            <div className="flex items-center gap-2 pb-2">
-              <Checkbox
-                id="hotel-eligible"
-                checked={inviteForm.hotelEligible}
-                onCheckedChange={(v) =>
-                  setInviteForm((f) => ({
-                    ...f,
-                    hotelEligible: v === true,
-                  }))
-                }
-              />
-              <Label htmlFor="hotel-eligible">Hotel eligible</Label>
-            </div>
-            <div className="flex items-center gap-2 pb-2">
-              <Checkbox
-                id="phil-mode"
-                checked={inviteForm.philMode}
-                onCheckedChange={(v) =>
-                  setInviteForm((f) => ({
-                    ...f,
-                    philMode: v === true,
-                  }))
-                }
-              />
-              <Label htmlFor="phil-mode">Phil mode</Label>
-            </div>
           </div>
         </div>
         <div className="space-y-2">
@@ -263,6 +228,15 @@ export function EditForm({ invite }: { invite: InviteData }) {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
+              <Label>Main Course</Label>
+              <Input
+                value={guest.mainCoursePreference ?? ""}
+                onChange={(e) =>
+                  updateGuestField(i, "mainCoursePreference", e.target.value)
+                }
+              />
+            </div>
+            <div className="space-y-2">
               <Label>Dietary</Label>
               <Input
                 value={guest.dietaryRestrictions ?? ""}
@@ -285,71 +259,69 @@ export function EditForm({ invite }: { invite: InviteData }) {
       ))}
 
       {/* Hotel Booking */}
-      {inviteForm.hotelEligible && (
-        <section className="space-y-4">
-          <h2 className="text-xs tracking-[0.3em] uppercase text-muted-foreground">
-            Hotel Booking
-          </h2>
-          <Separator />
+      <section className="space-y-4">
+        <h2 className="text-xs tracking-[0.3em] uppercase text-muted-foreground">
+          Hotel Booking
+        </h2>
+        <Separator />
 
-          <div className="grid grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label>Will Book</Label>
-              <select
-                value={
-                  hotelForm.willBook === null
-                    ? "pending"
-                    : hotelForm.willBook
-                      ? "yes"
-                      : "no"
-                }
-                onChange={(e) => {
-                  const v = e.target.value;
+        <div className="grid grid-cols-3 gap-4">
+          <div className="space-y-2">
+            <Label>Will Book</Label>
+            <select
+              value={
+                hotelForm.willBook === null
+                  ? "pending"
+                  : hotelForm.willBook
+                    ? "yes"
+                    : "no"
+              }
+              onChange={(e) => {
+                const v = e.target.value;
+                setHotelForm((f) => ({
+                  ...f,
+                  willBook: v === "pending" ? null : v === "yes",
+                }));
+              }}
+              className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm"
+            >
+              <option value="pending">Pending</option>
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+            </select>
+          </div>
+          <div className="space-y-2">
+            <Label>Booking Value ($)</Label>
+            <Input
+              type="number"
+              step="0.01"
+              placeholder="0.00"
+              value={hotelForm.bookingValue}
+              onChange={(e) =>
+                setHotelForm((f) => ({
+                  ...f,
+                  bookingValue: e.target.value,
+                }))
+              }
+            />
+          </div>
+          <div className="flex items-end pb-1">
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="booking-complete"
+                checked={hotelForm.bookingComplete}
+                onCheckedChange={(v) =>
                   setHotelForm((f) => ({
                     ...f,
-                    willBook: v === "pending" ? null : v === "yes",
-                  }));
-                }}
-                className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm"
-              >
-                <option value="pending">Pending</option>
-                <option value="yes">Yes</option>
-                <option value="no">No</option>
-              </select>
-            </div>
-            <div className="space-y-2">
-              <Label>Booking Value ($)</Label>
-              <Input
-                type="number"
-                step="0.01"
-                placeholder="0.00"
-                value={hotelForm.bookingValue}
-                onChange={(e) =>
-                  setHotelForm((f) => ({
-                    ...f,
-                    bookingValue: e.target.value,
+                    bookingComplete: v === true,
                   }))
                 }
               />
-            </div>
-            <div className="flex items-end pb-1">
-              <div className="flex items-center gap-2">
-                <Checkbox
-                  id="booking-complete"
-                  checked={hotelForm.bookingComplete}
-                  onCheckedChange={(v) =>
-                    setHotelForm((f) => ({
-                      ...f,
-                      bookingComplete: v === true,
-                    }))
-                  }
-                />
-                <Label htmlFor="booking-complete">Booking complete</Label>
-              </div>
+              <Label htmlFor="booking-complete">Booking complete</Label>
             </div>
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
       <Button onClick={handleSave} disabled={saving} className="w-full">
         {saving ? "Saving..." : "Save Changes"}

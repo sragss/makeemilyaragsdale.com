@@ -1,7 +1,7 @@
 import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
+import { randomUUID } from "crypto";
 import { invites, guests, hotelBookings, inviteEvents } from "../src/db/schema";
-import { generateCode } from "../src/lib/codes";
 
 async function seed() {
   const sql = neon(process.env.DATABASE_URL!);
@@ -15,32 +15,27 @@ async function seed() {
 
   const testData = [
     {
-      hotelEligible: true,
       maxGuests: 2,
-      notes: "The happy couple's test invite",
+      notes: "The happy couple's test RSVP",
       guestNames: ["Sam Ragsdale", "Emily Devery"],
     },
     {
-      hotelEligible: true,
       maxGuests: 2,
-      notes: "Close friends, hotel eligible",
+      notes: "Close friends",
       guestNames: ["John Smith", "Jane Smith"],
     },
     {
-      hotelEligible: false,
       maxGuests: 1,
-      notes: "Solo invite with +1 option",
+      notes: "Solo RSVP",
       guestNames: ["Alex Jones"],
     },
   ];
 
   for (const data of testData) {
-    const code = generateCode();
     const [inserted] = await db
       .insert(invites)
       .values({
-        code,
-        hotelEligible: data.hotelEligible,
+        internalKey: `SEED-${randomUUID()}`,
         maxGuests: data.maxGuests,
         notes: data.notes,
       })
@@ -54,10 +49,10 @@ async function seed() {
       }))
     );
 
-    console.log(`  ${code} → ${data.guestNames.join(" & ")}`);
+    console.log(`  ${data.guestNames.join(" & ")}`);
   }
 
-  console.log("\nSeeded 3 invites");
+  console.log("\nSeeded 3 RSVPs");
 }
 
 seed().catch(console.error);

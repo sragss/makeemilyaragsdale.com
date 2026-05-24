@@ -2,14 +2,12 @@
 
 import { useState, useTransition } from "react";
 import { Trash2, Check, X } from "lucide-react";
-import { deleteInvite } from "./rsvp/[code]/actions";
+import { deleteRsvp } from "./rsvp/[id]/actions";
 
 export function InviteTrashButton({
   inviteId,
-  code,
 }: {
   inviteId: string;
-  code: string;
 }) {
   const [confirming, setConfirming] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -19,11 +17,11 @@ export function InviteTrashButton({
       <div className="flex items-center gap-1">
         <button
           type="button"
-          title={`Delete ${code}`}
+          title="Delete RSVP"
           disabled={isPending}
           onClick={() =>
             startTransition(async () => {
-              await deleteInvite(inviteId);
+              await deleteRsvp(inviteId);
             })
           }
           className="rounded p-1 text-destructive transition-colors hover:bg-destructive/10 disabled:opacity-50"
@@ -46,7 +44,7 @@ export function InviteTrashButton({
   return (
     <button
       type="button"
-      title={`Delete ${code}`}
+      title="Delete RSVP"
       onClick={() => setConfirming(true)}
       className="rounded p-1 text-muted-foreground transition-colors hover:text-destructive"
     >

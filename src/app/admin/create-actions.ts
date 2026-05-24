@@ -1,23 +1,20 @@
 "use server";
 
+import { randomUUID } from "crypto";
 import { getDb } from "@/db";
 import { invites, guests } from "@/db/schema";
-import { generateCode } from "@/lib/codes";
 
-export async function createInvite(data: {
+export async function createRsvp(data: {
   guestNames: string[];
-  hotelEligible: boolean;
   address: string | null;
   notes: string | null;
 }) {
   const db = getDb();
-  const code = generateCode();
 
   const [inserted] = await db
     .insert(invites)
     .values({
-      code,
-      hotelEligible: data.hotelEligible,
+      internalKey: `ADMIN-${randomUUID()}`,
       maxGuests: data.guestNames.length,
       address: data.address,
       notes: data.notes,
@@ -32,5 +29,5 @@ export async function createInvite(data: {
     }))
   );
 
-  return { code };
+  return { id: inserted.id };
 }

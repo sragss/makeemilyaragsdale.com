@@ -5,7 +5,7 @@ import { count } from "drizzle-orm";
 import { Separator } from "@/components/ui/separator";
 import { isAdminAuthenticated } from "./actions";
 import { LoginForm } from "./login-form";
-import { CreateInviteForm } from "./create-invite";
+import { CreateRsvpForm } from "./create-rsvp";
 import { AdminTable } from "./admin-table";
 import { AgentPrompt } from "./agent-prompt";
 
@@ -32,7 +32,7 @@ export default async function AdminPage() {
       guests: true,
       hotelBookings: true,
     },
-    orderBy: (invites, { asc }) => [asc(invites.code)],
+    orderBy: (invites, { desc }) => [desc(invites.createdAt)],
   });
 
   const allInvites = allInvitesRaw.filter((i) => !i.deleted);
@@ -53,8 +53,6 @@ export default async function AdminPage() {
 
   const tableData = allInvites.map((inv) => ({
     id: inv.id,
-    code: inv.code,
-    hotelEligible: inv.hotelEligible,
     address: inv.address,
     guests: inv.guests.map((g) => ({
       id: g.id,
@@ -63,6 +61,7 @@ export default async function AdminPage() {
       attendingSaturday: g.attendingSaturday,
       email: g.email,
       phone: g.phone,
+      mainCoursePreference: g.mainCoursePreference,
       dietaryRestrictions: g.dietaryRestrictions,
       plusOneName: g.plusOneName,
     })),
@@ -95,12 +94,12 @@ export default async function AdminPage() {
           <Stat label="Declined" value={declined.length} />
           <Stat label="Pending" value={pending.length} />
           <Stat label="Hotel" value={hotelYes.length} />
-          <Stat label="Invites" value={allInvites.length} />
+          <Stat label="RSVPs" value={allInvites.length} />
         </div>
 
         <Separator />
 
-        <CreateInviteForm />
+        <CreateRsvpForm />
 
         <AdminTable invites={tableData} />
       </div>

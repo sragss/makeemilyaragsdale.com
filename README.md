@@ -1,6 +1,6 @@
 # MakeEmilyARagsdale.com
 
-Wedding website for Emily Devery & Sam Ragsdale — February 27, 2027 — San Miguel de Allende, Mexico.
+Wedding website for Emily Devery & Sam Ragsdale - February 27, 2027 - San Miguel de Allende, Mexico.
 
 ## Stack
 
@@ -14,12 +14,15 @@ Wedding website for Emily Devery & Sam Ragsdale — February 27, 2027 — San Mi
 
 | Route | Purpose |
 |-------|---------|
-| `/` | Landing — date, names, location |
-| `/details` | Schedule, venue, dress code, accommodation |
-| `/rsvp` | Code entry → RSVP form |
-| `/rsvp/[code]` | Direct RSVP link (e.g. `/rsvp/EBR-TOVIK`) |
+| `/` | Landing - date, names, location |
+| `/schedule` | Event schedule |
+| `/travel` | Travel and hotel information |
+| `/explore` | San Miguel recommendations |
+| `/dress-code` | Dress code |
+| `/faq` | Frequently asked questions |
+| `/rsvp` | Public RSVP form with hotel booking question |
 | `/admin` | Password-protected dashboard |
-| `/admin/rsvp/[code]` | Edit individual invite details |
+| `/admin/rsvp/[id]` | Edit an RSVP |
 
 ## Getting Started
 
@@ -29,9 +32,10 @@ pnpm dev
 ```
 
 Requires `.env.local` with:
-```
+
+```bash
 DATABASE_URL="postgresql://..."
-ADMIN_PASSWORD="emily-ragsdale"
+ADMIN_PASSWORD="..."
 ```
 
 ## Scripts
@@ -40,25 +44,17 @@ ADMIN_PASSWORD="emily-ragsdale"
 pnpm dev          # Local dev server
 pnpm build        # Production build
 pnpm db:push      # Push schema changes to Neon
-pnpm db:seed      # Seed test data (generates new random codes)
-pnpm db:studio    # Drizzle Studio (database GUI)
+pnpm db:seed      # Seed test RSVP data
+pnpm db:studio    # Drizzle Studio
 ```
 
-## Deployment
+## RSVP
 
-Push to `main` → auto-deploys to production on Vercel. PRs get preview deployments.
-
-Environment variables (`DATABASE_URL`, `ADMIN_PASSWORD`) are set in Vercel project settings.
-
-## RSVP Codes
-
-Each invite gets a pronounceable code like `EBR-TOVIK` (consonant-vowel alternating pattern). Codes are generated in `src/lib/codes.ts`. Guests enter codes at `/rsvp` or visit `/rsvp/EBR-TOVIK` directly.
-
-New invites can be created from the admin dashboard.
+Guests use `/rsvp` directly. There is no invite code entry and no hotel eligibility gate; anyone attending can select a main course and indicate whether they plan to book at the Belmond.
 
 ## Admin
 
 - **URL**: makeemilyaragsdale.com/admin
-- **Password**: Set via `ADMIN_PASSWORD` env var
-- Click any code in the table to edit guest details, hotel booking status, and booking value
-- Create new invites with the "+ New Invite" button
+- **Password**: Set via `ADMIN_PASSWORD`
+- Click a guest group in the table to edit guest details, hotel booking status, and booking value
+- Create manual RSVP records with the "+ New RSVP" button

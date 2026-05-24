@@ -21,19 +21,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { CopyButton } from "./copy-button";
 import { InviteTrashButton } from "./invite-trash-button";
-import { updateInvite } from "./rsvp/[code]/actions";
+import { updateRsvp } from "./rsvp/[id]/actions";
 
 interface InviteRow {
   id: string;
-  code: string;
-  hotelEligible: boolean;
   address: string | null;
   guests: {
     id: string;
@@ -42,6 +34,7 @@ interface InviteRow {
     attendingSaturday: boolean | null;
     email: string | null;
     phone: string | null;
+    mainCoursePreference: string | null;
     dietaryRestrictions: string | null;
     plusOneName: string | null;
   }[];
@@ -51,7 +44,7 @@ interface InviteRow {
   } | null;
 }
 
-type SortKey = "code" | "name";
+type SortKey = "name";
 
 const STATUS_OPTIONS = [
   { value: "attending", label: "Attending" },
@@ -60,7 +53,6 @@ const STATUS_OPTIONS = [
 ] as const;
 
 const HOTEL_OPTIONS = [
-  { value: "eligible", label: "Eligible" },
   { value: "booking", label: "Booking" },
   { value: "booked", label: "Booked" },
   { value: "declined_hotel", label: "Declined" },
@@ -71,9 +63,7 @@ const ADDR_OPTIONS = [
   { value: "no_addr", label: "Missing" },
 ] as const;
 
-// Keep these for backward compat in labels
 const HOTEL_LABELS: Record<string, string> = {
-  eligible: "Eligible",
   booking: "Booking",
   booked: "Booked",
   declined_hotel: "Declined",
@@ -86,7 +76,7 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
   const [filterStatus, setFilterStatus] = useState<Set<string>>(new Set());
   const [filterHotel, setFilterHotel] = useState<Set<string>>(new Set());
   const [filterAddr, setFilterAddr] = useState<Set<string>>(new Set());
-  const [sortKey, setSortKey] = useState<SortKey>("code");
+  const [sortKey, setSortKey] = useState<SortKey>("name");
   const [sortAsc, setSortAsc] = useState(true);
 
   function toggleFilter(
@@ -139,7 +129,6 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
     if (search.trim()) {
       const q = search.toLowerCase();
       result = result.filter((inv) => {
-        if (inv.code.toLowerCase().includes(q)) return true;
         if (inv.address?.toLowerCase().includes(q)) return true;
         return inv.guests.some(
           (g) =>
@@ -166,7 +155,6 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
 
     if (filterHotel.size > 0) {
       result = result.filter((inv) => {
-        if (filterHotel.has("eligible") && inv.hotelEligible) return true;
         if (filterHotel.has("booking") && inv.hotelBooking?.willBook === true && !inv.hotelBooking?.bookingComplete) return true;
         if (filterHotel.has("booked") && inv.hotelBooking?.bookingComplete === true) return true;
         if (filterHotel.has("declined_hotel") && inv.hotelBooking?.willBook === false) return true;
@@ -184,9 +172,7 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
 
     result = [...result].sort((a, b) => {
       let cmp = 0;
-      if (sortKey === "code") {
-        cmp = a.code.localeCompare(b.code);
-      } else if (sortKey === "name") {
+      if (sortKey === "name") {
         const nameA = a.guests[0]?.name ?? "";
         const nameB = b.guests[0]?.name ?? "";
         cmp = nameA.localeCompare(nameB);
@@ -213,7 +199,7 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
       {/* Search + Filter button */}
       <div className="flex gap-2">
         <Input
-          placeholder="Search guests, codes, address, email, phone..."
+          placeholder="Search guests, address, email, phone..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="flex-1"
@@ -237,34 +223,12 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
               onToggle={(v) => toggleFilter(filterStatus, setFilterStatus, v)}
             />
             <Separator />
-            <div className="space-y-2">
-              <Tooltip>
-                <TooltipTrigger className="text-xs text-muted-foreground underline decoration-dotted underline-offset-4 decoration-muted-foreground/50">
-                  Hotel
-                </TooltipTrigger>
-                <TooltipContent side="top" className="max-w-xs text-xs">
-                  Hotel-eligible guests are invited to book at the Belmond
-                  (3 nights, Thu-Sat). Close friends and family. Rooms are
-                  scarce — we need bookings promptly as funds are held until
-                  the block fills.
-                </TooltipContent>
-              </Tooltip>
-              <div className="flex flex-wrap gap-1">
-                {HOTEL_OPTIONS.map((opt) => (
-                  <button
-                    key={opt.value}
-                    onClick={() => toggleFilter(filterHotel, setFilterHotel, opt.value)}
-                    className={`px-2 py-1 text-xs rounded-sm border transition-colors cursor-pointer ${
-                      filterHotel.has(opt.value)
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "bg-transparent text-muted-foreground border-border hover:border-foreground/30"
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <FilterSection
+              label="Hotel"
+              options={HOTEL_OPTIONS}
+              selected={filterHotel}
+              onToggle={(v) => toggleFilter(filterHotel, setFilterHotel, v)}
+            />
             <Separator />
             <FilterSection
               label="Address"
@@ -313,20 +277,14 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
 
       {/* Count */}
       <p className="text-xs text-muted-foreground">
-        {filtered.length} invite{filtered.length !== 1 ? "s" : ""}
+        {filtered.length} RSVP{filtered.length !== 1 ? "s" : ""}
         {search && ` matching \u201c${search}\u201d`}
       </p>
 
       <div className="overflow-x-auto scrollbar-none">
-      <Table className="min-w-[680px]">
+      <Table className="min-w-[620px]">
         <TableHeader>
           <TableRow>
-            <TableHead
-              className="cursor-pointer select-none"
-              onClick={() => toggleSort("code")}
-            >
-              Code{sortIndicator("code")}
-            </TableHead>
             <TableHead
               className="cursor-pointer select-none"
               onClick={() => toggleSort("name")}
@@ -336,37 +294,32 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
             <TableHead>Status</TableHead>
             <TableHead>Hotel</TableHead>
             <TableHead>Contact</TableHead>
-            <TableHead>Links</TableHead>
             <TableHead className="w-10"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {filtered.map((invite) => (
             <TableRow key={invite.id}>
-              <TableCell className="font-mono text-xs">
-                <Link
-                  href={`/admin/rsvp/${invite.code}`}
-                  className="underline underline-offset-4 decoration-muted-foreground/50 hover:decoration-foreground transition-colors"
-                >
-                  {invite.code}
-                </Link>
-              </TableCell>
               <TableCell>
                 <div className="space-y-0.5">
-                  {invite.guests.map((g) => (
-                    <div key={g.id} className="text-sm">
-                      {g.name}
-                      {g.plusOneName && (
-                        <span className="text-muted-foreground">
-                          {" "}
-                          + {g.plusOneName}
-                        </span>
-                      )}
-                    </div>
-                  ))}
+                  <Link
+                    href={`/admin/rsvp/${invite.id}`}
+                    className="block underline underline-offset-4 decoration-muted-foreground/50 transition-colors hover:decoration-foreground"
+                  >
+                    {invite.guests.map((g) => (
+                      <span key={g.id} className="block text-sm">
+                        {g.name}
+                        {g.plusOneName && (
+                          <span className="text-muted-foreground">
+                            {" "}
+                            + {g.plusOneName}
+                          </span>
+                        )}
+                      </span>
+                    ))}
+                  </Link>
                   <AddressControl
                     inviteId={invite.id}
-                    code={invite.code}
                     address={invite.address}
                   />
                 </div>
@@ -398,29 +351,23 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
                 ))}
               </TableCell>
               <TableCell>
-                {invite.hotelEligible ? (
-                  invite.hotelBooking?.willBook === true ? (
-                    invite.hotelBooking.bookingComplete ? (
-                      <Badge variant="secondary" className="text-xs">
-                        Booked
-                      </Badge>
-                    ) : (
-                      <Badge variant="secondary" className="text-xs">
-                        Booking
-                      </Badge>
-                    )
-                  ) : invite.hotelBooking?.willBook === false ? (
-                    <span className="text-xs text-muted-foreground">
-                      Declined
-                    </span>
+                {invite.hotelBooking?.willBook === true ? (
+                  invite.hotelBooking.bookingComplete ? (
+                    <Badge variant="secondary" className="text-xs">
+                      Booked
+                    </Badge>
                   ) : (
-                    <span className="text-xs text-muted-foreground">
-                      Eligible
-                    </span>
+                    <Badge variant="secondary" className="text-xs">
+                      Booking
+                    </Badge>
                   )
+                ) : invite.hotelBooking?.willBook === false ? (
+                  <span className="text-xs text-muted-foreground">
+                    Declined
+                  </span>
                 ) : (
                   <span className="text-xs text-muted-foreground">
-                    &mdash;
+                    Pending
                   </span>
                 )}
               </TableCell>
@@ -434,6 +381,11 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
                       {g.email && <span>{g.email}</span>}
                       {g.email && g.phone && <span> / </span>}
                       {g.phone && <span>{g.phone}</span>}
+                      {g.mainCoursePreference && (
+                        <span className="block text-muted-foreground/70">
+                          Meal: {g.mainCoursePreference}
+                        </span>
+                      )}
                       {g.dietaryRestrictions && (
                         <span className="block text-muted-foreground/60">
                           Diet: {g.dietaryRestrictions}
@@ -444,21 +396,7 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
                 </div>
               </TableCell>
               <TableCell>
-                <div className="flex items-center gap-1 text-[10px] uppercase tracking-wide text-muted-foreground">
-                  <span>Addr</span>
-                  <CopyButton
-                    label="Address link"
-                    url={`https://makeemilyaragsdale.com/address/${invite.code}`}
-                  />
-                  <span>RSVP</span>
-                  <CopyButton
-                    label="RSVP link"
-                    url={`https://makeemilyaragsdale.com/rsvp/${invite.code}`}
-                  />
-                </div>
-              </TableCell>
-              <TableCell>
-                <InviteTrashButton inviteId={invite.id} code={invite.code} />
+                <InviteTrashButton inviteId={invite.id} />
               </TableCell>
             </TableRow>
           ))}
@@ -471,11 +409,9 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
 
 function AddressControl({
   inviteId,
-  code,
   address,
 }: {
   inviteId: string;
-  code: string;
   address: string | null;
 }) {
   const router = useRouter();
@@ -486,7 +422,7 @@ function AddressControl({
   async function handleSave() {
     setSaving(true);
     const nextAddress = value.trim();
-    await updateInvite(inviteId, {
+    await updateRsvp(inviteId, {
       address: nextAddress || null,
     });
     setSavedAddress(nextAddress);
@@ -507,9 +443,6 @@ function AddressControl({
       </PopoverTrigger>
       <PopoverContent align="start" className="w-80 space-y-3">
         <div className="space-y-1">
-          <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground">
-            {code}
-          </p>
           <p className="text-sm font-medium">Mailing address</p>
         </div>
         <textarea
@@ -529,13 +462,6 @@ function AddressControl({
           >
             {saving ? "Saving..." : "Save"}
           </Button>
-          <div className="flex items-center gap-1 text-[10px] uppercase tracking-wide text-muted-foreground">
-            <span>Text</span>
-            <CopyButton
-              label="Address link"
-              url={`https://makeemilyaragsdale.com/address/${code}`}
-            />
-          </div>
         </div>
       </PopoverContent>
     </Popover>

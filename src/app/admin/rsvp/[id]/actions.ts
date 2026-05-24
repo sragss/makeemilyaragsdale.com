@@ -14,6 +14,7 @@ export async function updateGuest(
     attendingSaturday?: boolean | null;
     email?: string | null;
     phone?: string | null;
+    mainCoursePreference?: string | null;
     dietaryRestrictions?: string | null;
     plusOneName?: string | null;
   }
@@ -26,14 +27,12 @@ export async function updateGuest(
   return { success: true };
 }
 
-export async function updateInvite(
+export async function updateRsvp(
   inviteId: string,
   data: {
-    hotelEligible?: boolean;
     maxGuests?: number;
     notes?: string | null;
     address?: string | null;
-    philMode?: boolean;
   }
 ) {
   const db = getDb();
@@ -43,7 +42,7 @@ export async function updateInvite(
 
 export { upsertHotelBooking as updateHotelBooking };
 
-export async function deleteInvite(inviteId: string) {
+export async function deleteRsvp(inviteId: string) {
   const db = getDb();
   await db
     .update(invites)

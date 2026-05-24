@@ -1,8 +1,19 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, type ReactNode } from "react";
-import { motion, useScroll, useTransform, type MotionValue } from "framer-motion";
+import { useEffect, useState, type ReactNode } from "react";
+import {
+  motion,
+  useMotionValueEvent,
+  useSpring,
+  useTransform,
+  type MotionValue,
+} from "framer-motion";
+import { ChevronDown } from "lucide-react";
+import {
+  ScrollStage,
+  type ScrollStageControls,
+} from "@/components/scroll-stage";
 
 type Item = {
   time: string;
@@ -201,86 +212,211 @@ const STACK_OFFSETS = [
   { x: 84, y: 96, rotate: -1.2 },
 ];
 
+const SCHEDULE_SCROLL_FRAMES = CARDS.length / 2 + 1;
+
+function getActiveCardIndex(progress: number) {
+  return Math.min(
+    CARDS.length - 1,
+    Math.max(0, Math.floor(progress * CARDS.length))
+  );
+}
+
+function getNextScheduleProgress(progress: number) {
+  const nextSegment = Math.floor(progress * CARDS.length + 0.015) + 1;
+  return Math.min(1, nextSegment / CARDS.length);
+}
+
+function smoothStep(progress: number) {
+  const clamped = Math.min(1, Math.max(0, progress));
+  return clamped * clamped * (3 - 2 * clamped);
+}
+
+function scrollHint(progress: number) {
+  return Math.sin(smoothStep(progress) * Math.PI);
+}
+
 function StackCard({
   index,
-  total,
+  activeIndex,
   progress,
   children,
 }: {
   index: number;
-  total: number;
+  activeIndex: number;
   progress: MotionValue<number>;
   children: ReactNode;
 }) {
   const offset = STACK_OFFSETS[index] ?? STACK_OFFSETS[STACK_OFFSETS.length - 1];
-  const transitions = Math.max(1, total - 1);
-
-  const isBase = index === 0;
-  const start = isBase ? 0 : (index - 1) / transitions;
-  const end = isBase ? 1 : index / transitions;
-
-  // Dealt cards enter from below, alternating side based on landing tilt:
-  // CCW-tilted cards toss in from the right, CW-tilted cards from the left.
   const tiltSign = Math.sign(offset.rotate) || 1;
-  const startX = isBase ? offset.x : -tiltSign * 160;
-  const startY = isBase ? offset.y : 1100;
-  const startRot = isBase ? offset.rotate : offset.rotate + tiltSign * 7;
-  const startOp = isBase ? 1 : 0.8;
+  const visible = index <= activeIndex;
+  const nudgeY = useTransform(progress, (latest) => {
+    const stepProgress = latest * CARDS.length;
+    const currentIndex = getActiveCardIndex(latest);
+    const localProgress = stepProgress - Math.floor(stepProgress);
 
-  const x = useTransform(progress, [start, end], [startX, offset.x]);
-  const y = useTransform(progress, [start, end], [startY, offset.y]);
-  const rotate = useTransform(progress, [start, end], [startRot, offset.rotate]);
-  const opacity = useTransform(progress, [start, end], [startOp, 1]);
+    if (index !== currentIndex || currentIndex >= CARDS.length - 1) return 0;
+    return -6 * scrollHint(localProgress);
+  });
+  const nudgeRotate = useTransform(progress, (latest) => {
+    const stepProgress = latest * CARDS.length;
+    const currentIndex = getActiveCardIndex(latest);
+    const localProgress = stepProgress - Math.floor(stepProgress);
+
+    if (index !== currentIndex || currentIndex >= CARDS.length - 1) return 0;
+    return -0.38 * tiltSign * scrollHint(localProgress);
+  });
+  const smoothNudgeY = useSpring(nudgeY, {
+    stiffness: 120,
+    damping: 26,
+    mass: 0.45,
+  });
+  const smoothNudgeRotate = useSpring(nudgeRotate, {
+    stiffness: 120,
+    damping: 26,
+    mass: 0.45,
+  });
 
   return (
     <motion.div
-      className="absolute inset-0"
-      style={{ x, y, rotate, opacity, zIndex: index }}
+      className="absolute inset-0 drop-shadow-[0_18px_28px_rgba(0,0,0,0.24)]"
+      initial={false}
+      animate={
+        visible
+          ? {
+              x: offset.x,
+              y: offset.y,
+              rotate: offset.rotate,
+              opacity: 1,
+              scale: 1,
+            }
+          : {
+              x: -tiltSign * 220,
+              y: 980,
+              rotate: offset.rotate + tiltSign * 8,
+              opacity: 0,
+              scale: 0.98,
+            }
+      }
+      transition={{
+        type: "spring",
+        stiffness: 118,
+        damping: 27,
+        mass: 0.9,
+      }}
+      style={{ zIndex: index, willChange: "transform, opacity" }}
     >
-      {children}
+      <motion.div
+        className="h-full w-full"
+        style={{
+          y: smoothNudgeY,
+          rotate: smoothNudgeRotate,
+          willChange: "transform",
+        }}
+      >
+        {children}
+      </motion.div>
     </motion.div>
   );
 }
 
-export default function ScheduleStack() {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end end"],
+function ScheduleDeck({ progress }: { progress: MotionValue<number> }) {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    setActiveIndex(getActiveCardIndex(progress.get()));
+  }, [progress]);
+
+  useMotionValueEvent(progress, "change", (latest) => {
+    const next = getActiveCardIndex(latest);
+    setActiveIndex((current) => (current === next ? current : next));
   });
 
   return (
-    <div data-route="schedule" className="relative -mt-10 w-full bg-[#3f3e19]">
-      {/* Mobile: simple vertical list */}
-      <div className="flex flex-col gap-8 px-4 py-12 md:hidden">
-        {CARDS.map((Card, i) => (
-          <Card key={i} />
-        ))}
-      </div>
-
-      {/* Desktop: scroll-tied stacking */}
-      <section
-        ref={ref}
-        data-snap-stack
-        className="relative hidden md:block"
-        style={{ height: `${CARDS.length * 100}vh` }}
-      >
-        <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden px-4 sm:px-8">
-          <div className="relative w-full max-w-[960px]">
-            <div aria-hidden className="aspect-[3/2] w-full" />
-            {CARDS.map((Card, i) => (
-              <StackCard
-                key={i}
-                index={i}
-                total={CARDS.length}
-                progress={scrollYProgress}
-              >
-                <Card />
-              </StackCard>
-            ))}
-          </div>
-        </div>
-      </section>
+    <div data-route="schedule" className="relative w-full max-w-[960px]">
+      <div aria-hidden className="aspect-[3/2] w-full" />
+      {CARDS.map((Card, i) => (
+        <StackCard
+          key={i}
+          index={i}
+          activeIndex={activeIndex}
+          progress={progress}
+        >
+          <Card />
+        </StackCard>
+      ))}
     </div>
+  );
+}
+
+function ScheduleScrollCue({
+  progress,
+  controls,
+}: {
+  progress: MotionValue<number>;
+  controls: ScrollStageControls;
+}) {
+  const [canAdvance, setCanAdvance] = useState(() => progress.get() < 0.985);
+
+  useMotionValueEvent(progress, "change", (latest) => {
+    const nextCanAdvance = latest < 0.985;
+    setCanAdvance((current) =>
+      current === nextCanAdvance ? current : nextCanAdvance
+    );
+  });
+
+  return (
+    <motion.button
+      type="button"
+      aria-label="Scroll to the next schedule card"
+      className={`absolute bottom-6 left-1/2 z-30 flex h-10 w-10 items-center justify-center rounded-full border border-[#f5e9c8]/35 bg-[#f5e9c8]/10 text-[#f5e9c8] shadow-[0_12px_28px_rgba(0,0,0,0.22)] backdrop-blur-md transition-colors hover:bg-[#f5e9c8]/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#f5e9c8] ${
+        canAdvance ? "pointer-events-auto" : "pointer-events-none"
+      }`}
+      style={{ x: "-50%" }}
+      initial={false}
+      animate={
+        canAdvance
+          ? { opacity: [0.45, 0.92, 0.45], y: [0, 6, 0] }
+          : { opacity: 0, y: 10 }
+      }
+      transition={
+        canAdvance
+          ? { duration: 1.65, ease: "easeInOut", repeat: Infinity }
+          : { duration: 0.2 }
+      }
+      whileHover={canAdvance ? { opacity: 1, y: 2 } : undefined}
+      whileTap={canAdvance ? { scale: 0.96 } : undefined}
+      onClick={() =>
+        controls.scrollToProgress(getNextScheduleProgress(progress.get()))
+      }
+    >
+      <ChevronDown aria-hidden className="h-5 w-5" strokeWidth={1.8} />
+    </motion.button>
+  );
+}
+
+export default function ScheduleStack() {
+  return (
+    <ScrollStage
+      frames={SCHEDULE_SCROLL_FRAMES}
+      className="relative -mt-10 w-full bg-[#3f3e19]"
+      mobile={
+        <div className="flex flex-col gap-8 px-4 py-12">
+          {CARDS.map((Card, i) => (
+            <Card key={i} />
+          ))}
+        </div>
+      }
+      viewportClassName="flex items-center justify-center px-4 sm:px-8"
+    >
+      {(scrollYProgress, controls) => (
+        <>
+          <ScheduleDeck progress={scrollYProgress} />
+          <ScheduleScrollCue
+            progress={scrollYProgress}
+            controls={controls}
+          />
+        </>
+      )}
+    </ScrollStage>
   );
 }
