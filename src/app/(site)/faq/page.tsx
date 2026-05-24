@@ -3,7 +3,7 @@ import { PageShell } from "@/components/page-shell";
 import { HiddenContactNumbers } from "./hidden-contact-numbers";
 
 export const metadata = {
-  title: "FAQ — Emily & Sam",
+  title: "Emily & Sam — FAQ",
 };
 
 const FAQS: { q: string; a: React.ReactNode }[] = [

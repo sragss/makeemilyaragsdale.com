@@ -1,7 +1,7 @@
 import { PageShell, Section } from "@/components/page-shell";
 
 export const metadata = {
-  title: "Dress Code — Emily & Sam",
+  title: "Emily & Sam — Dress Code",
 };
 
 export default function DressCode() {

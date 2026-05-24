@@ -67,11 +67,11 @@ const edict = localFont({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://makeemilyaragsdale.com"),
-  title: "Make Emily a Ragsdale",
+  title: "Emily & Sam",
   description:
     "Emily Devery & Sam Ragsdale. February 27, 2027. San Miguel de Allende, Mexico.",
   openGraph: {
-    title: "Emily & Sam, February 27, 2027",
+    title: "Emily & Sam — February 27, 2027",
     description: "San Miguel de Allende, Mexico",
   },
 };
