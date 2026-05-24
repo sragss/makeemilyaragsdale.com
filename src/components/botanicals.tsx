@@ -21,6 +21,8 @@ type DrawFn = (
 
 // Hand-drawn rose: layered spiral petals with a sketchy line
 const drawRose: DrawFn = (ctx, size, color) => {
+  const baseAlpha = ctx.globalAlpha;
+
   ctx.strokeStyle = color;
   ctx.lineWidth = 1.2;
   ctx.lineCap = "round";
@@ -57,7 +59,7 @@ const drawRose: DrawFn = (ctx, size, color) => {
 
   // Fill petals lightly
   ctx.fillStyle = color;
-  ctx.globalAlpha = 0.25;
+  ctx.globalAlpha = baseAlpha * 0.25;
   for (let i = 0; i < petals; i++) {
     const angle = (i * Math.PI * 2) / petals;
     const r = size * 0.45;
@@ -73,11 +75,13 @@ const drawRose: DrawFn = (ctx, size, color) => {
     );
     ctx.fill();
   }
-  ctx.globalAlpha = 1;
+  ctx.globalAlpha = baseAlpha;
 };
 
 // Simple cartoon leaf with vein line
 const drawLeaf: DrawFn = (ctx, size, color) => {
+  const baseAlpha = ctx.globalAlpha;
+
   ctx.strokeStyle = color;
   ctx.lineWidth = 1.2;
   ctx.lineCap = "round";
@@ -96,9 +100,9 @@ const drawLeaf: DrawFn = (ctx, size, color) => {
     0, -size * 0.5
   );
   ctx.fillStyle = color;
-  ctx.globalAlpha = 0.2;
+  ctx.globalAlpha = baseAlpha * 0.2;
   ctx.fill();
-  ctx.globalAlpha = 1;
+  ctx.globalAlpha = baseAlpha;
   ctx.stroke();
 
   // Vein
@@ -110,6 +114,8 @@ const drawLeaf: DrawFn = (ctx, size, color) => {
 
 // Small rosebud — simpler, for variety
 const drawBud: DrawFn = (ctx, size, color) => {
+  const baseAlpha = ctx.globalAlpha;
+
   ctx.strokeStyle = color;
   ctx.lineWidth = 1;
   ctx.lineCap = "round";
@@ -118,17 +124,17 @@ const drawBud: DrawFn = (ctx, size, color) => {
   ctx.beginPath();
   ctx.ellipse(-size * 0.08, 0, size * 0.2, size * 0.32, -0.2, 0, Math.PI * 2);
   ctx.fillStyle = color;
-  ctx.globalAlpha = 0.2;
+  ctx.globalAlpha = baseAlpha * 0.2;
   ctx.fill();
-  ctx.globalAlpha = 1;
+  ctx.globalAlpha = baseAlpha;
   ctx.stroke();
 
   ctx.beginPath();
   ctx.ellipse(size * 0.08, 0, size * 0.2, size * 0.32, 0.2, 0, Math.PI * 2);
   ctx.fillStyle = color;
-  ctx.globalAlpha = 0.15;
+  ctx.globalAlpha = baseAlpha * 0.15;
   ctx.fill();
-  ctx.globalAlpha = 1;
+  ctx.globalAlpha = baseAlpha;
   ctx.stroke();
 
   // Small stem
@@ -178,18 +184,31 @@ function createParticle(cx: number, cy: number): Particle {
 
 export function BotanicalConfetti({
   duration = 4500,
+  onComplete,
 }: {
   duration?: number;
+  onComplete?: () => void;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
   const frameRef = useRef<number>(0);
   const startRef = useRef<number>(0);
   const spawnedRef = useRef(false);
+  const completedRef = useRef(false);
+  const onCompleteRef = useRef(onComplete);
+
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+
+    particlesRef.current = [];
+    startRef.current = 0;
+    spawnedRef.current = false;
+    completedRef.current = false;
 
     const resize = () => {
       canvas.width = window.innerWidth;
@@ -204,6 +223,18 @@ export function BotanicalConfetti({
 
       if (!startRef.current) startRef.current = time;
       const elapsed = time - startRef.current;
+
+      if (elapsed >= duration) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particlesRef.current = [];
+
+        if (!completedRef.current) {
+          completedRef.current = true;
+          onCompleteRef.current?.();
+        }
+
+        return;
+      }
 
       // Burst spawn — all at once from center-bottom area (where the button was)
       if (!spawnedRef.current) {
