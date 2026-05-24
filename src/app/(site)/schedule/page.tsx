@@ -1,7 +1,7 @@
 import ScheduleStack from "./schedule-stack";
 
 export const metadata = {
-  title: "Schedule — Emily & Sam",
+  title: "Emily & Sam -- Schedule",
 };
 
 export default function Schedule() {
