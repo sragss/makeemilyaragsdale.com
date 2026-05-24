@@ -1,12 +1,12 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { CheckIcon, PlusIcon, XIcon } from "lucide-react";
-import { useWebHaptics } from "web-haptics/react";
 import { BotanicalConfetti } from "@/components/botanicals";
 import { SAndELogo } from "@/components/logos";
+import { useControlHaptics } from "@/lib/use-control-haptics";
 import { submitRsvp } from "./actions";
 import { AttendToggle } from "./attend-toggle";
 import { DietaryPicker } from "./dietary-picker";
@@ -77,7 +77,9 @@ export function RsvpFlow() {
 }
 
 function RsvpForm({ onComplete }: { onComplete: (attending: boolean) => void }) {
-  const { trigger } = useWebHaptics();
+  const triggerFormHaptic = useControlHaptics<HTMLFormElement>({
+    includeCheckboxLabels: true,
+  });
   const [guestData, setGuestData] = useState<GuestFormData[]>([
     createGuest(1),
   ]);
@@ -90,8 +92,10 @@ function RsvpForm({ onComplete }: { onComplete: (attending: boolean) => void }) 
   const [showHotelConfetti, setShowHotelConfetti] = useState(false);
 
   const namedGuests = guestData.filter((guest) => guest.name.trim());
-  const hasAttendingGuest = guestData.some((guest) => guest.coming);
   const acceptedGuests = namedGuests.filter((guest) => guest.coming);
+  const acceptedGuestEntries = guestData
+    .map((guest, index) => ({ guest, index }))
+    .filter(({ guest }) => guest.name.trim() && guest.coming);
   const missingContact = acceptedGuests.some(
     (guest) => !guest.email.trim() || !guest.phone.trim()
   );
@@ -111,27 +115,6 @@ function RsvpForm({ onComplete }: { onComplete: (attending: boolean) => void }) 
     !missingHotel &&
     !missingHotelAcknowledgement &&
     !submitting;
-
-  const triggerFormHaptic = useCallback(
-    (event: React.PointerEvent<HTMLFormElement>) => {
-      const target = event.target;
-      if (!(target instanceof HTMLElement)) return;
-
-      const control = target.closest("button, a[href], label");
-      if (!control || !event.currentTarget.contains(control)) return;
-
-      if (control instanceof HTMLButtonElement && control.disabled) return;
-      if (
-        control instanceof HTMLLabelElement &&
-        !control.querySelector('input[type="checkbox"]')
-      ) {
-        return;
-      }
-
-      void trigger("nudge", { intensity: 0.9 });
-    },
-    [trigger]
-  );
 
   function updateGuest(
     index: number,
@@ -190,7 +173,12 @@ function RsvpForm({ onComplete }: { onComplete: (attending: boolean) => void }) 
 
   return (
     <>
-      {showHotelConfetti && <BotanicalConfetti duration={3500} />}
+      {showHotelConfetti && (
+        <BotanicalConfetti
+          duration={3500}
+          onComplete={() => setShowHotelConfetti(false)}
+        />
+      )}
       <InvitationCard>
         <header className="mb-9 text-center">
           <p className="font-edict text-[10px] uppercase tracking-[0.45em] text-garden-cream/70">
@@ -213,93 +201,18 @@ function RsvpForm({ onComplete }: { onComplete: (attending: boolean) => void }) 
         >
           <EventSummary />
 
-          <section className="space-y-7">
-            <div className="space-y-2">
-              <SectionHeading eyebrow="Your party" title="Who's coming?" />
-              <p className="font-serif text-sm italic leading-snug text-garden-cream/68">
-                Please add each person named on your invitation so we have a
-                reply for everyone.
-              </p>
-            </div>
+          <section className="space-y-6">
+            <SectionHeading eyebrow="Your party" title="Who's coming?" />
 
             {guestData.map((guest, index) => (
-              <section
+              <GuestAttendance
                 key={guest.clientId}
-                className="space-y-5 border-t border-garden-cream/22 pt-7 first:border-t-0 first:pt-0"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <p className="font-edict text-[11px] uppercase tracking-[0.32em] text-garden-cream/60">
-                    Invited guest {index + 1}
-                  </p>
-                  {guestData.length > 1 && (
-                    <SmallCommandButton
-                      type="button"
-                      onClick={() => removeGuest(index)}
-                      aria-label={`Remove invited guest ${index + 1}`}
-                      className="px-2.5 tracking-[0.18em] sm:px-3 sm:tracking-[0.24em]"
-                    >
-                      <XIcon aria-hidden className="size-3.5" />
-                      Remove
-                    </SmallCommandButton>
-                  )}
-                </div>
-
-                <FieldGroup
-                  htmlFor={`name-${guest.clientId}`}
-                  label="Invited guest name"
-                  required
-                >
-                  <InvitationInput
-                    id={`name-${guest.clientId}`}
-                    placeholder="Full name"
-                    value={guest.name}
-                    onChange={(event) =>
-                      updateGuest(index, "name", event.target.value)
-                    }
-                  />
-                </FieldGroup>
-
-                <AttendToggle
-                  attending={guest.coming}
-                  onChange={(value) => updateGuest(index, "coming", value)}
-                />
-
-                <AnimatePresence initial={false}>
-                  {guest.coming && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3, ease: "easeInOut" }}
-                      className="overflow-hidden"
-                    >
-                      <div className="space-y-5 pt-1">
-                        <ContactFields
-                          guestIndex={index}
-                          email={guest.email}
-                          phone={guest.phone}
-                          required={guest.coming}
-                          onUpdate={updateGuest}
-                        />
-                        <MainCoursePicker
-                          value={guest.mainCoursePreference}
-                          onChange={(value) =>
-                            updateGuest(index, "mainCoursePreference", value)
-                          }
-                          id={`main-course-${guest.clientId}`}
-                        />
-                        <DietaryPicker
-                          value={guest.dietaryRestrictions}
-                          onChange={(value) =>
-                            updateGuest(index, "dietaryRestrictions", value)
-                          }
-                          id={`dietary-${guest.clientId}`}
-                        />
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </section>
+                guest={guest}
+                index={index}
+                canRemove={guestData.length > 1}
+                onRemove={() => removeGuest(index)}
+                onUpdate={updateGuest}
+              />
             ))}
 
             <button
@@ -308,11 +221,25 @@ function RsvpForm({ onComplete }: { onComplete: (attending: boolean) => void }) 
               className="flex min-h-14 w-full items-center justify-center gap-2 border border-dashed border-garden-cream/45 px-4 py-4 font-edict text-[12px] uppercase tracking-[0.24em] text-garden-cream transition-colors hover:border-garden-cream hover:bg-garden-cream/10"
             >
               <PlusIcon aria-hidden className="size-4" />
-              Add another invited guest
+              Add another guest
             </button>
           </section>
 
-          {hasAttendingGuest && (
+          {acceptedGuestEntries.length > 0 && (
+            <section className="space-y-6 border-t border-garden-cream/25 pt-8">
+              <SectionHeading eyebrow="Details" title="Meal & contact" />
+              {acceptedGuestEntries.map(({ guest, index }) => (
+                <GuestDetails
+                  key={guest.clientId}
+                  guest={guest}
+                  index={index}
+                  onUpdate={updateGuest}
+                />
+              ))}
+            </section>
+          )}
+
+          {acceptedGuests.length > 0 && (
             <section className="border-t border-garden-cream/25 pt-8">
               <EventCheckboxes
                 attendingFriday={attendingFriday}
@@ -324,7 +251,7 @@ function RsvpForm({ onComplete }: { onComplete: (attending: boolean) => void }) 
             </section>
           )}
 
-          {hasAttendingGuest && (
+          {acceptedGuests.length > 0 && (
             <HotelSection
               hotelWillBook={hotelWillBook}
               hotelAcknowledged={hotelAcknowledged}
@@ -412,6 +339,102 @@ function EventSummary() {
   );
 }
 
+function GuestAttendance({
+  guest,
+  index,
+  canRemove,
+  onRemove,
+  onUpdate,
+}: {
+  guest: GuestFormData;
+  index: number;
+  canRemove: boolean;
+  onRemove: () => void;
+  onUpdate: (
+    index: number,
+    field: keyof GuestFormData,
+    value: string | boolean
+  ) => void;
+}) {
+  const name = guest.name.trim();
+
+  return (
+    <section className="space-y-4 border-t border-garden-cream/22 pt-6 first:border-t-0 first:pt-0">
+      <div className="grid grid-cols-[1fr_auto] items-end gap-3">
+        <FieldGroup
+          htmlFor={`name-${guest.clientId}`}
+          label="Invited guest name"
+          required
+        >
+          <InvitationInput
+            id={`name-${guest.clientId}`}
+            placeholder="Full name"
+            value={guest.name}
+            onChange={(event) =>
+              onUpdate(index, "name", event.target.value)
+            }
+          />
+        </FieldGroup>
+        {canRemove && (
+          <button
+            type="button"
+            onClick={onRemove}
+            aria-label={`Remove ${name || "guest"}`}
+            className="mb-1 flex size-9 shrink-0 items-center justify-center border border-garden-cream/35 text-garden-cream/75 transition-colors hover:border-garden-cream hover:bg-garden-cream hover:text-garden-olive focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-garden-cream"
+          >
+            <XIcon aria-hidden className="size-4" />
+          </button>
+        )}
+      </div>
+
+      <AttendToggle
+        attending={guest.coming}
+        onChange={(value) => onUpdate(index, "coming", value)}
+      />
+    </section>
+  );
+}
+
+function GuestDetails({
+  guest,
+  index,
+  onUpdate,
+}: {
+  guest: GuestFormData;
+  index: number;
+  onUpdate: (
+    index: number,
+    field: keyof GuestFormData,
+    value: string | boolean
+  ) => void;
+}) {
+  return (
+    <section className="space-y-5 border-l border-garden-cream/25 pl-4 sm:pl-5">
+      <p className="font-edict text-[10px] uppercase tracking-[0.32em] text-garden-cream/58">
+        For {guest.name.trim()}
+      </p>
+      <MainCoursePicker
+        value={guest.mainCoursePreference}
+        onChange={(value) => onUpdate(index, "mainCoursePreference", value)}
+        id={`main-course-${guest.clientId}`}
+      />
+      <DietaryPicker
+        value={guest.dietaryRestrictions}
+        onChange={(value) => onUpdate(index, "dietaryRestrictions", value)}
+        id={`dietary-${guest.clientId}`}
+      />
+      <ContactFields
+        guestId={guest.clientId}
+        email={guest.email}
+        phone={guest.phone}
+        required={guest.coming}
+        onEmailChange={(value) => onUpdate(index, "email", value)}
+        onPhoneChange={(value) => onUpdate(index, "phone", value)}
+      />
+    </section>
+  );
+}
+
 function EventCheckboxes({
   attendingFriday,
   attendingSaturday,
@@ -427,12 +450,7 @@ function EventCheckboxes({
 }) {
   return (
     <div className="space-y-3">
-      <div className="space-y-1.5">
-        <FieldLabel>Event selection</FieldLabel>
-        <p className="font-serif text-sm italic leading-snug text-garden-cream/68">
-          Choose one or both events for everyone marked as attending.
-        </p>
-      </div>
+      <FieldLabel>Events</FieldLabel>
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         <ChecklistChoice
           selected={attendingFriday}
@@ -457,54 +475,48 @@ function EventCheckboxes({
 }
 
 function ContactFields({
-  guestIndex,
+  guestId,
   email,
   phone,
   required,
-  onUpdate,
+  onEmailChange,
+  onPhoneChange,
 }: {
-  guestIndex: number;
+  guestId: string;
   email: string;
   phone: string;
   required: boolean;
-  onUpdate: (
-    index: number,
-    field: keyof GuestFormData,
-    value: string | boolean
-  ) => void;
+  onEmailChange: (value: string) => void;
+  onPhoneChange: (value: string) => void;
 }) {
   return (
     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
       <FieldGroup
-        htmlFor={`email-${guestIndex}`}
+        htmlFor={`email-${guestId}`}
         label="Email"
         required={required}
         optional={!required}
       >
         <InvitationInput
-          id={`email-${guestIndex}`}
+          id={`email-${guestId}`}
           type="email"
           placeholder="jane@example.com"
           value={email}
-          onChange={(event) =>
-            onUpdate(guestIndex, "email", event.target.value)
-          }
+          onChange={(event) => onEmailChange(event.target.value)}
         />
       </FieldGroup>
       <FieldGroup
-        htmlFor={`phone-${guestIndex}`}
+        htmlFor={`phone-${guestId}`}
         label="Phone"
         required={required}
         optional={!required}
       >
         <InvitationInput
-          id={`phone-${guestIndex}`}
+          id={`phone-${guestId}`}
           type="tel"
           placeholder="+1 555 123 4567"
           value={phone}
-          onChange={(event) =>
-            onUpdate(guestIndex, "phone", event.target.value)
-          }
+          onChange={(event) => onPhoneChange(event.target.value)}
         />
       </FieldGroup>
     </div>
@@ -526,9 +538,7 @@ function HotelSection({
     <section className="space-y-5 border-t border-garden-cream/25 pt-8">
       <SectionHeading eyebrow="Stay" title="Belmond Casa de Sierra Nevada" />
       <p className="font-serif text-base leading-relaxed text-garden-cream/82">
-        Everyone is welcome to book a room at the Belmond with the wedding
-        party. The block is for 3 nights: Thursday Feb 25, Friday Feb 26, and
-        Saturday Feb 27. No pressure; we know it is pricey.
+        Planning to stay at the Belmond? We can send room-block details.
       </p>
 
       <div className="grid grid-cols-2 overflow-hidden border border-garden-cream/35">
@@ -562,12 +572,7 @@ function HotelSection({
       </a>
 
       <div className="space-y-3">
-        <div className="space-y-1.5">
-          <FieldLabel required>Room block</FieldLabel>
-          <p className="font-serif text-sm italic leading-snug text-garden-cream/68">
-            Tell us if we should follow up with Belmond booking details.
-          </p>
-        </div>
+        <FieldLabel required>Room block</FieldLabel>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           <ChoiceButton
             selected={hotelWillBook === true}
@@ -622,8 +627,7 @@ function HotelSection({
                   <span className="ml-1 text-garden-cream/70">*</span>
                 </span>
                 <span className="block font-serif text-sm leading-relaxed text-garden-cream/82">
-                  I understand the room block is limited, and Sam & Emily may
-                  follow up with booking details.
+                  I understand the room block is limited.
                 </span>
               </span>
             </label>
@@ -799,21 +803,6 @@ function ChecklistChoice({
           {detail}
         </span>
       </span>
-    </button>
-  );
-}
-
-function SmallCommandButton({
-  className = "",
-  children,
-  ...props
-}: React.ComponentProps<"button">) {
-  return (
-    <button
-      {...props}
-      className={`inline-flex h-8 shrink-0 items-center gap-1.5 border border-garden-cream/40 px-3 font-edict text-[10px] uppercase tracking-[0.24em] text-garden-cream transition-colors hover:border-garden-cream hover:bg-garden-cream hover:text-garden-olive ${className}`}
-    >
-      {children}
     </button>
   );
 }
