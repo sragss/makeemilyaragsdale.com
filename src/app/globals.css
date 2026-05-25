@@ -201,6 +201,12 @@ body:has([data-route="schedule"]) footer a:hover {
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
+  opacity: 1;
+  transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.faq-cave-wall[data-asked="true"]::before {
+  opacity: 0;
 }
 
 @media (max-width: 640px) {
