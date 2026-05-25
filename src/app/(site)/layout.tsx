@@ -1,6 +1,5 @@
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
-import { SiteHaptics } from "@/components/site-haptics";
 import { SmoothScrollProvider } from "@/components/smooth-scroll-provider";
 
 export default function SiteLayout({
@@ -10,11 +9,9 @@ export default function SiteLayout({
 }) {
   return (
     <SmoothScrollProvider>
-      <SiteHaptics>
-        <SiteNav />
-        <main className="flex-1">{children}</main>
-        <SiteFooter />
-      </SiteHaptics>
+      <SiteNav />
+      <main className="flex-1">{children}</main>
+      <SiteFooter />
     </SmoothScrollProvider>
   );
 }

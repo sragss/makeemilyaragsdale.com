@@ -4,7 +4,6 @@ import { useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { CheckIcon, PlusIcon, XIcon } from "lucide-react";
-import { useWebHaptics } from "web-haptics/react";
 import { BotanicalConfetti } from "@/components/botanicals";
 import { SAndELogo } from "@/components/logos";
 import { submitRsvp } from "./actions";
@@ -110,7 +109,6 @@ export function RsvpFlow() {
 }
 
 function RsvpForm({ onComplete }: { onComplete: (attending: boolean) => void }) {
-  const haptics = useWebHaptics();
   const [currentStep, setCurrentStep] = useState<RsvpStep>("details");
   const [stepDirection, setStepDirection] = useState(1);
   const [guestData, setGuestData] = useState<GuestFormData[]>([
@@ -248,10 +246,8 @@ function RsvpForm({ onComplete }: { onComplete: (attending: boolean) => void }) 
         hotelAcknowledged:
           acceptedGuests.length > 0 ? hotelAcknowledged : undefined,
       });
-      void haptics.trigger("success");
       onComplete(acceptedGuests.length > 0);
     } catch {
-      void haptics.trigger("error");
       setSubmitError("Something went wrong. Please try again.");
     } finally {
       setSubmitting(false);
