@@ -5,12 +5,12 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 const SLIDES = [
-  "/images/Belmond 1.png",
-  "/images/Belmond 2.png",
-  "/images/Belmond 3.png",
+  "/images/Belmond 1 upscale.jpg",
+  "/images/Belmond 2 upscale.jpg",
+  "/images/Belmond 3 Upscale.jpg",
   "/images/Belmond 4.png",
-  "/images/Belmond 5.png",
-  "/images/Belmond 6.png",
+  "/images/Belmond 5 Upscale.jpg",
+  "/images/belmond-6-upscale.png",
 ];
 
 const AUTO_MS = 8000;
