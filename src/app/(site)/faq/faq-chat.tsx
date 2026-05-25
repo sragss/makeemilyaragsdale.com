@@ -202,19 +202,19 @@ export function FAQChat() {
           )}
 
           <PromptInput
-            className="overflow-hidden rounded-md bg-[#fbf4df] shadow-[0_22px_70px_rgba(28,17,9,0.22),0_2px_12px_rgba(28,17,9,0.08)] [&_[data-slot=input-group]]:border-0 [&_[data-slot=input-group]]:bg-transparent [&_[data-slot=input-group]]:shadow-none"
+            className="overflow-hidden rounded-[2rem] border border-garden-moss/18 bg-[#fbf4df]/95 shadow-[0_24px_70px_rgba(28,17,9,0.16),0_2px_12px_rgba(28,17,9,0.06)] [&_[data-slot=input-group]]:min-h-[8.75rem] [&_[data-slot=input-group]]:flex-col [&_[data-slot=input-group]]:items-stretch [&_[data-slot=input-group]]:border-0 [&_[data-slot=input-group]]:bg-transparent [&_[data-slot=input-group]]:shadow-none"
             onSubmit={({ text }) => ask(text)}
           >
             <PromptInputBody>
               <PromptInputTextarea
-                className="min-h-20 px-3 font-serif text-[18px] leading-relaxed text-garden-ink placeholder:text-garden-moss/45 md:text-[18px]"
+                className="min-h-20 px-6 pt-6 font-serif text-[18px] leading-relaxed text-garden-ink placeholder:text-garden-moss/55 md:text-[18px]"
                 disabled={status !== "ready"}
                 placeholder="Ask Poncho a question..."
               />
             </PromptInputBody>
-            <PromptInputFooter className="justify-end px-2.5 pb-2 pt-1">
+            <PromptInputFooter className="justify-end px-3 pb-3 pt-1 sm:px-4 sm:pb-4">
               <PromptInputSubmit
-                className="size-10 -rotate-3 rounded-full bg-garden-terracotta text-garden-cream shadow-[0_10px_22px_rgba(28,17,9,0.22)] transition-all duration-200 hover:-translate-y-0.5 hover:rotate-0 hover:bg-garden-moss hover:shadow-[0_14px_28px_rgba(28,17,9,0.24)] active:translate-y-0 active:scale-95 disabled:opacity-45 [&_svg]:transition-transform hover:[&_svg]:-translate-y-0.5 hover:[&_svg]:translate-x-0.5"
+                className="size-12 rounded-full bg-garden-terracotta text-garden-cream shadow-[0_10px_22px_rgba(28,17,9,0.18)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-garden-moss hover:shadow-[0_14px_28px_rgba(28,17,9,0.2)] active:translate-y-0 active:scale-95 disabled:opacity-45 [&_svg]:transition-transform hover:[&_svg]:-translate-y-0.5"
                 disabled={status === "error"}
                 onStop={stop}
                 status={status}

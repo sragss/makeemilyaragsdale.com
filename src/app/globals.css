@@ -214,16 +214,16 @@ body:has([data-route="faq-chat"]) footer {
 
 .faq-cave-wall::before {
   background: #80673a;
-  filter: blur(0.2px) drop-shadow(2px 2.5px 0 rgba(65, 45, 20, 0.04));
+  filter: blur(0.2px) drop-shadow(2px 2.5px 0 rgba(65, 45, 20, 0.02));
   mix-blend-mode: multiply;
-  opacity: 0.1;
+  opacity: 0.05;
 }
 
 .faq-cave-wall::after {
   background: #fff7df;
   filter: blur(0.45px);
   mix-blend-mode: soft-light;
-  opacity: 0.06;
+  opacity: 0.03;
   transform: translate(calc(-50% - 1.5px), calc(-50% - 1.5px)) rotate(-5deg);
 }
 
