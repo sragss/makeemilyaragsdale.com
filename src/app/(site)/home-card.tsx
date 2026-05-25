@@ -10,12 +10,12 @@ export function HomeCard() {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  const springConfig = { stiffness: 140, damping: 18, mass: 0.6 };
+  const springConfig = { stiffness: 180, damping: 10, mass: 0.55 };
   const sx = useSpring(mouseX, springConfig);
   const sy = useSpring(mouseY, springConfig);
 
-  const rotateX = useTransform(sy, [-0.5, 0.5], [6, -6]);
-  const rotateY = useTransform(sx, [-0.5, 0.5], [-6, 6]);
+  const rotateX = useTransform(sy, [-0.5, 0.5], [10, -10]);
+  const rotateY = useTransform(sx, [-0.5, 0.5], [-10, 10]);
 
   function handleMove(e: React.MouseEvent<HTMLDivElement>) {
     const el = ref.current;

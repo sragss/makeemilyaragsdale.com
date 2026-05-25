@@ -1,8 +1,22 @@
 "use client";
 
 import Image from "next/image";
+import { Globe, Mail, Phone } from "lucide-react";
 import { ScrollStackPanels } from "@/components/scroll-stage";
 import { BelmondCarousel } from "./belmond-carousel";
+
+function WhatsAppIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+    </svg>
+  );
+}
 
 const HOTELS = [
   {
@@ -33,9 +47,95 @@ const HOTELS = [
 
 const AIRPORTS = [
   { code: "QRO", name: "Querétaro", distance: "~1 hour by car." },
-  { code: "MEX", name: "Mexico City", distance: "~3 hours by car." },
   { code: "BJX", name: "Bajío", distance: "~1.5 hours by car." },
+  { code: "MEX", name: "Mexico City", distance: "~3 hours by car." },
 ];
+
+type ContactType = "whatsapp" | "phone" | "website" | "email";
+
+type TransportContact = {
+  type: ContactType;
+  label: string;
+  href: string;
+};
+
+type TransportService = {
+  name: string;
+  contacts: TransportContact[];
+};
+
+const TRANSPORT_SERVICES: TransportService[] = [
+  {
+    name: "SMA Shuttles",
+    contacts: [
+      {
+        type: "whatsapp",
+        label: "+52 418 144 2546",
+        href: "https://wa.me/524181442546",
+      },
+      {
+        type: "website",
+        label: "smashuttles.com",
+        href: "https://www.smashuttles.com/",
+      },
+    ],
+  },
+  {
+    name: "Juan Cruz",
+    contacts: [
+      {
+        type: "whatsapp",
+        label: "+52 415 177 6738",
+        href: "https://wa.me/524151776738",
+      },
+    ],
+  },
+  {
+    name: "Enlaces Turísticos",
+    contacts: [
+      {
+        type: "website",
+        label: "enlacesturisticosintegrados.com",
+        href: "https://enlacesturisticosintegrados.com/",
+      },
+    ],
+  },
+  {
+    name: "Bajio Go",
+    contacts: [
+      {
+        type: "whatsapp",
+        label: "+52 415 185 8665",
+        href: "https://wa.me/524151858665",
+      },
+      {
+        type: "phone",
+        label: "USA +1 202 609 9905",
+        href: "tel:+12026099905",
+      },
+      {
+        type: "email",
+        label: "bajiogoshuttle@gmail.com",
+        href: "mailto:bajiogoshuttle@gmail.com",
+      },
+    ],
+  },
+];
+
+function ContactIcon({
+  type,
+  className,
+}: {
+  type: ContactType;
+  className?: string;
+}) {
+  if (type === "whatsapp") return <WhatsAppIcon className={className} />;
+  if (type === "website")
+    return <Globe className={className} aria-hidden="true" strokeWidth={1.6} />;
+  if (type === "email")
+    return <Mail className={className} aria-hidden="true" strokeWidth={1.6} />;
+  return <Phone className={className} aria-hidden="true" strokeWidth={1.6} />;
+}
 
 export function TravelScroll() {
   return (
@@ -94,21 +194,19 @@ function BelmondIntroPanel() {
 
 function HotelsPanel() {
   return (
-    <section className="flex h-full flex-col overflow-hidden bg-[#f5e9c8] text-[#493932]">
-      <div className="flex flex-1 items-center justify-center px-3">
-        <div className="mx-auto max-w-2xl space-y-4 text-center">
-          <h2 className="font-edict text-3xl font-light italic sm:text-4xl">
-            Other hotels we recommend
-          </h2>
-          <p className="font-inter text-[15px] leading-relaxed text-[#493932]/80 sm:text-base">
-            For guests who are not able to stay at the Belmond, here are a few
-            hotels we&apos;d recommend nearby. All are walkable to the center of
-            town.
-          </p>
-        </div>
+    <section className="flex h-full flex-col items-center justify-start overflow-hidden bg-[#f5e9c8] px-3 pt-[12vh] text-[#493932]">
+      <div className="mx-auto max-w-2xl space-y-4 text-center">
+        <h2 className="font-edict text-3xl font-light italic sm:text-4xl">
+          Other hotels we recommend
+        </h2>
+        <p className="font-inter text-[15px] leading-relaxed text-[#493932]/80 sm:text-base">
+          For guests who are not able to stay at the Belmond, here are a few
+          hotels we&apos;d recommend nearby. All are walkable to the center of
+          town.
+        </p>
       </div>
 
-      <ul className="grid w-full grid-cols-2 gap-y-6 pb-12 sm:grid-cols-4">
+      <ul className="mt-24 grid w-full grid-cols-2 gap-y-6 sm:mt-32 sm:grid-cols-4">
         {HOTELS.map((hotel) => (
           <li key={hotel.name} className="space-y-4">
             <a
@@ -150,36 +248,62 @@ function TransportationPanel() {
         </header>
 
         <div className="grid grid-cols-1 gap-x-16 gap-y-12 sm:grid-cols-2 lg:gap-x-24">
-          <div>
-            <header className="mb-5 border-b border-[#f5e9c8]/35 pb-3">
-              <h3 className="font-edict text-xl italic font-normal sm:text-2xl">
-                Airports
-              </h3>
-            </header>
-            <ul>
-              {AIRPORTS.map((airport, index) => (
-                <li
-                  key={airport.code}
-                  className={`flex items-baseline justify-between gap-4 py-3 ${
-                    index < AIRPORTS.length - 1
-                      ? "border-b border-[#f5e9c8]/15"
-                      : ""
-                  }`}
-                >
-                  <div>
-                    <p className="font-edict text-[15px] uppercase tracking-[0.18em] sm:text-base">
-                      {airport.name}
+          <div className="space-y-10">
+            <div>
+              <header className="mb-5 border-b border-[#f5e9c8]/35 pb-3">
+                <h3 className="font-edict text-xl italic font-normal sm:text-2xl">
+                  Airports
+                </h3>
+              </header>
+              <ul>
+                {AIRPORTS.map((airport, index) => (
+                  <li
+                    key={airport.code}
+                    className={`flex items-baseline justify-between gap-4 py-3 ${
+                      index < AIRPORTS.length - 1
+                        ? "border-b border-[#f5e9c8]/15"
+                        : ""
+                    }`}
+                  >
+                    <div>
+                      <p className="font-edict text-[15px] uppercase tracking-[0.18em] text-[#d2cf53] sm:text-base">
+                        {airport.name}
+                      </p>
+                      <p className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.3em] text-[#f5e9c8]/60">
+                        {airport.code}
+                      </p>
+                    </div>
+                    <p className="font-inter text-[12px] italic text-[#f5e9c8]/85 sm:text-[13px]">
+                      {airport.distance}
                     </p>
-                    <p className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.3em] text-[#f5e9c8]/60">
-                      {airport.code}
-                    </p>
-                  </div>
-                  <p className="font-inter text-[12px] italic text-[#f5e9c8]/85 sm:text-[13px]">
-                    {airport.distance}
-                  </p>
-                </li>
-              ))}
-            </ul>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <header className="mb-5 border-b border-[#f5e9c8]/35 pb-3">
+                <h3 className="font-edict text-xl italic font-normal sm:text-2xl">
+                  Ubers
+                </h3>
+              </header>
+              <p className="font-inter text-[13px] leading-relaxed text-[#f5e9c8]/85 sm:text-sm">
+                San Miguel itself is walkable, and Uber is around $5 a ride.
+              </p>
+            </div>
+
+            <div>
+              <header className="mb-5 border-b border-[#f5e9c8]/35 pb-3">
+                <h3 className="font-edict text-xl italic font-normal sm:text-2xl">
+                  Shuttles
+                </h3>
+              </header>
+              <p className="font-inter text-[13px] leading-relaxed text-[#f5e9c8]/85 sm:text-sm">
+                A shuttle will run between a central pickup spot in town and
+                Luna Escondida on Saturday evening, with returns from 11 pm to 2
+                am. More details to come.
+              </p>
+            </div>
           </div>
 
           <div>
@@ -190,38 +314,61 @@ function TransportationPanel() {
             </header>
 
             <p className="font-inter text-[13px] leading-relaxed text-[#f5e9c8]/85 sm:text-sm">
-              We recommend pre-booking a car for arrival. Two services we trust:
+              Pre-book a car for arrival.
+              <br />
+              Four services recommended by our planner:
             </p>
 
             <ul className="mt-4">
-              <li className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-[#f5e9c8]/15 py-3">
-                <p className="font-edict text-[15px] uppercase tracking-[0.18em]">
-                  TransportArte Mexico
-                </p>
-                <p className="font-mono text-[11px] tracking-wider text-[#f5e9c8]/85">
-                  +52 415 105 5196
-                </p>
-              </li>
-              <li className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-3">
-                <p className="font-edict text-[15px] uppercase tracking-[0.18em]">
-                  Transportes Turísticos Allende
-                </p>
-                <a
-                  className="font-mono text-[11px] tracking-wider text-[#f5e9c8]/85 underline underline-offset-4 hover:text-[#f5e9c8]"
-                  href="https://transportesturisticosallende.com/contacto.html"
-                  target="_blank"
-                  rel="noopener noreferrer"
+              {TRANSPORT_SERVICES.map((service, i) => (
+                <li
+                  key={service.name}
+                  className={`py-3 ${
+                    i < TRANSPORT_SERVICES.length - 1
+                      ? "border-b border-[#f5e9c8]/15"
+                      : ""
+                  }`}
                 >
-                  visit website
-                </a>
-              </li>
+                  <p className="font-edict text-[15px] uppercase tracking-[0.18em] text-[#d2cf53]">
+                    {service.name}
+                  </p>
+                  <ul className="mt-1.5 grid grid-cols-2 gap-x-4 gap-y-1">
+                    {service.contacts.map((contact) => {
+                      const external =
+                        contact.type === "website" ||
+                        contact.type === "whatsapp";
+                      const isLink = contact.type !== "phone";
+                      return (
+                        <li key={contact.label}>
+                          {isLink ? (
+                            <a
+                              href={contact.href}
+                              target={external ? "_blank" : undefined}
+                              rel={external ? "noopener noreferrer" : undefined}
+                              className="group flex items-center gap-2 font-inter text-[12px] tracking-wide text-[#f5e9c8]/80 transition-colors duration-150 hover:text-[#d2cf53]"
+                            >
+                              <ContactIcon
+                                type={contact.type}
+                                className="h-3.5 w-3.5 shrink-0 transition-colors duration-150"
+                              />
+                              <span>{contact.label}</span>
+                            </a>
+                          ) : (
+                            <div className="flex items-center gap-2 font-inter text-[12px] tracking-wide text-[#f5e9c8]/80">
+                              <ContactIcon
+                                type={contact.type}
+                                className="h-3.5 w-3.5 shrink-0 text-[#f5e9c8]/70"
+                              />
+                              <span>{contact.label}</span>
+                            </div>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </li>
+              ))}
             </ul>
-
-            <p className="mt-5 font-edict text-[15px] italic leading-relaxed text-[#f5e9c8]/90 sm:text-base">
-              A shuttle will run between central pickup in town and Luna
-              Escondida on Saturday evening, with returns from 11 pm to 2 am.
-              San Miguel itself is walkable, and Uber is around $5 a ride.
-            </p>
           </div>
         </div>
       </div>

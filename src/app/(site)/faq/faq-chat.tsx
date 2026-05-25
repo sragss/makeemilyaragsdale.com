@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useMemo, useRef } from "react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
@@ -126,12 +127,12 @@ export function FAQChat() {
 
   return (
     <section
-      className="faq-cave-wall relative min-h-[calc(100svh-2.5rem)]"
+      className="faq-cave-wall relative min-h-[calc(100svh-8rem)]"
       data-route="faq-chat"
     >
       <div
         aria-live="polite"
-        className="relative z-10 mx-auto flex min-h-[calc(100svh-2.5rem)] w-full max-w-3xl flex-col gap-6 px-4 pb-44 pt-6 sm:px-6 sm:pb-48 sm:pt-8"
+        className="relative z-10 mx-auto flex min-h-[calc(100svh-8rem)] w-full max-w-3xl flex-col gap-6 px-4 pb-[30rem] pt-6 sm:px-6 sm:pb-[32rem] sm:pt-8"
         role="log"
       >
         {messages.map((message) => (
@@ -183,7 +184,7 @@ export function FAQChat() {
         <div ref={bottomRef} />
       </div>
 
-      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-20 px-3 pb-3 sm:px-6 sm:pb-6">
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-20 px-3 pb-[22rem] sm:px-6 sm:pb-[24rem]">
         <div className="pointer-events-auto mx-auto w-full max-w-3xl">
           {error && (
             <div className="mb-3 flex items-center justify-between gap-3 rounded-sm bg-garden-terracotta/10 px-3 py-2 font-serif text-[13px] text-garden-ink">
@@ -202,25 +203,43 @@ export function FAQChat() {
           )}
 
           <PromptInput
-            className="overflow-hidden rounded-[2rem] border border-garden-moss/18 bg-[#fbf4df]/95 shadow-[0_24px_70px_rgba(28,17,9,0.16),0_2px_12px_rgba(28,17,9,0.06)] [&_[data-slot=input-group]]:min-h-[8.75rem] [&_[data-slot=input-group]]:flex-col [&_[data-slot=input-group]]:items-stretch [&_[data-slot=input-group]]:border-0 [&_[data-slot=input-group]]:bg-transparent [&_[data-slot=input-group]]:shadow-none"
+            className="overflow-hidden rounded-2xl border border-garden-moss/18 bg-[#3f3e19]/30 shadow-[0_24px_70px_rgba(28,17,9,0.16),0_2px_12px_rgba(28,17,9,0.06)] [&_[data-slot=input-group]]:min-h-[8.75rem] [&_[data-slot=input-group]]:flex-col [&_[data-slot=input-group]]:items-stretch [&_[data-slot=input-group]]:border-0 [&_[data-slot=input-group]]:bg-transparent [&_[data-slot=input-group]]:shadow-none"
             onSubmit={({ text }) => ask(text)}
           >
             <PromptInputBody>
               <PromptInputTextarea
-                className="min-h-20 px-6 pt-6 font-serif text-[18px] leading-relaxed text-garden-ink placeholder:text-garden-moss/55 md:text-[18px]"
+                className="min-h-20 px-6 pt-6 font-serif text-[22px] leading-relaxed text-garden-cream placeholder:text-garden-cream/70 md:text-[22px]"
                 disabled={status !== "ready"}
-                placeholder="Ask Poncho a question..."
+                placeholder="Have a question? Ask Poncho!"
               />
             </PromptInputBody>
             <PromptInputFooter className="justify-end px-3 pb-3 pt-1 sm:px-4 sm:pb-4">
               <PromptInputSubmit
-                className="size-12 rounded-full bg-garden-terracotta text-garden-cream shadow-[0_10px_22px_rgba(28,17,9,0.18)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-garden-moss hover:shadow-[0_14px_28px_rgba(28,17,9,0.2)] active:translate-y-0 active:scale-95 disabled:opacity-45 [&_svg]:transition-transform hover:[&_svg]:-translate-y-0.5"
+                className="size-12 rounded-2xl bg-[#ada736] text-garden-cream shadow-[0_10px_22px_rgba(28,17,9,0.18)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#e2d649] hover:shadow-[0_14px_28px_rgba(28,17,9,0.2)] active:translate-y-0 active:scale-95 active:bg-[#e2d649] disabled:opacity-45 [&_svg]:transition-transform hover:[&_svg]:-translate-y-0.5"
                 disabled={status === "error"}
                 onStop={stop}
                 status={status}
               />
             </PromptInputFooter>
           </PromptInput>
+
+          <div className="mt-5 flex items-center justify-between gap-3 px-2">
+            <Image
+              src="/images/poweredbymerit.svg"
+              alt="Powered by Merit"
+              width={114}
+              height={14}
+              className="h-3.5 w-auto opacity-80"
+            />
+            <a
+              href="https://tryponcho.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-inter text-sm leading-none text-garden-cream/75 transition-colors hover:text-[#e2d649]"
+            >
+              tryponcho.com
+            </a>
+          </div>
         </div>
       </div>
     </section>

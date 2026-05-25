@@ -68,9 +68,40 @@ Three airports serve San Miguel:
 - MEX (Mexico City) - about 3 hours by car
 - BJX (Bajio) - about 1.5 hours by car
 
-Pre-book ground transportation. Two trusted services are TransportArte Mexico (+52 415 105 5196) and Transportes Turisticos Allende (transportesturisticosallende.com). A shuttle will run between a central pickup in town and Luna Escondida on Saturday evening, with returns from 11 PM to 2 AM. Within San Miguel, the town is walkable and Uber is around $5 a ride.
+Pre-book ground transportation. Four services recommended by the wedding planner are listed below with pricing in Mexican pesos (MXN). A shuttle will run between a central pickup in town and Luna Escondida on Saturday evening, with returns from 11 PM to 2 AM. Within San Miguel, the town is walkable and Uber is around $5 a ride.
 - For airport, hotel, driver, or shuttle questions, link to [Travel & Stay](/travel).
 - If asked which airport is "best," explain the tradeoff: QRO is the shortest listed drive, BJX is also close, and MEX is farther but often useful for flight options. Recommend checking flights and then booking a car in advance.
+
+### Recommended Transportation Services
+
+All prices are in Mexican pesos (MXN). Vehicle capacities are listed in parentheses.
+
+**SMA Shuttles**
+- Phone: +52 418 144 2546
+- Website: https://www.smashuttles.com/
+- From Mexico City (MEX, ~4.5 hours): Sedan (1-3) $5,500; Minivan (5) $6,000; Suburban (6) $7,000; Hiace (10) $8,200
+- From Bajío (BJX): Sedan (1-3) $1,900; Minivan (5) $2,800; Suburban (6) $3,500; Hiace (10) $4,100
+- From Querétaro (QRO): Sedan (1-3) $1,900; Minivan (5) $2,800; Suburban (6) $3,500; Hiace (10) $4,100
+
+**Juan Cruz Airport Transfers**
+- Phone: +52 415 177 6738
+- From Querétaro (QRO): Sedan (1-3) $2,000; SUV (5) $3,000; Suburban (6) $3,900; Hiace (8) $4,000; Sprinter (13) $7,200
+- From Bajío (BJX): Sedan (1-3) $2,000; SUV (5) $3,000; Suburban (6) $3,900; Hiace (8) $4,000; Sprinter (13) $7,200
+- From Mexico City (MEX): Sedan (1-3) $5,800; SUV (6) $7,500; Urban (8) $9,000; Sprinter (13) $15,800
+
+**Enlaces Turísticos**
+- Website: https://enlacesturisticosintegrados.com/
+- From Querétaro (QRO): Car (4) $2,100; Van (6) $2,600; Hiace (11) $3,600; Sprinter (18) $7,300
+- From Bajío (BJX): Car (4) $2,100; Van (6) $2,600; Hiace (11) $3,600; Sprinter (18) $7,300
+- From Mexico City (MEX): Car (4) $6,300; Van (6) $7,300; Hiace (11) $9,500; Sprinter (18) $14,700
+
+**Bajio Go**
+- Phone (Mexico): +52 415 185 8665
+- Phone (USA): +1 202 609 9905
+- Email: bajiogoshuttle@gmail.com
+- Service types: Private (1-9 people) or Shared with other passengers.
+
+To reserve any service, guests should provide: contact name and phone, arriving airport, day/time and number of people, flight number and airline, arrival time, and the pickup or drop-off address in San Miguel. Mention large luggage upfront because an extra trailer may be required. Drivers note that if a pickup time is delayed more than 30 minutes the company may release the vehicle or charge an extra fee, so share accurate flight info.
 
 ## Key Logistics
 

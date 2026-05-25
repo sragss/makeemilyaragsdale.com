@@ -219,6 +219,9 @@ function RestaurantsPanel() {
           <h2 className="font-edict text-3xl uppercase tracking-[0.18em] text-[#888834] sm:text-4xl">
             Restaurants
           </h2>
+          <p className="mt-3 font-edict text-base italic text-[#888834] sm:text-lg">
+            More to come in the WhatsApp group closer to the date.
+          </p>
         </header>
 
         <ul className="grid grid-cols-1 gap-x-12 sm:grid-cols-2">
@@ -232,7 +235,7 @@ function RestaurantsPanel() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`${item.name} on Google Maps`}
-                className="group inline-block font-serif text-xl font-light leading-tight text-[#d2cf53] transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#d2cf53]"
+                className="group inline-block font-serif text-xl font-light leading-tight text-[#888834] transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#888834]"
               >
                 <span className="relative inline bg-gradient-to-r from-current to-current bg-[length:0%_1px] bg-left-bottom bg-no-repeat transition-[background-size] duration-500 ease-out group-hover:bg-[length:100%_1px] group-focus-visible:bg-[length:100%_1px]">
                   {item.name}
@@ -244,10 +247,6 @@ function RestaurantsPanel() {
             </li>
           ))}
         </ul>
-
-        <p className="mt-10 text-center font-edict text-base italic text-[#f5e9c8]/70 sm:text-lg">
-          More to come in the WhatsApp group closer to the date.
-        </p>
       </div>
     </section>
   );
