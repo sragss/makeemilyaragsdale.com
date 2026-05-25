@@ -195,7 +195,7 @@ function CeremonyCard() {
 
 function ReceptionImage() {
   return (
-    <div className="relative aspect-[3/2] w-full bg-garden-green p-2 sm:p-3">
+    <div className="relative aspect-[3/2] w-full bg-[#888834] p-2 sm:p-3">
       <div className="relative h-full overflow-hidden">
         <Image
           src="/images/Reception.png"
@@ -299,7 +299,7 @@ function StackCard({
               x: -tiltSign * 220,
               y: 980,
               rotate: offset.rotate + tiltSign * 8,
-              opacity: 0,
+              opacity: 1,
               scale: 0.98,
             }
       }
