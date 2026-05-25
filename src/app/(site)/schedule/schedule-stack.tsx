@@ -406,7 +406,7 @@ export default function ScheduleStack() {
       frames={SCHEDULE_SCROLL_FRAMES}
       className="relative -mt-12 w-full bg-[#3f3e19] md:-mt-10"
       mobile={
-        <div className="flex flex-col gap-8 px-2 pb-12 pt-24">
+        <div className="flex flex-col gap-8 px-2 pb-12 pt-20">
           {CARDS.map((Card, i) => (
             <Card key={i} />
           ))}

@@ -250,7 +250,7 @@ function TransportationPanel() {
           <p className="font-inter text-[10px] uppercase tracking-[0.45em] text-[#f5e9c8]/65">
             Getting to &amp; around San Miguel
           </p>
-          <h2 className="mt-3 font-edict text-4xl uppercase tracking-[0.18em] sm:text-5xl">
+          <h2 className="mt-3 font-edict text-2xl uppercase tracking-[0.08em] md:text-5xl md:tracking-[0.18em]">
             Transportation
           </h2>
         </header>
