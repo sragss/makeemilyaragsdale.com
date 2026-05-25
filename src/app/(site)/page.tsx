@@ -13,7 +13,7 @@ export default function Home() {
         className="object-cover"
       />
 
-      <div className="absolute inset-0 flex items-center justify-center px-6 py-12 [perspective:1400px]">
+      <div className="absolute inset-0 flex items-center justify-center px-3 py-12 [perspective:1400px]">
         <HomeCard />
       </div>
     </section>

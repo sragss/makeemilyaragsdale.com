@@ -400,13 +400,13 @@ export default function ScheduleStack() {
       frames={SCHEDULE_SCROLL_FRAMES}
       className="relative -mt-12 w-full bg-[#3f3e19] md:-mt-10"
       mobile={
-        <div className="flex flex-col gap-8 px-4 py-12">
+        <div className="flex flex-col gap-8 px-2 py-12">
           {CARDS.map((Card, i) => (
             <Card key={i} />
           ))}
         </div>
       }
-      viewportClassName="flex items-center justify-center px-4 sm:px-8"
+      viewportClassName="flex items-center justify-center px-2 sm:px-4"
     >
       {(scrollYProgress, controls) => (
         <>

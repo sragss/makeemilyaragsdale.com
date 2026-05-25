@@ -11,8 +11,8 @@ const TABS = [
   { href: "/", label: "Home" },
   { href: "/schedule", label: "Schedule" },
   { href: "/travel", label: "Travel & Stay" },
+  { href: "/dress-code", label: "Attire" },
   { href: "/explore", label: "Explore" },
-  { href: "/dress-code", label: "Dress Code" },
   { href: "/faq", label: "FAQ" },
   { href: "/rsvp", label: "RSVP" },
 ];
@@ -49,7 +49,8 @@ export function SiteNav() {
     <header
       className="sticky top-0 z-50 border-b border-garden-moss/20 bg-garden-cream/85 shadow-[0_1px_18px_rgba(28,17,9,0.08),inset_0_1px_0_rgba(255,255,255,0.45)] backdrop-blur-xl backdrop-saturate-150 supports-[backdrop-filter]:bg-garden-cream/70"
     >
-      <div className="mx-auto flex h-12 w-full max-w-6xl items-stretch gap-6 px-4 sm:px-6 md:h-10">
+      <div className="mx-auto flex h-10 w-full max-w-6xl items-stretch gap-6 px-2 sm:px-3">
+
         <Link
           href="/"
           aria-label="Sam & Emily — Home"

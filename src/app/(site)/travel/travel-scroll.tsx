@@ -72,7 +72,7 @@ function HeroPanel() {
 
 function BelmondIntroPanel() {
   return (
-    <section className="flex h-full items-center justify-center overflow-hidden bg-[#f5e9c8] px-6 pb-[14vh] text-[#493932]">
+    <section className="flex h-full items-center justify-center overflow-hidden bg-[#f5e9c8] px-3 pb-[14vh] text-[#493932]">
       <div className="mx-auto max-w-3xl space-y-6 text-center">
         <h2 className="font-edict text-[2.25rem] font-medium uppercase tracking-[0.08em] sm:text-[2.7rem]">
           The Belmond
@@ -95,7 +95,7 @@ function BelmondIntroPanel() {
 function HotelsPanel() {
   return (
     <section className="flex h-full flex-col overflow-hidden bg-[#f5e9c8] text-[#493932]">
-      <div className="flex flex-1 items-center justify-center px-6">
+      <div className="flex flex-1 items-center justify-center px-3">
         <div className="mx-auto max-w-2xl space-y-4 text-center">
           <h2 className="font-edict text-3xl font-light italic sm:text-4xl">
             Other hotels we recommend
@@ -138,7 +138,7 @@ function HotelsPanel() {
 
 function TransportationPanel() {
   return (
-    <section className="flex h-full items-center justify-center overflow-hidden bg-[#888834] px-6 text-[#f5e9c8] sm:px-10">
+    <section className="flex h-full items-center justify-center overflow-hidden bg-[#888834] px-3 text-[#f5e9c8] sm:px-5">
       <div className="mx-auto w-full max-w-5xl">
         <header className="mb-10 text-center sm:mb-14">
           <p className="font-inter text-[10px] uppercase tracking-[0.45em] text-[#f5e9c8]/65">

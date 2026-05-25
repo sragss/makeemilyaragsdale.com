@@ -8,27 +8,32 @@ const ACTIVITIES = [
   {
     name: "Hot air balloon at sunrise",
     mapsQuery: "hot air balloon San Miguel de Allende",
+    href: "https://globosanmiguel.com/portfolio/classic-sunrise-flight/",
     note: "One of the most beautiful things we have done. You float over the high desert as light comes up over the colonial rooftops.",
   },
   {
     name: "Horseback riding with Coyote Canyon Adventures",
     mapsQuery: "Coyote Canyon Adventures San Miguel de Allende",
+    href: "https://www.coyotecanyonadventures.com/index.php?vw=1698&vh=952&v0=&v1=32&v1b=0&v2=eng&v3=0&v25=155",
     note: "We rode with them last time and loved it. They run trips through the canyons outside town.",
   },
   {
     name: "Casa Dragones tequila tasting",
     mapsQuery: "Casa Dragones San Miguel de Allende tasting room",
+    href: "https://casadragones.com/us/visit-us/casa-dragones-tasting-room",
     note: "An intimate tasting in their tasting room downtown. Reservations required and worth booking well in advance.",
   },
   {
     name: "Fábrica La Aurora",
     mapsQuery: "Fábrica La Aurora San Miguel de Allende",
+    href: "https://fabricalaaurora.com/",
     note: "A former textile factory turned gallery and design complex. Easy to spend half a day wandering through artist studios, antiques, and design shops.",
   },
   {
-    name: "Hot springs (La Gruta or Escondido Place)",
-    mapsQuery: "La Gruta Spa San Miguel de Allende",
-    note: "A short drive outside town. La Gruta has a beautiful tunnel-fed thermal pool that feels otherworldly.",
+    name: "Mayan Baths",
+    mapsQuery: "Mayan Baths San Miguel de Allende",
+    href: "https://www.mayanbaths.com/index.php?vw=1698&vh=952&v0=&v1=261&v1b=171&v2=esp&v3=0&v4=despliega&v5=despliega&v6=despliega&v10=0&v13=&v14=&v25=1560&v26=0",
+    note: "A short drive outside town. A series of thermal pools and steam rituals inspired by Mayan tradition — book ahead.",
   },
   {
     name: "Mercado de Artesanías and Mercado Ignacio Ramírez",
@@ -124,17 +129,17 @@ function googleMapsHref(query: string) {
 function InfoList({
   items,
 }: {
-  items: { name: string; mapsQuery: string; note: string }[];
+  items: { name: string; mapsQuery: string; note: string; href?: string }[];
 }) {
   return (
     <ul className="divide-y divide-garden-moss/15 border-y border-garden-moss/15">
       {items.map((item) => (
         <li key={item.name} className="py-4">
           <a
-            href={googleMapsHref(item.mapsQuery)}
+            href={item.href ?? googleMapsHref(item.mapsQuery)}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label={`${item.name} on Google Maps`}
+            aria-label={item.href ? item.name : `${item.name} on Google Maps`}
             className="group inline-block font-serif text-xl font-light leading-tight text-garden-moss transition-colors hover:text-garden-olive focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-garden-green"
           >
             <span className="relative inline bg-gradient-to-r from-current to-current bg-[length:0%_1px] bg-left-bottom bg-no-repeat transition-[background-size] duration-500 ease-out group-hover:bg-[length:100%_1px] group-focus-visible:bg-[length:100%_1px]">

@@ -26,7 +26,7 @@ export default function RsvpPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-[#f5e9c8]/60 via-[#f5e9c8]/72 to-[#f5e9c8]" />
       </div>
 
-      <section className="relative mx-auto grid w-full max-w-6xl gap-8 px-4 pb-16 pt-16 sm:gap-10 sm:px-6 sm:pb-24 sm:pt-28 lg:grid-cols-[minmax(0,0.78fr)_minmax(440px,0.92fr)] lg:items-start lg:gap-14">
+      <section className="relative mx-auto grid w-full max-w-6xl gap-8 px-2 pb-16 pt-16 sm:gap-10 sm:px-3 sm:pb-24 sm:pt-28 lg:grid-cols-[minmax(0,0.78fr)_minmax(440px,0.92fr)] lg:items-start lg:gap-14">
         <header className="mx-auto max-w-xl pt-4 text-center text-garden-moss lg:sticky lg:top-24 lg:mx-0 lg:text-left">
           <p className="font-inter text-[10px] uppercase tracking-[0.45em] text-garden-moss/65">
             February 26-27, 2027

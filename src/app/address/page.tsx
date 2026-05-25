@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function AddressPage() {
   return (
-    <main className="flex flex-1 flex-col items-center justify-center bg-garden-cream px-4 py-10 sm:py-16">
+    <main className="flex flex-1 flex-col items-center justify-center bg-garden-cream px-2 py-10 sm:py-16">
       <div className="w-full max-w-md">
         <AddressFlow />
       </div>

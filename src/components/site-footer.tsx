@@ -4,7 +4,7 @@ import Image from "next/image";
 export function SiteFooter() {
   return (
     <footer className="bg-[#f5e9c8] text-[#493932]">
-      <div className="relative mx-auto grid w-full max-w-6xl grid-cols-3 items-center gap-4 px-4 py-10 sm:px-6">
+      <div className="relative mx-auto grid w-full max-w-6xl grid-cols-3 items-center gap-4 px-2 py-10 sm:px-3">
         <p className="font-edict text-sm font-medium tracking-[0.12em] justify-self-start">
           02-27-2027
         </p>
