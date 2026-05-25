@@ -32,16 +32,16 @@ const HOTELS = [
     href: "https://www.fiestamericanatravelty.com/en/live-aqua/hotels/live-aqua-san-miguel-de-allende",
   },
   {
-    name: "Hacienda El Santuario",
-    src: "/images/Hacienda el santurario.png",
-    note: "Whitewashed boutique in Centro with a rooftop onto the Parroquia.",
-    href: "https://www.haciendaelsantuario.com/es/",
+    name: "L'otel Casa Arca",
+    src: "/images/L'otel Casa Arca.png",
+    note: "Boutique design hotel tucked into Centro.",
+    href: "https://www.lotel-casaarca.com/",
   },
   {
-    name: "Casa Carmen",
-    src: "/images/Casa Carmen.png",
-    note: "Longtime B&B with a courtyard and included breakfast.",
-    href: "https://casa-carmen.san-miguel-de-allendehotels.com/en/",
+    name: "Maria Camille",
+    src: "/images/Maria Camille.png",
+    note: "Romantic colonial-style hotel near the Jardín.",
+    href: "https://www.hotelmariacamille.com/en",
   },
 ];
 
@@ -201,12 +201,11 @@ function HotelsPanel() {
         </h2>
         <p className="font-inter text-[15px] leading-relaxed text-[#493932]/80 sm:text-base">
           For guests who are not able to stay at the Belmond, here are a few
-          hotels we&apos;d recommend nearby. All are walkable to the center of
-          town.
+          hotels we&apos;d recommend nearby. All are walkable to the Belmond.
         </p>
       </div>
 
-      <ul className="mt-24 grid w-full grid-cols-2 gap-y-6 sm:mt-32 sm:grid-cols-4">
+      <ul className="mt-[16vh] grid w-full grid-cols-2 gap-y-6 sm:mt-[22vh] sm:grid-cols-4">
         {HOTELS.map((hotel) => (
           <li key={hotel.name} className="space-y-4">
             <a

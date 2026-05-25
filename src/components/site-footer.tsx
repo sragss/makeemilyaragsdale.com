@@ -20,7 +20,7 @@ const THEMES: Record<string, FooterTheme> = {
   "/": { bg: "#888834", fg: "#f2e5bb" },
   "/schedule": { bg: "#3f3e19", fg: "#f2e5bb", divider: true },
   "/travel": { bg: "#888834", fg: "#f2e5bb", divider: true },
-  "/dress-code": { bg: "#3f3e19", fg: "#f2e5bb", divider: true },
+  "/dress-code": { bg: "#888834", fg: "#f2e5bb", divider: true },
   "/explore": { bg: "#3f3e19", fg: "#f2e5bb", divider: true },
   "/faq": { bg: "#888834", fg: "#f2e5bb", divider: true },
 };

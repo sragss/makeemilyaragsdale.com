@@ -1,8 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { useRef } from "react";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { ScrollStackPanels } from "@/components/scroll-stage";
 
 type Look = {
@@ -26,9 +24,9 @@ const LOOKS: Look[] = [
     body: "Bring a hat and sunscreen, the high-desert sun is intense.",
     image: "/images/Pool Party Attire.png",
     alt: "Pool party attire inspiration",
-    bgClass: "bg-[#f2e5bb]",
-    textClass: "text-garden-ink",
-    accentClass: "text-[#888834]",
+    bgClass: "bg-[#493523]",
+    textClass: "text-garden-cream",
+    accentClass: "text-garden-green",
     inspirationUrl: "https://www.pinterest.com/emily_devery/wedding/pool-party-inspiration/",
   },
   {
@@ -38,8 +36,8 @@ const LOOKS: Look[] = [
     body: "Footwear suitable for walking the parade on cobblestone, and a light jacket or wrap for the rooftop after sunset as the temperature drops substantially in the evenings.",
     image: "/images/White Party Attire.png",
     alt: "White party attire inspiration",
-    bgClass: "bg-[#888834]",
-    textClass: "text-garden-cream",
+    bgClass: "bg-[#f5e9c8]",
+    textClass: "text-[#888834]",
     accentClass: "text-[#493523]",
     inspirationUrl: "https://www.pinterest.com/emily_devery/wedding/welcome-party-inspiration/",
   },
@@ -68,63 +66,32 @@ export function AttireScroll() {
 }
 
 function AttirePanel({ look, priority }: { look: Look; priority?: boolean }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  const springConfig = { stiffness: 180, damping: 10, mass: 0.55 };
-  const sx = useSpring(mouseX, springConfig);
-  const sy = useSpring(mouseY, springConfig);
-
-  const rotateX = useTransform(sy, [-0.5, 0.5], [10, -10]);
-  const rotateY = useTransform(sx, [-0.5, 0.5], [-10, 10]);
-
-  function handleMove(e: React.MouseEvent<HTMLElement>) {
-    const el = ref.current;
-    if (!el) return;
-    const r = el.getBoundingClientRect();
-    mouseX.set((e.clientX - r.left) / r.width - 0.5);
-    mouseY.set((e.clientY - r.top) / r.height - 0.5);
-  }
-
-  function handleLeave() {
-    mouseX.set(0);
-    mouseY.set(0);
-  }
-
   const imageCard = (
-    <motion.div
-      ref={ref}
-      onMouseMove={handleMove}
-      onMouseLeave={handleLeave}
-      whileTap={{ scale: 0.97 }}
-      style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-      className="relative aspect-[3/2] w-full overflow-hidden will-change-transform"
-    >
+    <div className="relative h-[55vh] w-full overflow-hidden md:h-full">
       <Image
         src={look.image}
         alt={look.alt}
         fill
-        className="object-contain"
+        className="object-cover"
         sizes="(min-width: 768px) 60vw, 100vw"
         priority={priority}
       />
-    </motion.div>
+    </div>
   );
 
   return (
     <section
       className={`flex h-full items-center overflow-hidden ${look.bgClass} ${look.textClass}`}
     >
-      <div className="grid w-full items-center gap-10 px-3 py-12 md:grid-cols-[3fr_2fr] md:gap-16 md:pl-12 md:pr-12">
-        <div className="[perspective:1400px]">
+      <div className="mx-auto grid h-full w-full items-center gap-8 md:grid-cols-[3fr_2fr] md:gap-16">
+        <div className="h-[55vh] md:h-full">
           {look.inspirationUrl ? (
             <a
               href={look.inspirationUrl}
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`${look.title} inspiration board`}
-              className="block"
+              className="block h-full"
             >
               {imageCard}
             </a>
@@ -132,7 +99,7 @@ function AttirePanel({ look, priority }: { look: Look; priority?: boolean }) {
             imageCard
           )}
         </div>
-        <div className="text-center">
+        <div className="px-6 pb-12 text-center md:px-12 md:pb-0">
           <p
             className={`font-edict text-xs font-medium uppercase tracking-[0.45em] opacity-80 ${look.accentClass ?? ""}`}
           >
@@ -146,7 +113,7 @@ function AttirePanel({ look, priority }: { look: Look; priority?: boolean }) {
           >
             {look.subtitle}
           </p>
-          <p className="mx-auto mt-8 max-w-md font-edict text-base leading-relaxed text-pretty opacity-85">
+          <p className="mx-auto mt-8 max-w-md font-edict text-base leading-relaxed text-balance opacity-85">
             {look.body}
           </p>
           {look.inspirationUrl ? (
@@ -157,7 +124,7 @@ function AttirePanel({ look, priority }: { look: Look; priority?: boolean }) {
                 rel="noopener noreferrer"
                 className={`font-edict text-xs font-medium uppercase tracking-[0.3em] underline underline-offset-4 opacity-80 transition-opacity hover:opacity-100 ${look.accentClass ?? ""}`}
               >
-                more inspiration
+                get inspired
               </a>
             </p>
           ) : null}

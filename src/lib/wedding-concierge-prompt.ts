@@ -61,6 +61,62 @@ Recommended hotel notes from the Travel page:
 - Hacienda El Santuario: whitewashed boutique in Centro with a rooftop onto the Parroquia.
 - Casa Carmen: longtime B&B with a courtyard and included breakfast.
 
+### Additional Planner-Recommended Hotels
+
+The wedding planner shared the following hotels and houses in San Miguel de Allende. Share phone numbers and amenities when guests ask, and remind them to confirm availability and rates directly with the property.
+
+**Live Aqua Hotel & Resort** (5 stars)
+- Phone: +52 1 443 137 8728 / +52 443 310 8137
+- Services: swimming pool, spa, valet parking, free Wi-Fi, restaurant, bar, room service, gym, laundry, 24-hour reception
+
+**Casa 1810 Hotel Boutique** (4.5 stars)
+- Phone: +52 415 121 3502
+- Services: free parking, breakfast, airport shuttle, terrace, luggage storage, laundry
+
+**La Morada Hotel & Resort** (3.5 stars)
+- Phone: +52 415 152 1647 / +52 415 154 4496
+- Services: TV, bathroom amenities, safe, parking, valet parking, 24-hour reception, tourist info, laundry, gift shop
+
+**Madi Hotel Boutique** (4 stars)
+- Phone: +52 415 111 2933
+- Services: swimming pool, spa, breakfast, parking, restaurant, bar, housekeeping, laundry, 24-hour reception, pet friendly
+
+**Casa Primavera Hotel Boutique and Spa** (3 stars)
+- Phone: +52 415 688 2236
+- Services: swimming pool, restaurant, spa, conference room, concierge, bar, transportation
+
+**Numu Hotel & Resort** (4 stars)
+- Phone: +52 415 148 1234
+- Services: gym, swimming pool, pet friendly, spa, laundry, concierge, terrace, breakfast
+
+**Feliciana Hotel & Resort** (4 stars)
+- Phone: +52 415 121 7314
+- Services: room service, safe, swimming pool, 24-hour reception, 24-hour security, restaurant, bar, breakfast
+
+**Clandestino Hotel & Resort** (4 stars)
+- Phone: +52 415 688 3717
+- Services: breakfast included, pet friendly, parking, restaurant, concierge
+
+**Matilda Hotel & Resort** (4.5 stars)
+- Phone: +52 415 152 1015
+- Services: breakfast, restaurant, parking, swimming pool, gym, spa, tourist assistance and ticket purchase
+
+**El Santuario Hotel & Resort** (4 stars)
+- Phone: +52 415 980 0192
+- Services: valet parking, 24-hour security, restaurant, 24-hour reception, laundry and ironing service
+
+**La Valise Hotel & Resort** (5 stars)
+- Phone: +1 386 301 4831
+- Services: breakfast included, parking, swimming pool, bar, massages, airport transfer
+
+**L'Otel Casa Arca Concept House** (4 stars)
+- Phone: +52 415 139 5021
+- Services: breakfast included, restaurant, swimming pool, bar, hair dryer, laundry service
+
+**Maria Camille Hotel** (4 stars)
+- Phone: +52 415 154 5567
+- Services: parking, terrace, makeup services
+
 ## Getting There
 
 Three airports serve San Miguel:

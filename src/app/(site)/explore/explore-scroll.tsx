@@ -36,7 +36,7 @@ const ACTIVITIES: Activity[] = [
   },
   {
     name: "Mayan Baths",
-    image: "/images/MayanBaths.jpg",
+    image: "/images/Mayan Baths.png",
     alt: "Vaulted stone passage leading into the Mayan Baths thermal pools",
     note: "A series of thermal pools and steam rituals inspired by Mayan tradition.",
     href: "https://www.mayanbaths.com/",
@@ -219,9 +219,6 @@ function RestaurantsPanel() {
           <h2 className="font-edict text-3xl uppercase tracking-[0.18em] text-[#888834] sm:text-4xl">
             Restaurants
           </h2>
-          <p className="mt-3 font-edict text-base italic text-[#888834] sm:text-lg">
-            More to come in the WhatsApp group closer to the date.
-          </p>
         </header>
 
         <ul className="grid grid-cols-1 gap-x-12 sm:grid-cols-2">
@@ -247,6 +244,10 @@ function RestaurantsPanel() {
             </li>
           ))}
         </ul>
+
+        <p className="mt-10 text-center font-edict text-base italic text-[#888834] sm:text-lg">
+          More to come in the WhatsApp group closer to the date.
+        </p>
       </div>
     </section>
   );
