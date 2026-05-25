@@ -70,12 +70,12 @@ Returns `{ rsvps, guests, attending, declined, pending, hotelBooking, hotelCompl
 ```json
 {"action":"create","guestNames":["Jane Doe","John Doe"],"address":"123 Main St","notes":"College friends"}
 {"action":"update_rsvp","id":"RSVP_ID","address":"456 Oak Ave","notes":"Updated note"}
-{"action":"update_guest","guestId":"GUEST_ID","attendingFriday":true,"attendingSaturday":true,"email":"jane@example.com","phone":"+1 555 123 4567","mainCoursePreference":"Steak"}
+{"action":"update_guest","guestId":"GUEST_ID","attendingFriday":true,"attendingSaturday":true,"email":"jane@example.com","phone":"+1 555 123 4567","mainCoursePreference":"Beef"}
 {"action":"update_hotel","id":"RSVP_ID","willBook":true,"bookingComplete":true,"bookingValue":"4500.00"}
 {"action":"delete","id":"RSVP_ID","confirm":true}
 ```
 
-Guest lookup can use `guestId`, or `inviteId` + `guestName`. `mainCoursePreference` is a string such as Steak, Chicken, Fish, Vegetarian, Vegan, or a custom value.
+Guest lookup can use `guestId`, or `inviteId` + `guestName`. `mainCoursePreference` is a string such as Beef, Pork, Chicken, Fish, Vegetarian, or a custom value.
 
 ## Design
 

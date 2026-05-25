@@ -10,7 +10,7 @@ export default function SiteLayout({
   return (
     <SmoothScrollProvider>
       <SiteNav />
-      <main className="flex-1">{children}</main>
+      <main className="flex flex-1 flex-col">{children}</main>
       <SiteFooter />
     </SmoothScrollProvider>
   );

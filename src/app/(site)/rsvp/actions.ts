@@ -39,12 +39,6 @@ export async function submitRsvp(data: RsvpSubmission) {
   }
 
   for (const guest of submittedGuests) {
-    if ((guest.attendingFriday || guest.attendingSaturday) && !guest.email) {
-      throw new Error(`Email is required for ${guest.name}`);
-    }
-    if ((guest.attendingFriday || guest.attendingSaturday) && !guest.phone) {
-      throw new Error(`Phone is required for ${guest.name}`);
-    }
     if (guest.email && !EMAIL_REGEX.test(guest.email)) {
       throw new Error(`Invalid email: ${guest.email}`);
     }

@@ -158,6 +158,11 @@
 
 }
 
+/* RSVP route: cream body so any layout gaps match the page card background. */
+body:has([data-route="rsvp"]) {
+  background-color: #f5e9c8;
+}
+
 /* Schedule route: dark frame for body + footer. Kept unlayered so it beats Tailwind utility classes like `bg-[#f5e9c8]` on the footer. */
 body:has([data-route="schedule"]) {
   background-color: #3f3e19;

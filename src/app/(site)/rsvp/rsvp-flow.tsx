@@ -22,16 +22,16 @@ interface GuestFormData {
 }
 
 const RSVP_STEPS = [
+  { id: "details", label: "Details", eyebrow: "", title: "", subtitle: "" },
   {
-    id: "details",
-    label: "Details",
-    eyebrow: "Weekend",
-    title: "The weekend",
+    id: "rsvp",
+    label: "RSVP",
+    eyebrow: "",
+    title: "RSVP",
+    subtitle: "February 26-27, 2027 · San Miguel de Allende, Mexico",
   },
-  { id: "party", label: "Party", eyebrow: "Your party", title: "Who's coming?" },
-  { id: "contact", label: "Contact", eyebrow: "Follow-up", title: "Contact" },
-  { id: "meal", label: "Meal", eyebrow: "Dinner", title: "Meal preferences" },
-  { id: "stay", label: "Stay", eyebrow: "Stay", title: "Belmond" },
+  { id: "meal", label: "Meal", eyebrow: "", title: "Meal", subtitle: "" },
+  { id: "stay", label: "Stay", eyebrow: "", title: "Belmond", subtitle: "" },
 ] as const;
 
 type RsvpStep = (typeof RSVP_STEPS)[number]["id"];
@@ -81,17 +81,23 @@ export function RsvpFlow() {
             transition={{ duration: 0.4 }}
             className="py-9 text-center"
           >
-            <p className="font-edict text-[11px] uppercase tracking-[0.38em] text-garden-cream/70 sm:text-[10px] sm:tracking-[0.45em]">
-              Reply received
-            </p>
-            <h2 className="mt-4 font-eros text-[3.35rem] font-normal uppercase leading-none text-garden-cream sm:text-6xl">
-              {completedAttending ? "See you there" : "We'll miss you"}
-            </h2>
-            <p className="mx-auto mt-6 max-w-sm font-serif text-xl italic leading-snug text-garden-cream/88 sm:text-lg">
-              {completedAttending
-                ? "We can't wait to celebrate with you in San Miguel."
-                : "Thanks for letting us know. We'll be thinking of you."}
-            </p>
+            {completedAttending ? (
+              <>
+                <p className="font-edict text-[11px] uppercase tracking-[0.38em] text-garden-cream/70 sm:text-[10px] sm:tracking-[0.45em]">
+                  Reply received
+                </p>
+                <h2 className="mt-4 font-eros text-[3.35rem] font-normal uppercase leading-none text-garden-cream sm:text-6xl">
+                  See you there
+                </h2>
+                <p className="mx-auto mt-6 max-w-sm font-serif text-xl italic leading-snug text-garden-cream/88 sm:text-lg">
+                  We can't wait to celebrate with you in San Miguel.
+                </p>
+              </>
+            ) : (
+              <h2 className="font-eros text-[3.35rem] font-normal uppercase leading-none text-garden-cream sm:text-6xl">
+                You'll be missed
+              </h2>
+            )}
           </motion.div>
         </InvitationCard>
       </>
@@ -137,16 +143,14 @@ function RsvpForm({ onComplete }: { onComplete: (attending: boolean) => void }) 
   const missingHotelAcknowledgement =
     acceptedGuests.length > 0 && hotelWillBook === true && !hotelAcknowledged;
   const hasAcceptedGuests = acceptedGuests.length > 0;
-  const partyComplete =
+  const rsvpComplete =
     namedGuests.length > 0 && (!hasAcceptedGuests || !missingEventSelection);
-  const contactComplete = true;
   const mealComplete = !hasAcceptedGuests || !missingMainCourse;
   const stayComplete =
     !hasAcceptedGuests || (!missingHotel && !missingHotelAcknowledgement);
   const stepComplete: Record<RsvpStep, boolean> = {
     details: true,
-    party: partyComplete,
-    contact: contactComplete,
+    rsvp: rsvpComplete,
     meal: mealComplete,
     stay: stayComplete,
   };
@@ -155,18 +159,17 @@ function RsvpForm({ onComplete }: { onComplete: (attending: boolean) => void }) 
   );
   const furthestStepIndex = getFurthestStepIndex({
     hasAcceptedGuests,
-    partyComplete,
+    rsvpComplete,
     mealComplete,
   });
   const currentStepIsFinal =
     currentStep === "stay" ||
-    (currentStep === "party" && namedGuests.length > 0 && !hasAcceptedGuests);
+    (currentStep === "rsvp" && namedGuests.length > 0 && !hasAcceptedGuests);
   const currentStepHint = getStepHint({
     currentStep,
     namedGuestCount: namedGuests.length,
     hasAcceptedGuests,
     missingEventSelection,
-    missingMainCourse,
     missingHotel,
     missingHotelAcknowledgement,
   });
@@ -263,27 +266,7 @@ function RsvpForm({ onComplete }: { onComplete: (attending: boolean) => void }) 
         />
       )}
       <InvitationCard>
-        <header className="mb-10 text-center sm:mb-9">
-          <p className="font-edict text-[11px] uppercase tracking-[0.38em] text-garden-cream/70 sm:text-[10px] sm:tracking-[0.45em]">
-            Emily & Sam
-          </p>
-          <h2 className="mt-3 font-eros text-5xl font-normal uppercase leading-none text-garden-cream sm:text-6xl">
-            RSVP
-          </h2>
-          <p className="mx-auto mt-4 max-w-sm font-serif text-[1.08rem] italic leading-snug text-garden-cream/82 sm:text-base">
-            San Miguel de Allende
-            <br />
-            February 26-27, 2027
-          </p>
-        </header>
-
         <form onSubmit={handleSubmit} className="space-y-7 sm:space-y-8">
-          <StepProgress
-            currentStep={currentStep}
-            furthestStepIndex={furthestStepIndex}
-            onStepChange={goToStep}
-          />
-
           <motion.div
             layout
             transition={{ layout: { duration: 0.28, ease: [0.22, 1, 0.36, 1] } }}
@@ -300,10 +283,10 @@ function RsvpForm({ onComplete }: { onComplete: (attending: boolean) => void }) 
                 </StepPanel>
               )}
 
-              {currentStep === "party" && (
+              {currentStep === "rsvp" && (
                 <StepPanel
-                  key="party"
-                  step="party"
+                  key="rsvp"
+                  step="rsvp"
                   direction={stepDirection}
                 >
                   <div className="space-y-6">
@@ -350,25 +333,6 @@ function RsvpForm({ onComplete }: { onComplete: (attending: boolean) => void }) 
                       </motion.div>
                     )}
                   </AnimatePresence>
-                </StepPanel>
-              )}
-
-              {currentStep === "contact" && (
-                <StepPanel
-                  key="contact"
-                  step="contact"
-                  direction={stepDirection}
-                >
-                  <div className="space-y-6">
-                    {acceptedGuestEntries.map(({ guest, index }) => (
-                      <GuestContactDetails
-                        key={guest.clientId}
-                        guest={guest}
-                        index={index}
-                        onUpdate={updateGuest}
-                      />
-                    ))}
-                  </div>
                 </StepPanel>
               )}
 
@@ -431,17 +395,17 @@ function RsvpForm({ onComplete }: { onComplete: (attending: boolean) => void }) 
 
 function getFurthestStepIndex({
   hasAcceptedGuests,
-  partyComplete,
+  rsvpComplete,
   mealComplete,
 }: {
   hasAcceptedGuests: boolean;
-  partyComplete: boolean;
+  rsvpComplete: boolean;
   mealComplete: boolean;
 }) {
-  if (!partyComplete) return 1;
+  if (!rsvpComplete) return 1;
   if (!hasAcceptedGuests) return 1;
-  if (!mealComplete) return 3;
-  return 4;
+  if (!mealComplete) return 2;
+  return 3;
 }
 
 function getStepHint({
@@ -449,7 +413,6 @@ function getStepHint({
   namedGuestCount,
   hasAcceptedGuests,
   missingEventSelection,
-  missingMainCourse,
   missingHotel,
   missingHotelAcknowledgement,
 }: {
@@ -457,7 +420,6 @@ function getStepHint({
   namedGuestCount: number;
   hasAcceptedGuests: boolean;
   missingEventSelection: boolean;
-  missingMainCourse: boolean;
   missingHotel: boolean;
   missingHotelAcknowledgement: boolean;
 }) {
@@ -465,19 +427,11 @@ function getStepHint({
     return "";
   }
 
-  if (currentStep === "party") {
+  if (currentStep === "rsvp") {
     if (namedGuestCount === 0) return "Add at least one guest name.";
     if (hasAcceptedGuests && missingEventSelection) {
       return "Choose at least one weekend event, or mark each guest as declining.";
     }
-  }
-
-  if (currentStep === "contact") {
-    return "Add an email or phone if direct follow-up would be helpful.";
-  }
-
-  if (currentStep === "meal" && missingMainCourse) {
-    return "Choose a main course for each attending guest.";
   }
 
   if (currentStep === "stay") {
@@ -501,67 +455,15 @@ function InvitationCard({ children }: { children: React.ReactNode }) {
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-2 border-[4px] border-double border-garden-cream/45 sm:inset-3 sm:border-[5px]"
+        className="pointer-events-none absolute inset-2 border-2 border-garden-cream/45 sm:inset-3 sm:border-[3px]"
       />
       <div className="relative px-6 py-10 sm:px-10 sm:py-12 lg:px-12">
         <div className="mb-8 flex justify-center">
-          <SAndELogo className="h-16 w-auto text-garden-cream sm:h-20" />
+          <SAndELogo className="h-16 w-auto text-[#d2cf53] sm:h-20" />
         </div>
         {children}
       </div>
     </div>
-  );
-}
-
-function StepProgress({
-  currentStep,
-  furthestStepIndex,
-  onStepChange,
-}: {
-  currentStep: RsvpStep;
-  furthestStepIndex: number;
-  onStepChange: (step: RsvpStep) => void;
-}) {
-  return (
-    <ol className="grid grid-cols-5 gap-1 border-y border-garden-cream/25 py-3">
-      {RSVP_STEPS.map((step, index) => {
-        const active = step.id === currentStep;
-        const accessible = index <= furthestStepIndex;
-
-        return (
-          <li key={step.id}>
-            <button
-              type="button"
-              aria-current={active ? "step" : undefined}
-              disabled={!accessible}
-              onClick={() => onStepChange(step.id)}
-              className={`flex min-h-12 w-full flex-col items-center justify-center gap-1 px-1 text-center transition-colors disabled:cursor-not-allowed ${
-                active
-                  ? "text-garden-cream"
-                  : accessible
-                    ? "text-garden-cream/58 hover:text-garden-cream"
-                    : "text-garden-cream/25"
-              }`}
-            >
-              <span
-                className={`flex size-6 items-center justify-center border font-inter text-[11px] leading-none ${
-                  active
-                    ? "border-garden-cream bg-garden-cream text-garden-olive"
-                    : accessible
-                      ? "border-garden-cream/40"
-                      : "border-garden-cream/18"
-                }`}
-              >
-                {index + 1}
-              </span>
-              <span className="font-edict text-[8px] uppercase tracking-[0.08em] sm:text-[10px] sm:tracking-[0.18em]">
-                {step.label}
-              </span>
-            </button>
-          </li>
-        );
-      })}
-    </ol>
   );
 }
 
@@ -588,10 +490,13 @@ function StepPanel({
       transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
       className="space-y-6"
     >
-      <SectionHeading
-        eyebrow={stepDetails.eyebrow}
-        title={stepDetails.title}
-      />
+      {stepDetails.title ? (
+        <SectionHeading
+          eyebrow={stepDetails.eyebrow}
+          title={stepDetails.title}
+          subtitle={stepDetails.subtitle}
+        />
+      ) : null}
       {children}
     </motion.section>
   );
@@ -650,13 +555,15 @@ function StepControls({
           type={currentStepIsFinal ? "submit" : "button"}
           onClick={currentStepIsFinal ? undefined : onNext}
           disabled={primaryDisabled}
-          className="min-h-14 border border-garden-cream bg-garden-cream px-5 py-3 font-edict text-[13px] font-medium uppercase tracking-[0.24em] text-garden-olive transition-colors hover:bg-transparent hover:text-garden-cream disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:bg-garden-cream disabled:hover:text-garden-olive sm:text-[12px]"
+          className="min-h-14 border border-[#d2cf53] bg-[#d2cf53] px-5 py-3 font-edict text-[13px] font-medium uppercase tracking-[0.24em] text-[#3f3e19] transition-colors hover:bg-transparent hover:text-[#d2cf53] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-[#d2cf53] disabled:hover:text-[#3f3e19] sm:text-[12px]"
         >
           {currentStepIsFinal
             ? submitting
               ? "Submitting"
               : "Send reply"
-            : "Continue"}
+            : currentStep === "details"
+              ? "RSVP"
+              : "Continue"}
         </button>
       </div>
     </div>
@@ -664,31 +571,21 @@ function StepControls({
 }
 
 function WeekendDetails() {
-  const rows = [
-    ["Welcome party", "Friday, February 26, 3-8 PM"],
-    ["Ceremony & reception", "Saturday, February 27, 2027"],
-    ["Venue", "Luna Escondida"],
-    ["Location", "San Miguel de Allende, MX"],
-    ["Stay", "Belmond Casa de Sierra Nevada room block available"],
-    ["Dress", "Enchanted Garden"],
-  ] as const;
-
   return (
-    <dl className="border-y border-garden-cream/35 py-2">
-      {rows.map(([label, value]) => (
-        <div
-          key={label}
-          className="grid grid-cols-1 gap-1 border-b border-garden-cream/15 py-3 last:border-b-0 sm:grid-cols-[11rem_1fr] sm:gap-4"
-        >
-          <dt className="font-edict text-[11px] uppercase tracking-[0.28em] text-garden-cream/58 sm:text-[10px] sm:tracking-[0.34em]">
-            {label}
-          </dt>
-          <dd className="font-serif text-[1.08rem] leading-snug text-garden-cream sm:text-base">
-            {value}
-          </dd>
-        </div>
-      ))}
-    </dl>
+    <div className="py-6 text-center sm:py-10">
+      <h2 className="font-eros font-normal uppercase leading-[0.85] text-garden-cream">
+        <span className="block text-[3.25rem] sm:text-[4.5rem]">Kindly</span>
+        <span className="mt-1 block text-[5.75rem] sm:text-[8rem]">Reply</span>
+      </h2>
+      <p className="mt-8 text-garden-cream sm:mt-10">
+        <span className="font-edict text-[1.35rem] italic sm:text-[1.55rem]">
+          by
+        </span>
+        <span className="ml-3 font-edict text-[1.35rem] uppercase tracking-[0.12em] sm:ml-4 sm:text-[1.55rem]">
+          January 15, 2027
+        </span>
+      </p>
+    </div>
   );
 }
 
@@ -748,35 +645,6 @@ function GuestAttendance({
   );
 }
 
-function GuestContactDetails({
-  guest,
-  index,
-  onUpdate,
-}: {
-  guest: GuestFormData;
-  index: number;
-  onUpdate: (
-    index: number,
-    field: keyof GuestFormData,
-    value: string | boolean
-  ) => void;
-}) {
-  return (
-    <section className="space-y-5 border-l border-garden-cream/25 pl-5">
-      <p className="font-edict text-[11px] uppercase tracking-[0.28em] text-garden-cream/58 sm:text-[10px] sm:tracking-[0.32em]">
-        For {guest.name.trim()}
-      </p>
-      <ContactFields
-        guestId={guest.clientId}
-        email={guest.email}
-        phone={guest.phone}
-        onEmailChange={(value) => onUpdate(index, "email", value)}
-        onPhoneChange={(value) => onUpdate(index, "phone", value)}
-      />
-    </section>
-  );
-}
-
 function GuestMealDetails({
   guest,
   index,
@@ -792,8 +660,8 @@ function GuestMealDetails({
 }) {
   return (
     <section className="space-y-5 border-l border-garden-cream/25 pl-5">
-      <p className="font-edict text-[11px] uppercase tracking-[0.28em] text-garden-cream/58 sm:text-[10px] sm:tracking-[0.32em]">
-        For {guest.name.trim()}
+      <p className="font-edict text-[1.65rem] italic leading-tight text-garden-cream sm:text-[1.85rem]">
+        {guest.name.trim()}
       </p>
       <MainCoursePicker
         value={guest.mainCoursePreference}
@@ -848,55 +716,6 @@ function EventCheckboxes({
   );
 }
 
-function ContactFields({
-  guestId,
-  email,
-  phone,
-  required = false,
-  onEmailChange,
-  onPhoneChange,
-}: {
-  guestId: string;
-  email: string;
-  phone: string;
-  required?: boolean;
-  onEmailChange: (value: string) => void;
-  onPhoneChange: (value: string) => void;
-}) {
-  return (
-    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-      <FieldGroup
-        htmlFor={`email-${guestId}`}
-        label="Email"
-        required={required}
-        optional={!required}
-      >
-        <InvitationInput
-          id={`email-${guestId}`}
-          type="email"
-          placeholder="jane@example.com"
-          value={email}
-          onChange={(event) => onEmailChange(event.target.value)}
-        />
-      </FieldGroup>
-      <FieldGroup
-        htmlFor={`phone-${guestId}`}
-        label="Phone"
-        required={required}
-        optional={!required}
-      >
-        <InvitationInput
-          id={`phone-${guestId}`}
-          type="tel"
-          placeholder="+1 555 123 4567"
-          value={phone}
-          onChange={(event) => onPhoneChange(event.target.value)}
-        />
-      </FieldGroup>
-    </div>
-  );
-}
-
 function HotelSection({
   hotelWillBook,
   hotelAcknowledged,
@@ -942,7 +761,7 @@ function HotelSection({
         href="https://www.belmond.com/hotels/north-america/mexico/san-miguel-de-allende/belmond-casa-de-sierra-nevada/"
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex min-h-11 items-center border border-garden-cream/55 px-4 py-2 font-edict text-[11px] uppercase tracking-[0.24em] text-garden-cream transition-colors hover:bg-garden-cream hover:text-garden-olive sm:text-[10px] sm:tracking-[0.28em]"
+        className="inline-flex min-h-11 items-center border border-garden-cream/55 px-4 py-2 font-edict text-[11px] uppercase tracking-[0.24em] text-garden-cream transition-colors hover:border-[#d2cf53] hover:bg-[#d2cf53] hover:text-[#3f3e19] sm:text-[10px] sm:tracking-[0.28em]"
       >
         View the Belmond
       </a>
@@ -977,7 +796,7 @@ function HotelSection({
             <label
               className={`flex min-h-14 w-full cursor-pointer items-start gap-3 border px-4 py-4 text-left transition-colors sm:py-3 ${
                 hotelAcknowledged
-                  ? "border-garden-cream bg-garden-cream/10"
+                  ? "border-[#d2cf53] bg-[#d2cf53]/10"
                   : "border-garden-cream/30 hover:border-garden-cream/60"
               }`}
             >
@@ -989,9 +808,9 @@ function HotelSection({
               />
               <span
                 aria-hidden
-                className={`mt-0.5 flex size-6 shrink-0 items-center justify-center border border-garden-cream/60 transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-garden-cream/55 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-garden-olive sm:size-5 ${
+                className={`mt-0.5 flex size-6 shrink-0 items-center justify-center border border-garden-cream/60 transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-[#d2cf53]/55 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-garden-olive sm:size-5 ${
                   hotelAcknowledged
-                    ? "bg-garden-cream text-garden-olive"
+                    ? "border-[#d2cf53] bg-[#d2cf53] text-[#3f3e19]"
                     : "text-transparent"
                 }`}
               >
@@ -1017,18 +836,27 @@ function HotelSection({
 function SectionHeading({
   eyebrow,
   title,
+  subtitle,
 }: {
   eyebrow: string;
   title: string;
+  subtitle?: string;
 }) {
   return (
-    <div className="space-y-1">
-      <p className="font-edict text-[11px] uppercase tracking-[0.34em] text-garden-cream/55 sm:text-[10px] sm:tracking-[0.42em]">
-        {eyebrow}
-      </p>
-      <h3 className="font-serif text-[1.85rem] font-light leading-tight text-garden-cream sm:text-2xl">
+    <div className="space-y-2 text-center">
+      {eyebrow ? (
+        <p className="font-edict text-[11px] uppercase tracking-[0.34em] text-[#d2cf53] sm:text-[12px] sm:tracking-[0.42em]">
+          {eyebrow}
+        </p>
+      ) : null}
+      <h3 className="font-eros text-[3.25rem] font-normal uppercase leading-none text-garden-cream sm:text-[4rem]">
         {title}
       </h3>
+      {subtitle ? (
+        <p className="font-serif text-[1.05rem] italic leading-snug text-garden-cream/85 sm:text-[1.15rem]">
+          {subtitle}
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -1125,7 +953,7 @@ function ChoiceButton({
       onClick={onClick}
       className={`flex min-h-16 items-center gap-3 border px-4 py-3 text-left font-serif text-[1.08rem] leading-snug transition-colors sm:min-h-14 sm:text-base ${
         selected
-          ? "border-garden-cream bg-garden-cream text-garden-olive"
+          ? "border-[#d2cf53] bg-[#d2cf53] text-[#3f3e19]"
           : "border-garden-cream/35 text-garden-cream hover:border-garden-cream/70 hover:bg-garden-cream/10"
       }`}
     >
@@ -1159,7 +987,7 @@ function ChecklistChoice({
       onClick={onClick}
       className={`flex min-h-[4.5rem] w-full items-start gap-3 border px-4 py-3.5 text-left transition-colors sm:min-h-16 sm:px-3.5 sm:py-3 ${
         selected
-          ? "border-garden-cream bg-garden-cream text-garden-olive"
+          ? "border-[#d2cf53] bg-[#d2cf53] text-[#3f3e19]"
           : "border-garden-cream/35 text-garden-cream hover:border-garden-cream/70 hover:bg-garden-cream/10"
       }`}
     >

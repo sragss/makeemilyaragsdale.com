@@ -21,12 +21,12 @@ READING:
 WRITING (POST /api/admin with JSON body):
   {"action":"create", "guestNames":["Name1","Name2"], "address":"...", "notes":"..."}
   {"action":"update_rsvp", "id":"...", "address":"..."}
-  {"action":"update_guest", "inviteId":"...", "guestName":"Name", "attendingFriday":true, "attendingSaturday":true, "email":"...", "phone":"...", "mainCoursePreference":"Steak"}
+  {"action":"update_guest", "inviteId":"...", "guestName":"Name", "attendingFriday":true, "attendingSaturday":true, "email":"...", "phone":"...", "mainCoursePreference":"Beef"}
   {"action":"update_hotel", "id":"...", "willBook":true, "bookingComplete":true, "bookingValue":"4500.00"}
   {"action":"delete", "id":"...", "confirm":true}
 
 EVENTS: Two events — Friday pool party (Feb 26) and Saturday wedding (Feb 27). Each guest has attendingFriday and attendingSaturday (true/false/null).
-MAIN COURSE: mainCoursePreference is a string such as Steak, Chicken, Fish, Vegetarian, Vegan, or a custom value.
+MAIN COURSE: mainCoursePreference is a string such as Beef, Pork, Chicken, Fish, Vegetarian, or a custom value.
 
 SAFETY:
 - Delete requires "confirm":true — it soft-deletes only (recoverable)
