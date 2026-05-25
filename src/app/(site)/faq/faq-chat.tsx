@@ -207,7 +207,7 @@ export function FAQChat() {
           >
             <PromptInputBody>
               <PromptInputTextarea
-                className="min-h-20 px-3 font-serif text-[18px] leading-relaxed text-garden-ink placeholder:text-garden-moss/45"
+                className="min-h-20 px-3 font-serif text-[18px] leading-relaxed text-garden-ink placeholder:text-garden-moss/45 md:text-[18px]"
                 disabled={status !== "ready"}
                 placeholder="Ask Poncho a question..."
               />
