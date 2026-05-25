@@ -126,12 +126,12 @@ export function FAQChat() {
 
   return (
     <section
-      className="relative min-h-[calc(100svh-2.5rem)] bg-[#f7ebcf]"
+      className="faq-cave-wall relative min-h-[calc(100svh-2.5rem)]"
       data-route="faq-chat"
     >
       <div
         aria-live="polite"
-        className="mx-auto flex min-h-[calc(100svh-2.5rem)] w-full max-w-3xl flex-col gap-6 px-4 pb-44 pt-6 sm:px-6 sm:pb-48 sm:pt-8"
+        className="relative z-10 mx-auto flex min-h-[calc(100svh-2.5rem)] w-full max-w-3xl flex-col gap-6 px-4 pb-44 pt-6 sm:px-6 sm:pb-48 sm:pt-8"
         role="log"
       >
         {messages.map((message) => (
