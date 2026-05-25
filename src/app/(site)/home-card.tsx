@@ -82,14 +82,14 @@ export function HomeCard() {
           />
         </svg>
 
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-8 text-center sm:px-20">
+        <div className="absolute inset-0 flex flex-col items-center justify-start px-8 pb-14 pt-14 text-center sm:justify-center sm:px-20 sm:pb-0 sm:pt-0">
           <SAndELogo className="h-16 w-auto text-[#888834] sm:h-20" />
 
           <p className="mt-5 font-edict text-[12px] font-medium uppercase tracking-[0.34em] text-[#2a2a10] sm:mt-6 sm:text-[13px]">
             February 27, 2027
           </p>
 
-          <SamAndEmilyLogo className="mt-5 h-auto w-full max-w-[620px] text-[#3f3e19] sm:mt-6" />
+          <SamAndEmilyLogo className="mt-5 h-auto w-[90%] max-w-[620px] text-[#3f3e19] sm:mt-6 sm:w-full" />
 
           <p className="mt-4 font-edict text-lg italic text-[#2a2a10] sm:mt-5 sm:text-xl">
             San Miguel De Allende, Mexico
@@ -97,7 +97,7 @@ export function HomeCard() {
 
           <Link
             href="/rsvp"
-            className="mt-7 inline-block bg-[#898834] px-10 py-3 font-edict text-sm font-medium uppercase tracking-[0.28em] text-[#f2e4bc] transition-colors hover:bg-[#514f22] sm:mt-8"
+            className="mt-auto inline-block bg-[#898834] px-10 py-3 font-edict text-sm font-medium uppercase tracking-[0.28em] text-[#f2e4bc] transition-colors hover:bg-[#514f22] sm:mt-8"
           >
             RSVP
           </Link>

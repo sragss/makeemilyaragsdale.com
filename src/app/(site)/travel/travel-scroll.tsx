@@ -139,19 +139,28 @@ function ContactIcon({
 
 export function TravelScroll() {
   return (
-    <ScrollStackPanels className="relative -mt-12 w-full md:-mt-10">
-      <HeroPanel />
-      <BelmondIntroPanel />
-      <BelmondCarousel />
-      <HotelsPanel />
-      <TransportationPanel />
-    </ScrollStackPanels>
+    <>
+      <div className="flex flex-col md:hidden">
+        <HeroPanel />
+        <BelmondIntroPanel />
+        <BelmondCarousel />
+        <HotelsPanel />
+        <TransportationPanel />
+      </div>
+      <ScrollStackPanels className="relative -mt-12 hidden w-full md:-mt-10 md:block">
+        <HeroPanel />
+        <BelmondIntroPanel />
+        <BelmondCarousel />
+        <HotelsPanel />
+        <TransportationPanel />
+      </ScrollStackPanels>
+    </>
   );
 }
 
 function HeroPanel() {
   return (
-    <section className="relative h-full w-full overflow-hidden">
+    <section className="relative aspect-[3/4] w-full overflow-hidden md:aspect-auto md:h-full">
       <Image
         src="/images/TravelandStay-Hero.png"
         alt="San Miguel de Allende skyline at golden hour"
@@ -172,7 +181,7 @@ function HeroPanel() {
 
 function BelmondIntroPanel() {
   return (
-    <section className="flex h-full items-center justify-center overflow-hidden bg-[#f5e9c8] px-3 pb-[14vh] text-[#493932]">
+    <section className="flex items-center justify-center overflow-hidden bg-[#f5e9c8] px-3 py-16 text-[#493932] md:h-full md:py-0 md:pb-[14vh]">
       <div className="mx-auto max-w-3xl space-y-6 text-center">
         <h2 className="font-edict text-[2.25rem] font-medium uppercase tracking-[0.08em] sm:text-[2.7rem]">
           The Belmond
@@ -194,7 +203,7 @@ function BelmondIntroPanel() {
 
 function HotelsPanel() {
   return (
-    <section className="flex h-full flex-col items-center justify-start overflow-hidden bg-[#f5e9c8] px-3 pt-[12vh] text-[#493932]">
+    <section className="flex flex-col items-center justify-start overflow-hidden bg-[#f5e9c8] px-3 py-16 text-[#493932] md:h-full md:py-0 md:pt-[12vh]">
       <div className="mx-auto max-w-2xl space-y-4 text-center">
         <h2 className="font-edict text-3xl font-light italic sm:text-4xl">
           Other hotels we recommend
@@ -205,7 +214,7 @@ function HotelsPanel() {
         </p>
       </div>
 
-      <ul className="mt-[16vh] grid w-full grid-cols-2 gap-y-6 sm:mt-[22vh] sm:grid-cols-4">
+      <ul className="mt-10 grid w-full grid-cols-2 gap-y-6 md:mt-[22vh] md:grid-cols-4">
         {HOTELS.map((hotel) => (
           <li key={hotel.name} className="space-y-4">
             <a
@@ -235,7 +244,7 @@ function HotelsPanel() {
 
 function TransportationPanel() {
   return (
-    <section className="flex h-full items-center justify-center overflow-hidden bg-[#888834] px-3 text-[#f5e9c8] sm:px-5">
+    <section className="flex items-center justify-center overflow-hidden bg-[#888834] px-3 py-16 text-[#f5e9c8] md:h-full md:py-0 sm:px-5">
       <div className="mx-auto w-full max-w-5xl">
         <header className="mb-10 text-center sm:mb-14">
           <p className="font-inter text-[10px] uppercase tracking-[0.45em] text-[#f5e9c8]/65">

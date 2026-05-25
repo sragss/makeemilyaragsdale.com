@@ -30,7 +30,7 @@ export function BelmondCarousel() {
   }, [index]);
 
   return (
-    <section className="relative h-full w-full overflow-hidden bg-[#1c1109]">
+    <section className="relative aspect-[3/4] w-full overflow-hidden bg-[#1c1109] md:aspect-auto md:h-full">
       <div className="relative h-full w-full">
         <AnimatePresence initial={false} mode="sync">
           <motion.div
