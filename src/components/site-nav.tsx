@@ -47,19 +47,19 @@ export function SiteNav() {
 
   return (
     <header
-      className="sticky top-0 z-50 border-b border-garden-moss/20 bg-garden-cream/85 shadow-[0_1px_18px_rgba(28,17,9,0.08),inset_0_1px_0_rgba(255,255,255,0.45)] backdrop-blur-xl backdrop-saturate-150 supports-[backdrop-filter]:bg-garden-cream/70"
+      className="sticky top-0 z-50 border-b border-garden-moss/20 bg-[#888834] shadow-[0_1px_18px_rgba(28,17,9,0.08),inset_0_1px_0_rgba(255,255,255,0.45)]"
     >
-      <div className="mx-auto flex h-10 w-full max-w-6xl items-stretch gap-6 px-2 sm:px-3">
+      <div className="flex h-10 w-full items-stretch gap-6 pl-3 pr-2 sm:pl-4 sm:pr-3">
 
         <Link
           href="/"
           aria-label="Sam & Emily — Home"
           className="flex w-28 shrink-0 items-center"
         >
-          <SamAndEmilyLogo className="h-8 w-auto text-[#3f3e19] md:h-7" />
+          <SamAndEmilyLogo className="h-8 w-auto text-garden-cream md:h-7" />
         </Link>
 
-        <nav className="relative hidden flex-1 overflow-x-auto scrollbar-none md:block">
+        <nav className="relative hidden flex-1 justify-end overflow-x-auto scrollbar-none md:flex">
           <ul className="flex h-full items-stretch whitespace-nowrap">
             {TABS.map((tab) => {
               const active = isActive(pathname, tab.href);
@@ -69,8 +69,8 @@ export function SiteNav() {
                     href={tab.href}
                     className={`group relative flex items-center px-3 font-edict text-[12px] font-medium uppercase tracking-[0.16em] transition-colors ${
                       active
-                        ? "text-garden-ink"
-                        : "text-garden-moss/75 hover:text-garden-ink"
+                        ? "text-garden-cream"
+                        : "text-garden-cream/75 hover:text-garden-cream"
                     }`}
                   >
                     <span className="relative">{tab.label}</span>
@@ -98,7 +98,7 @@ export function SiteNav() {
           aria-controls="mobile-site-nav"
           aria-expanded={mobileMenuOpen}
           onClick={() => setMobileMenuOpen((open) => !open)}
-          className="ml-auto inline-flex h-12 w-12 items-center justify-center text-garden-moss transition-colors hover:text-garden-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-garden-green md:hidden"
+          className="ml-auto inline-flex h-12 w-12 items-center justify-center text-garden-cream transition-colors hover:text-garden-cream/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-garden-green md:hidden"
         >
           {mobileMenuOpen ? (
             <X aria-hidden className="h-5 w-5" strokeWidth={1.7} />
@@ -136,8 +136,8 @@ export function SiteNav() {
                         onClick={() => setMobileMenuOpen(false)}
                         className={`group relative flex min-h-14 items-center justify-between py-4 font-edict text-[13px] font-medium uppercase tracking-[0.24em] transition-colors ${
                           active
-                            ? "text-garden-ink"
-                            : "text-garden-moss/78 hover:text-garden-ink"
+                            ? "text-garden-cream"
+                            : "text-garden-cream/75 hover:text-garden-cream"
                         }`}
                       >
                         <span>{tab.label}</span>

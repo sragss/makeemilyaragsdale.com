@@ -45,7 +45,7 @@ export function SiteFooter() {
         theme.divider ? "border-t border-[var(--footer-fg)]" : ""
       }`}
     >
-      <div className="relative mx-auto grid w-full max-w-6xl grid-cols-3 items-center gap-4 px-3 py-5 sm:px-4 sm:py-6">
+      <div className="relative grid w-full grid-cols-3 items-center gap-4 py-5 pl-3 pr-2 sm:py-6 sm:pl-4 sm:pr-3">
         <p className="font-edict text-xs font-medium tracking-[0.18em] justify-self-start">
           02-27-2027
         </p>
