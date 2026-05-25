@@ -201,7 +201,7 @@ body:has([data-route="faq-chat"]) footer {
   aspect-ratio: 104.46 / 108.36;
   content: "";
   pointer-events: none;
-  transform: translate(-50%, -50%) rotate(-5deg);
+  transform: translate(-50%, -50%);
   mask-image: url("/poncho-light.svg");
   mask-position: center;
   mask-repeat: no-repeat;
@@ -224,7 +224,7 @@ body:has([data-route="faq-chat"]) footer {
   filter: blur(0.45px);
   mix-blend-mode: soft-light;
   opacity: 0.03;
-  transform: translate(calc(-50% - 1.5px), calc(-50% - 1.5px)) rotate(-5deg);
+  transform: translate(calc(-50% - 1.5px), calc(-50% - 1.5px));
 }
 
 @media (max-width: 640px) {
