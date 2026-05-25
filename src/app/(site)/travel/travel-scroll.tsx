@@ -181,7 +181,7 @@ function HeroPanel() {
 
 function BelmondIntroPanel() {
   return (
-    <section className="flex items-center justify-center overflow-hidden bg-[#f5e9c8] px-3 py-16 text-[#493932] md:h-full md:py-0 md:pb-[14vh]">
+    <section className="flex items-center justify-center overflow-hidden bg-[#f5e9c8] px-6 py-16 text-[#493932] md:h-full md:px-3 md:py-0 md:pb-[14vh]">
       <div className="mx-auto max-w-3xl space-y-6 text-center">
         <h2 className="font-edict text-[2.25rem] font-medium uppercase tracking-[0.08em] sm:text-[2.7rem]">
           The Belmond
@@ -203,7 +203,7 @@ function BelmondIntroPanel() {
 
 function HotelsPanel() {
   return (
-    <section className="flex flex-col items-center justify-start overflow-hidden bg-[#f5e9c8] px-3 py-16 text-[#493932] md:h-full md:py-0 md:pt-[12vh]">
+    <section className="flex flex-col items-center justify-start overflow-hidden bg-[#f5e9c8] px-6 py-16 text-[#493932] md:h-full md:px-3 md:py-0 md:pt-[12vh]">
       <div className="mx-auto max-w-2xl space-y-4 text-center">
         <h2 className="font-edict text-3xl font-light italic sm:text-4xl">
           Other hotels we recommend
@@ -244,13 +244,13 @@ function HotelsPanel() {
 
 function TransportationPanel() {
   return (
-    <section className="flex items-center justify-center overflow-hidden bg-[#888834] px-3 py-16 text-[#f5e9c8] md:h-full md:py-0 sm:px-5">
+    <section className="flex items-center justify-center overflow-hidden bg-[#888834] px-6 py-16 text-[#f5e9c8] md:h-full md:px-5 md:py-0">
       <div className="mx-auto w-full max-w-5xl">
         <header className="mb-10 text-center sm:mb-14">
           <p className="font-inter text-[10px] uppercase tracking-[0.45em] text-[#f5e9c8]/65">
             Getting to &amp; around San Miguel
           </p>
-          <h2 className="mt-3 font-edict text-2xl uppercase tracking-[0.08em] md:text-5xl md:tracking-[0.18em]">
+          <h2 className="mt-3 font-edict text-xl uppercase tracking-[0.06em] md:text-5xl md:tracking-[0.18em]">
             Transportation
           </h2>
         </header>
