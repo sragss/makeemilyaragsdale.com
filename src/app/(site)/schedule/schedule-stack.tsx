@@ -132,6 +132,9 @@ function WelcomePartyCard() {
           <span className="text-garden-cream">Welcome</span>{" "}
           <span className="text-garden-green">Party</span>
         </h2>
+        <p className="font-edict italic text-base text-garden-cream/80 sm:text-lg">
+          Hosted by the Ragsdale Family
+        </p>
       </div>
       <ColumnTimeline
         items={FRIDAY_ITEMS}
@@ -176,6 +179,9 @@ function CeremonyCard() {
           </span>
           <span className="block text-garden-moss">Reception</span>
         </h2>
+        <p className="font-edict italic text-base text-garden-ink/70 sm:text-lg">
+          Hosted by the Devery Family
+        </p>
       </div>
       <ColumnTimeline
         items={SATURDAY_ITEMS}

@@ -1,6 +1,8 @@
 "use client";
 
 import Image from "next/image";
+import { useRef } from "react";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { ScrollStackPanels } from "@/components/scroll-stage";
 
 type Look = {
@@ -12,42 +14,46 @@ type Look = {
   alt: string;
   bgClass: string;
   textClass: string;
-  ringClass: string;
+  accentClass?: string;
+  inspirationUrl?: string;
 };
 
 const LOOKS: Look[] = [
   {
     day: "Friday Afternoon",
-    title: "Pool Party",
-    subtitle: "Welcome at the Belmond",
-    body: "Resort casual. Swimwear with a coverup, sundresses, linen shirts, sandals. Bring a hat and sunscreen — the high-desert sun is intense.",
+    title: "Resort Casual",
+    subtitle: "Pool Party",
+    body: "Bring a hat and sunscreen, the high-desert sun is intense.",
     image: "/images/Pool Party Attire.png",
     alt: "Pool party attire inspiration",
-    bgClass: "bg-garden-terracotta",
-    textClass: "text-garden-cream",
-    ringClass: "ring-garden-cream/40",
+    bgClass: "bg-[#f2e5bb]",
+    textClass: "text-garden-ink",
+    accentClass: "text-[#888834]",
+    inspirationUrl: "https://www.pinterest.com/emily_devery/wedding/pool-party-inspiration/",
   },
   {
     day: "Friday Evening",
-    title: "White Linens",
-    subtitle: "Callejoneada and Tunki Rooftop",
-    body: "Relaxed and elevated, all in white. Footwear suitable for walking the parade on cobblestone, and a light jacket or wrap for the rooftop after sunset.",
+    title: "White Party",
+    subtitle: "Parade and Rooftop",
+    body: "Footwear suitable for walking the parade on cobblestone, and a light jacket or wrap for the rooftop after sunset as the temperature drops substantially in the evenings.",
     image: "/images/White Party Attire.png",
-    alt: "White linens attire inspiration",
-    bgClass: "bg-garden-moss",
+    alt: "White party attire inspiration",
+    bgClass: "bg-[#888834]",
     textClass: "text-garden-cream",
-    ringClass: "ring-garden-cream/40",
+    accentClass: "text-[#493523]",
+    inspirationUrl: "https://www.pinterest.com/emily_devery/wedding/welcome-party-inspiration/",
   },
   {
     day: "Saturday",
     title: "Enchanted Garden",
-    subtitle: "Ceremony and Reception",
-    body: "Garden neutrals, greens, golds, and khaki. Draping, pleating, and romantic silhouettes at golden hour. We recommend a layer or shawl as it cools down in the evenings, and block heels or flats for the cobblestone paths.",
+    subtitle: "Ceremony & Reception",
+    body: "Footwear suitable for walking the cobblestone path between the ceremony and reception.",
     image: "/images/Enchanted Garden Attire.png",
     alt: "Enchanted garden attire inspiration",
-    bgClass: "bg-garden-olive",
+    bgClass: "bg-[#3f3e19]",
     textClass: "text-garden-cream",
-    ringClass: "ring-garden-cream/40",
+    accentClass: "text-[#d2cf53]",
+    inspirationUrl: "https://www.pinterest.com/emily_devery/wedding/enchanted-garden-inspiration/",
   },
 ];
 
@@ -62,36 +68,99 @@ export function AttireScroll() {
 }
 
 function AttirePanel({ look, priority }: { look: Look; priority?: boolean }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const springConfig = { stiffness: 140, damping: 18, mass: 0.6 };
+  const sx = useSpring(mouseX, springConfig);
+  const sy = useSpring(mouseY, springConfig);
+
+  const rotateX = useTransform(sy, [-0.5, 0.5], [6, -6]);
+  const rotateY = useTransform(sx, [-0.5, 0.5], [-6, 6]);
+
+  function handleMove(e: React.MouseEvent<HTMLElement>) {
+    const el = ref.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    mouseX.set((e.clientX - r.left) / r.width - 0.5);
+    mouseY.set((e.clientY - r.top) / r.height - 0.5);
+  }
+
+  function handleLeave() {
+    mouseX.set(0);
+    mouseY.set(0);
+  }
+
+  const imageCard = (
+    <motion.div
+      ref={ref}
+      onMouseMove={handleMove}
+      onMouseLeave={handleLeave}
+      whileTap={{ scale: 0.97 }}
+      style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+      className="relative aspect-[3/2] w-full overflow-hidden will-change-transform"
+    >
+      <Image
+        src={look.image}
+        alt={look.alt}
+        fill
+        className="object-contain"
+        sizes="(min-width: 768px) 60vw, 100vw"
+        priority={priority}
+      />
+    </motion.div>
+  );
+
   return (
     <section
       className={`flex h-full items-center overflow-hidden ${look.bgClass} ${look.textClass}`}
     >
-      <div className="mx-auto grid w-full max-w-7xl items-center gap-10 px-3 py-12 md:grid-cols-[3fr_2fr] md:gap-16 md:px-6">
-        <div className={`p-2 ring-1 ${look.ringClass}`}>
-          <div className="relative aspect-[3/2] w-full overflow-hidden">
-            <Image
-              src={look.image}
-              alt={look.alt}
-              fill
-              className="object-contain"
-              sizes="(min-width: 768px) 60vw, 100vw"
-              priority={priority}
-            />
-          </div>
+      <div className="grid w-full items-center gap-10 px-3 py-12 md:grid-cols-[3fr_2fr] md:gap-16 md:pl-12 md:pr-12">
+        <div className="[perspective:1400px]">
+          {look.inspirationUrl ? (
+            <a
+              href={look.inspirationUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`${look.title} inspiration board`}
+              className="block"
+            >
+              {imageCard}
+            </a>
+          ) : (
+            imageCard
+          )}
         </div>
         <div className="text-center">
-          <p className="font-edict text-[11px] uppercase tracking-[0.45em] opacity-80">
+          <p
+            className={`font-edict text-xs font-medium uppercase tracking-[0.45em] opacity-80 ${look.accentClass ?? ""}`}
+          >
             {look.day}
           </p>
-          <h2 className="mt-6 font-serif text-4xl font-light uppercase tracking-[0.15em] sm:text-5xl">
+          <h2 className="mt-6 font-eros text-5xl font-normal uppercase leading-[0.9] sm:text-6xl">
             {look.title}
           </h2>
-          <p className="mt-4 font-serif text-lg italic opacity-90">
+          <p
+            className={`mt-4 font-serif text-2xl italic opacity-90 sm:text-3xl ${look.accentClass ?? ""}`}
+          >
             {look.subtitle}
           </p>
-          <p className="mx-auto mt-8 max-w-md text-sm leading-relaxed opacity-85">
+          <p className="mx-auto mt-8 max-w-md font-edict text-base leading-relaxed text-pretty opacity-85">
             {look.body}
           </p>
+          {look.inspirationUrl ? (
+            <p className="mt-5">
+              <a
+                href={look.inspirationUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`font-edict text-xs font-medium uppercase tracking-[0.3em] underline underline-offset-4 opacity-80 transition-opacity hover:opacity-100 ${look.accentClass ?? ""}`}
+              >
+                more inspiration
+              </a>
+            </p>
+          ) : null}
         </div>
       </div>
     </section>
