@@ -112,7 +112,7 @@ export function SiteNav() {
         {mobileMenuOpen && (
           <motion.div
             id="mobile-site-nav"
-            className="absolute inset-x-0 top-full z-40 h-[calc(100dvh-3rem)] overflow-y-auto border-t border-garden-moss/10 bg-garden-cream/96 shadow-[0_30px_80px_rgba(28,17,9,0.18)] md:hidden"
+            className="absolute inset-x-0 top-full z-40 h-[calc(100dvh-3rem)] overflow-y-auto border-t border-garden-cream/15 bg-[#888834] shadow-[0_30px_80px_rgba(28,17,9,0.18)] md:hidden"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
@@ -122,14 +122,14 @@ export function SiteNav() {
               aria-label="Mobile navigation"
               className="mx-auto flex min-h-[calc(100dvh-3rem)] max-w-6xl flex-col justify-center px-5 py-9"
             >
-              <ul className="border-y border-garden-moss/18">
+              <ul className="border-y border-garden-cream/20">
                 {TABS.map((tab) => {
                   const active = isActive(pathname, tab.href);
 
                   return (
                     <li
                       key={tab.href}
-                      className="border-b border-garden-moss/12 last:border-b-0"
+                      className="border-b border-garden-cream/15 last:border-b-0"
                     >
                       <Link
                         href={tab.href}
@@ -141,7 +141,7 @@ export function SiteNav() {
                         }`}
                       >
                         <span>{tab.label}</span>
-                        <span className="relative h-px w-10 overflow-hidden bg-garden-moss/18">
+                        <span className="relative h-px w-10 overflow-hidden bg-garden-cream/25">
                           <motion.span
                             className="absolute inset-y-0 left-0 bg-garden-green"
                             initial={false}
