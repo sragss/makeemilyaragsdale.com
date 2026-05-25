@@ -1,6 +1,13 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "streamdown/styles.css";
+
+@source "../../node_modules/streamdown/dist/*.js";
+@source "../../node_modules/@streamdown/cjk/dist/*.js";
+@source "../../node_modules/@streamdown/code/dist/*.js";
+@source "../../node_modules/@streamdown/math/dist/*.js";
+@source "../../node_modules/@streamdown/mermaid/dist/*.js";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -165,6 +172,67 @@ body:has([data-route="schedule"]) footer a {
 body:has([data-route="schedule"]) footer a:hover {
   background-color: var(--color-garden-cream);
   color: #3f3e19;
+}
+
+body:has([data-route="faq-chat"]) footer {
+  display: none;
+}
+
+.faq-cave-wall {
+  isolation: isolate;
+  background-color: #f7ebcf;
+  background-image:
+    radial-gradient(circle at 24% 8%, rgba(255, 251, 238, 0.42), transparent 34rem),
+    radial-gradient(circle at 76% 44%, rgba(105, 73, 35, 0.08), transparent 38rem),
+    url("/images/noise.webp");
+  background-size:
+    auto,
+    auto,
+    190px 190px;
+}
+
+.faq-cave-wall::before,
+.faq-cave-wall::after {
+  position: fixed;
+  top: 42svh;
+  left: 50%;
+  z-index: 0;
+  width: clamp(14rem, 36vw, 28rem);
+  aspect-ratio: 104.46 / 108.36;
+  content: "";
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  mask-image: url("/poncho-light.svg");
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  -webkit-mask-image: url("/poncho-light.svg");
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+}
+
+.faq-cave-wall::before {
+  background: #80673a;
+  filter: blur(0.2px) drop-shadow(2px 2.5px 0 rgba(65, 45, 20, 0.02));
+  mix-blend-mode: multiply;
+  opacity: 0.05;
+}
+
+.faq-cave-wall::after {
+  background: #fff7df;
+  filter: blur(0.45px);
+  mix-blend-mode: soft-light;
+  opacity: 0.03;
+  transform: translate(calc(-50% - 1.5px), calc(-50% - 1.5px));
+}
+
+@media (max-width: 640px) {
+  .faq-cave-wall::before,
+  .faq-cave-wall::after {
+    top: 39svh;
+    width: clamp(13rem, 62vw, 20rem);
+  }
 }
 
 @layer utilities {
