@@ -199,7 +199,7 @@ function HotelsPanel() {
         <h2 className="font-edict text-3xl font-light italic sm:text-4xl">
           Other hotels we recommend
         </h2>
-        <p className="font-inter text-[15px] leading-relaxed text-[#493932]/80 sm:text-base">
+        <p className="text-balance font-inter text-[15px] leading-relaxed text-[#493932]/80 sm:text-base">
           For guests who are not able to stay at the Belmond, here are a few
           hotels we&apos;d recommend nearby. All are walkable to the Belmond.
         </p>

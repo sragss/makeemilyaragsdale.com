@@ -22,34 +22,34 @@ const ACTIVITIES: Activity[] = [
   },
   {
     name: "Hot Air Balloon",
-    image: "/images/Hot Air Balloon.png",
+    image: "/images/hot-air-balloon-4k.png",
     alt: "Hot air balloons drifting over the high desert at sunrise",
     note: "Sunrise trips floating above the high desert as light comes up over the colonial rooftops.",
     href: "https://globosanmiguel.com/portfolio/classic-sunrise-flight/",
   },
   {
     name: "Casa Dragones Tasting",
-    image: "/images/Casa Dragones.png",
+    image: "/images/casa-dragones-4k.png",
     alt: "Casa Dragones tasting room interior with backlit tequila bottles",
     note: "An intimate tasting in their tasting room downtown. Reservations required and worth booking well in advance.",
     href: "https://casadragones.com/us/visit-us/casa-dragones-tasting-room",
   },
   {
     name: "Mayan Baths",
-    image: "/images/Mayan Baths.png",
+    image: "/images/Mayan Baths Upscale.png",
     alt: "Vaulted stone passage leading into the Mayan Baths thermal pools",
     note: "A series of thermal pools and steam rituals inspired by Mayan tradition.",
     href: "https://www.mayanbaths.com/",
   },
   {
-    name: "Fábrica La Aurora",
+    name: "Fabrica La Aurora",
     image: "/images/Fabrica La Aurora.png",
     alt: "Art and antiques inside Fábrica La Aurora",
     note: "A former textile factory turned gallery and design complex. Easy to spend half a day wandering through artist studios, antiques, and design shops.",
     href: "https://fabricalaaurora.com/",
   },
   {
-    name: "Mercado de Artesanías",
+    name: "Mercado de Artesanias",
     image: "/images/Mercado de Artesanias.png",
     alt: "Stalls of flowers and crafts at the Mercado de Artesanías",
     note: "A vibrant and sprawling artisan market with textiles, ceramics, silver, and flowers.",
@@ -143,7 +143,7 @@ function IntroPanel() {
           <br />
           <span className="text-[#888834]">Stay Late</span>
         </h2>
-        <p className="font-edict text-base leading-relaxed text-[#f5e9c8]/85 sm:text-lg">
+        <p className="text-balance font-edict text-base leading-relaxed text-[#f5e9c8]/85 sm:text-lg">
           If your schedule allows, stay a little while. San Miguel de Allende is
           a colonial town in the high desert of central Mexico, known for its
           cobblestone streets, golden light, and centuries-old cathedral. It has
@@ -202,7 +202,7 @@ function ActivityPanel({
           <h2 className="font-edict text-3xl uppercase tracking-[0.18em] text-garden-moss sm:text-4xl">
             {activity.name}
           </h2>
-          <p className="mx-auto mt-6 max-w-md text-pretty font-edict text-base leading-relaxed text-[#493932]/85 sm:text-lg">
+          <p className="mx-auto mt-6 max-w-md text-balance font-edict text-base leading-relaxed text-[#493932]/85 sm:text-lg">
             {activity.note}
           </p>
         </div>
