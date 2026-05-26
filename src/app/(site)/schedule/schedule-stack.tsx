@@ -19,6 +19,7 @@ type Item = {
   time: string;
   title: string;
   detail: ReactNode;
+  detailClassName?: string;
 };
 
 function ColumnTimeline({
@@ -44,7 +45,11 @@ function ColumnTimeline({
           >
             {item.title}
           </p>
-          <p className={`font-edict text-xs leading-snug sm:text-sm ${detailClass}`}>
+          <p
+            className={`font-edict text-xs leading-snug sm:text-sm ${detailClass} ${
+              item.detailClassName ?? ""
+            }`}
+          >
             {item.detail}
           </p>
         </div>
@@ -107,6 +112,7 @@ const SATURDAY_ITEMS: Item[] = [
     title: "Reception",
     detail:
       "Dinner and dancing at Salón Luna, with toasts, first dances, and the evening unfolding in earnest.",
+    detailClassName: "text-balance sm:text-wrap",
   },
   {
     time: "11 PM",

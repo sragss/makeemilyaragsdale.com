@@ -99,7 +99,7 @@ function AttirePanel({ look, priority }: { look: Look; priority?: boolean }) {
             imageCard
           )}
         </div>
-        <div className="px-6 pb-12 text-center md:px-12 md:pb-0">
+        <div className="px-6 pb-20 text-center md:px-12 md:pb-0">
           <p
             className={`font-edict text-xs font-medium uppercase tracking-[0.45em] opacity-80 ${look.accentClass ?? ""}`}
           >

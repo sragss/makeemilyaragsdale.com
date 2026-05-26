@@ -208,9 +208,12 @@ function HotelsPanel() {
         </p>
       </div>
 
-      <ul className="mt-[16vh] grid w-full grid-cols-2 gap-y-6 sm:mt-[22vh] sm:grid-cols-4">
+      <ul className="-mx-6 mt-[12vh] flex w-screen snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-2 scrollbar-none sm:mx-0 sm:mt-[22vh] sm:grid sm:w-full sm:snap-none sm:grid-cols-4 sm:gap-y-6 sm:overflow-visible sm:px-0">
         {HOTELS.map((hotel) => (
-          <li key={hotel.name} className="space-y-4">
+          <li
+            key={hotel.name}
+            className="w-[78%] flex-none snap-center space-y-4 sm:w-auto sm:flex-1 sm:snap-none"
+          >
             <a
               href={hotel.href}
               target="_blank"
@@ -222,7 +225,7 @@ function HotelsPanel() {
                 src={hotel.src}
                 alt={hotel.name}
                 fill
-                sizes="(min-width: 640px) 25vw, 50vw"
+                sizes="(min-width: 640px) 25vw, 78vw"
                 className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
               />
             </a>
