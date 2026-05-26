@@ -3,7 +3,7 @@ import { HomeCard } from "./home-card";
 
 export default function Home() {
   return (
-    <section className="relative -mt-12 h-screen w-full overflow-hidden md:-mt-10">
+    <section className="relative w-full flex-1 overflow-hidden sm:-mt-12 sm:h-screen sm:flex-none md:-mt-10">
       <Image
         src="/images/Home.png"
         alt="Emily & Sam — San Miguel de Allende"
@@ -13,7 +13,7 @@ export default function Home() {
         className="object-cover"
       />
 
-      <div className="absolute inset-0 flex items-center justify-center px-3 py-12 [perspective:1400px]">
+      <div className="absolute inset-0 flex items-center justify-center px-3 py-4 [perspective:1400px] sm:py-12">
         <HomeCard />
       </div>
     </section>
