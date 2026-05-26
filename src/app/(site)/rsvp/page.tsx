@@ -29,7 +29,7 @@ export default function RsvpPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-[#f5e9c8]/60 via-[#f5e9c8]/72 to-[#f5e9c8]" />
       </div>
 
-      <section className="relative mx-auto flex w-full max-w-2xl flex-1 flex-col items-center justify-center px-2 py-4 sm:flex-none sm:justify-start sm:px-3 sm:py-28">
+      <section className="relative mx-auto flex min-h-[calc(100svh-7.5rem)] w-full max-w-2xl flex-col items-center justify-center px-2 py-4 sm:min-h-0 sm:justify-start sm:px-3 sm:py-28">
         <RsvpFlow />
       </section>
     </div>
