@@ -268,7 +268,7 @@ export function FAQChat() {
         {!hasAsked && (
           <motion.div
             key="faq-chat-input-floating"
-            className="pointer-events-none fixed inset-x-0 bottom-0 z-20 px-3 pb-[22rem] sm:px-6 sm:pb-[24rem]"
+            className="pointer-events-none fixed inset-x-0 top-[44%] z-20 px-3 sm:bottom-0 sm:top-auto sm:px-6 sm:pb-[24rem]"
             initial={{ opacity: 1, y: 0 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 24 }}

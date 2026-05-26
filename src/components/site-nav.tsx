@@ -47,7 +47,7 @@ export function SiteNav() {
 
   return (
     <header
-      className="sticky top-0 z-50 border-b border-garden-moss/20 bg-[#888834] shadow-[0_1px_18px_rgba(28,17,9,0.08),inset_0_1px_0_rgba(255,255,255,0.45)]"
+      className="sticky top-0 z-50 border-b border-garden-moss/20 bg-[#888834] shadow-[0_1px_18px_rgba(28,17,9,0.08)]"
     >
       <div className="flex h-10 w-full items-stretch gap-6 pl-3 pr-2 sm:pl-4 sm:pr-3">
 
@@ -112,7 +112,7 @@ export function SiteNav() {
         {mobileMenuOpen && (
           <motion.div
             id="mobile-site-nav"
-            className="absolute inset-x-0 top-full z-40 h-[calc(100dvh-3rem)] overflow-y-auto border-t border-garden-cream/15 bg-[#888834] shadow-[0_30px_80px_rgba(28,17,9,0.18)] md:hidden"
+            className="fixed inset-x-0 bottom-0 top-10 z-40 overflow-y-auto border-t border-garden-cream/15 bg-[#888834] shadow-[0_30px_80px_rgba(28,17,9,0.18)] md:hidden"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
@@ -120,7 +120,7 @@ export function SiteNav() {
           >
             <nav
               aria-label="Mobile navigation"
-              className="mx-auto flex min-h-[calc(100dvh-3rem)] max-w-6xl flex-col justify-center px-5 py-9"
+              className="mx-auto flex min-h-full max-w-6xl flex-col justify-center px-5 py-9"
             >
               <ul className="border-y border-garden-cream/20">
                 {TABS.map((tab) => {
@@ -134,24 +134,13 @@ export function SiteNav() {
                       <Link
                         href={tab.href}
                         onClick={() => setMobileMenuOpen(false)}
-                        className={`group relative flex min-h-14 items-center justify-between py-4 font-edict text-[13px] font-medium uppercase tracking-[0.24em] transition-colors ${
+                        className={`group relative flex min-h-14 items-center py-4 font-edict text-[13px] font-medium uppercase tracking-[0.24em] transition-colors ${
                           active
                             ? "text-garden-cream"
                             : "text-garden-cream/75 hover:text-garden-cream"
                         }`}
                       >
                         <span>{tab.label}</span>
-                        <span className="relative h-px w-10 overflow-hidden bg-garden-cream/25">
-                          <motion.span
-                            className="absolute inset-y-0 left-0 bg-garden-green"
-                            initial={false}
-                            animate={{ width: active ? "100%" : "0%" }}
-                            transition={{
-                              duration: 0.28,
-                              ease: "easeOut",
-                            }}
-                          />
-                        </span>
                       </Link>
                     </li>
                   );

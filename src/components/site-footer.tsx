@@ -18,11 +18,11 @@ const DEFAULT_THEME: FooterTheme = {
 
 const THEMES: Record<string, FooterTheme> = {
   "/": { bg: "#888834", fg: "#f2e5bb" },
-  "/schedule": { bg: "#3f3e19", fg: "#f2e5bb", divider: true },
+  "/schedule": { bg: "#888834", fg: "#f2e5bb" },
   "/travel": { bg: "#888834", fg: "#f2e5bb", divider: true },
-  "/dress-code": { bg: "#888834", fg: "#f2e5bb", divider: true },
-  "/explore": { bg: "#3f3e19", fg: "#f2e5bb", divider: true },
-  "/faq": { bg: "#888834", fg: "#f2e5bb", divider: true },
+  "/dress-code": { bg: "#888834", fg: "#f2e5bb" },
+  "/explore": { bg: "#888834", fg: "#f2e5bb" },
+  "/faq": { bg: "#888834", fg: "#f2e5bb" },
 };
 
 function themeForPathname(pathname: string): FooterTheme {
@@ -31,6 +31,11 @@ function themeForPathname(pathname: string): FooterTheme {
 
 export function SiteFooter() {
   const pathname = usePathname();
+
+  if (pathname === "/") {
+    return null;
+  }
+
   const theme = themeForPathname(pathname);
 
   const themeVars = {

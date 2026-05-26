@@ -163,20 +163,17 @@ body:has([data-route="rsvp"]) {
   background-color: #f5e9c8;
 }
 
-/* Schedule route: dark frame for body + footer. Kept unlayered so it beats Tailwind utility classes like `bg-[#f5e9c8]` on the footer. */
+/* FAQ route: olive body so the page stays continuous green between header, section, and footer. */
+body:has([data-route="faq-chat"]) {
+  background-color: #888834;
+}
+body:has([data-route="faq-chat"]) header.sticky {
+  border-bottom-color: transparent;
+}
+
+/* Schedule route: dark body frame, olive footer to match the top nav. */
 body:has([data-route="schedule"]) {
   background-color: #3f3e19;
-}
-body:has([data-route="schedule"]) footer {
-  background-color: #3f3e19;
-  color: var(--color-garden-cream);
-}
-body:has([data-route="schedule"]) footer a {
-  border-color: var(--color-garden-cream);
-}
-body:has([data-route="schedule"]) footer a:hover {
-  background-color: var(--color-garden-cream);
-  color: #3f3e19;
 }
 
 .faq-cave-wall {
@@ -211,7 +208,7 @@ body:has([data-route="schedule"]) footer a:hover {
 
 @media (max-width: 640px) {
   .faq-cave-wall::before {
-    top: 20svh;
+    top: 38svh;
     width: clamp(3.6rem, 17.1vw, 5.85rem);
   }
 }
