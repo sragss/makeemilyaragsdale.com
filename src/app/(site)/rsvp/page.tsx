@@ -15,7 +15,7 @@ export default function RsvpPage() {
   return (
     <div
       data-route="rsvp"
-      className="relative -mt-12 flex flex-1 flex-col overflow-hidden bg-[#f5e9c8] text-[#493932] md:-mt-10"
+      className="relative flex flex-1 flex-col overflow-hidden bg-[#f5e9c8] text-[#493932] md:-mt-10"
     >
       <div className="absolute inset-x-0 top-0 h-[46vh] overflow-hidden sm:h-[58vh]">
         <Image
@@ -29,7 +29,7 @@ export default function RsvpPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-[#f5e9c8]/60 via-[#f5e9c8]/72 to-[#f5e9c8]" />
       </div>
 
-      <section className="relative mx-auto flex w-full max-w-2xl flex-1 flex-col items-center justify-center px-2 pb-8 pt-8 sm:flex-none sm:justify-start sm:px-3 sm:pb-24 sm:pt-28">
+      <section className="relative mx-auto flex w-full max-w-2xl flex-1 flex-col items-center justify-center px-2 py-4 sm:flex-none sm:justify-start sm:px-3 sm:py-28">
         <RsvpFlow />
       </section>
     </div>
