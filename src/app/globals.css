@@ -158,6 +158,14 @@
 
 }
 
+/* Mobile-only scroll snap for stacked panel pages (Travel, Attire, Explore). */
+@media (max-width: 767px) {
+  html:has([data-mobile-snap]) {
+    scroll-snap-type: y mandatory;
+    scroll-padding-top: 2.5rem;
+  }
+}
+
 /* RSVP route: cream body so any layout gaps match the page card background. */
 body:has([data-route="rsvp"]) {
   background-color: #f5e9c8;

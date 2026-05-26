@@ -157,6 +157,18 @@ export function ScrollStackPanels({
       frames={panels.length}
       className={className}
       viewportClassName={viewportClassName}
+      mobile={
+        <div data-mobile-snap>
+          {panels.map((panel, index) => (
+            <div
+              key={index}
+              className="h-svh w-full snap-start snap-always overflow-hidden"
+            >
+              {panel}
+            </div>
+          ))}
+        </div>
+      }
     >
       {(progress) => (
         <div className="relative h-full w-full">
