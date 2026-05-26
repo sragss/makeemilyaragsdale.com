@@ -160,19 +160,20 @@ export function TravelScroll() {
 
 function HeroPanel() {
   return (
-    <section className="relative aspect-[3/4] w-full overflow-hidden md:aspect-auto md:h-full">
+    <section className="relative min-h-[calc(100svh-2.5rem)] w-full overflow-hidden md:aspect-auto md:h-full md:min-h-0">
       <Image
         src="/images/TravelandStay-Hero.png"
         alt="San Miguel de Allende skyline at golden hour"
         fill
         priority
         sizes="100vw"
-        className="scale-110 object-cover"
+        className="scale-110 object-cover object-[70%_50%] md:object-center"
       />
       <div className="absolute inset-0 bg-black/10" />
       <div className="absolute inset-0 flex items-center justify-center px-6">
-        <h1 className="font-eros text-[clamp(5.07rem,18.59vw,15.21rem)] font-normal uppercase leading-[0.85] tracking-[-0.01em] text-[#f5e9c8] drop-shadow-[0_4px_24px_rgba(0,0,0,0.35)]">
-          Travel &amp; Stay
+        <h1 className="text-center font-eros text-[clamp(5.07rem,18.59vw,15.21rem)] font-normal uppercase leading-[0.75] tracking-[-0.01em] text-[#f5e9c8] drop-shadow-[0_4px_24px_rgba(0,0,0,0.35)] md:text-left md:leading-[0.85]">
+          <span className="block md:inline">Travel </span>
+          <span className="block md:inline">&amp; Stay</span>
         </h1>
       </div>
     </section>
@@ -181,7 +182,7 @@ function HeroPanel() {
 
 function BelmondIntroPanel() {
   return (
-    <section className="flex items-center justify-center overflow-hidden bg-[#f5e9c8] px-6 py-16 text-[#493932] md:h-full md:px-3 md:py-0 md:pb-[14vh]">
+    <section className="flex min-h-[calc(100svh-2.5rem)] items-center justify-center overflow-hidden bg-[#f5e9c8] px-6 py-16 text-[#493932] md:h-full md:min-h-0 md:px-3 md:py-0 md:pb-[14vh]">
       <div className="mx-auto max-w-3xl space-y-6 text-center">
         <h2 className="font-edict text-[2.25rem] font-medium uppercase tracking-[0.08em] sm:text-[2.7rem]">
           The Belmond
@@ -203,7 +204,7 @@ function BelmondIntroPanel() {
 
 function HotelsPanel() {
   return (
-    <section className="flex flex-col items-center justify-start overflow-hidden bg-[#f5e9c8] px-6 py-16 text-[#493932] md:h-full md:px-3 md:py-0 md:pt-[12vh]">
+    <section className="flex min-h-[calc(100svh-2.5rem)] flex-col items-center justify-start overflow-hidden bg-[#f5e9c8] px-6 py-16 text-[#493932] md:h-full md:min-h-0 md:px-3 md:py-0 md:pt-[12vh]">
       <div className="mx-auto max-w-2xl space-y-4 text-center">
         <h2 className="font-edict text-3xl font-light italic sm:text-4xl">
           Other hotels we recommend
@@ -247,10 +248,7 @@ function TransportationPanel() {
     <section className="flex items-center justify-center overflow-hidden bg-[#888834] px-6 py-16 text-[#f5e9c8] md:h-full md:px-5 md:py-0">
       <div className="mx-auto w-full max-w-5xl">
         <header className="mb-10 text-center sm:mb-14">
-          <p className="font-inter text-[10px] uppercase tracking-[0.45em] text-[#f5e9c8]/65">
-            Getting to &amp; around San Miguel
-          </p>
-          <h2 className="mt-3 font-edict text-xl uppercase tracking-[0.06em] md:text-5xl md:tracking-[0.18em]">
+          <h2 className="font-edict text-xl uppercase tracking-[0.06em] md:text-5xl md:tracking-[0.18em]">
             Transportation
           </h2>
         </header>

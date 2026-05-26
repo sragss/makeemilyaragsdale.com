@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 const SLIDES = [
@@ -17,9 +17,23 @@ const AUTO_MS = 8000;
 
 export function BelmondCarousel() {
   const [index, setIndex] = useState(0);
+  const touchStartX = useRef<number | null>(null);
 
   const go = (next: number) => {
     setIndex(((next % SLIDES.length) + SLIDES.length) % SLIDES.length);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const delta = e.changedTouches[0].clientX - touchStartX.current;
+    const threshold = 50;
+    if (delta < -threshold) go(index + 1);
+    else if (delta > threshold) go(index - 1);
+    touchStartX.current = null;
   };
 
   useEffect(() => {
@@ -30,7 +44,11 @@ export function BelmondCarousel() {
   }, [index]);
 
   return (
-    <section className="relative aspect-[3/4] w-full overflow-hidden bg-[#1c1109] md:aspect-auto md:h-full">
+    <section
+      className="relative h-[calc(100svh-2.5rem)] w-full overflow-hidden bg-[#1c1109] md:aspect-auto md:h-full"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
       <div className="relative h-full w-full">
         <AnimatePresence initial={false} mode="sync">
           <motion.div
@@ -47,7 +65,13 @@ export function BelmondCarousel() {
               fill
               priority={index === 0}
               sizes="100vw"
-              className="object-cover"
+              className={`object-cover ${
+                index === 0
+                  ? "object-[10%_50%] md:object-center"
+                  : index === 4
+                  ? "object-[70%_50%] md:object-center"
+                  : ""
+              }`}
             />
             <div className="absolute inset-0 bg-black/25" />
           </motion.div>
@@ -66,7 +90,7 @@ export function BelmondCarousel() {
           type="button"
           onClick={() => go(index - 1)}
           aria-label="Previous slide"
-          className="absolute left-4 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-[#f5e9c8]/60 bg-black/30 text-[#f5e9c8] backdrop-blur-sm transition-all hover:scale-105 hover:border-[#f5e9c8] hover:bg-black/45 sm:left-8 sm:h-14 sm:w-14"
+          className="absolute left-4 top-1/2 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-[#f5e9c8]/60 bg-black/30 text-[#f5e9c8] backdrop-blur-sm transition-all hover:scale-105 hover:border-[#f5e9c8] hover:bg-black/45 md:flex sm:left-8 sm:h-14 sm:w-14"
         >
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="15 18 9 12 15 6" />
@@ -76,7 +100,7 @@ export function BelmondCarousel() {
           type="button"
           onClick={() => go(index + 1)}
           aria-label="Next slide"
-          className="absolute right-4 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-[#f5e9c8]/60 bg-black/30 text-[#f5e9c8] backdrop-blur-sm transition-all hover:scale-105 hover:border-[#f5e9c8] hover:bg-black/45 sm:right-8 sm:h-14 sm:w-14"
+          className="absolute right-4 top-1/2 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-[#f5e9c8]/60 bg-black/30 text-[#f5e9c8] backdrop-blur-sm transition-all hover:scale-105 hover:border-[#f5e9c8] hover:bg-black/45 md:flex sm:right-8 sm:h-14 sm:w-14"
         >
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="9 18 15 12 9 6" />
