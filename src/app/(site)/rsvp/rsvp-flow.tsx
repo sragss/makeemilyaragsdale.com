@@ -28,7 +28,7 @@ const RSVP_STEPS = [
     label: "RSVP",
     eyebrow: "",
     title: "RSVP",
-    subtitle: "February 26-27, 2027 · San Miguel de Allende, Mexico",
+    subtitle: "",
   },
   { id: "meal", label: "Meal", eyebrow: "", title: "Meal", subtitle: "" },
   { id: "stay", label: "Stay", eyebrow: "", title: "Belmond", subtitle: "" },
