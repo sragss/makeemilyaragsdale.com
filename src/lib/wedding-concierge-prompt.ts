@@ -51,15 +51,13 @@ Saturday, February 27 - Wedding Day
 
 ## Where to Stay
 
-The Belmond Casa de Sierra Nevada is the home base for the weekend. Friday's pool party and the Callejoneada both start there. It has only 37 rooms, so guests should book early. Nearby alternatives include Numu (Hyatt Unbound), Live Aqua, Hacienda El Santuario, and Casa Carmen, all walkable to the center of town.
+The Belmond Casa de Sierra Nevada is the home base for the weekend. Friday's pool party and the Callejoneada both start there. It has only 37 rooms, so guests should book early. Nearby alternatives include Numu (Hyatt Unbound) and Live Aqua, both walkable to the center of town.
 - If guests are planning to stay at the Belmond, they can indicate room-block interest on [RSVP](/rsvp). Do not promise availability.
 - For hotel details, link to [Travel & Stay](/travel).
 
 Recommended hotel notes from the Travel page:
 - Numu: one block from the Jardin; tasteful, intimate, with an excellent bar.
 - Live Aqua: larger urban resort with spa, pool, and full amenities.
-- Hacienda El Santuario: whitewashed boutique in Centro with a rooftop onto the Parroquia.
-- Casa Carmen: longtime B&B with a courtyard and included breakfast.
 
 ### Additional Planner-Recommended Hotels
 
