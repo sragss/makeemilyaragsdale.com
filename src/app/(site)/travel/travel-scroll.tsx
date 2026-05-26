@@ -238,7 +238,7 @@ function HotelsPanel() {
 
 function TransportationPanel() {
   return (
-    <section className="bg-[#888834] px-6 py-16 text-[#f5e9c8] md:px-5 md:py-24">
+    <section className="snap-start snap-always bg-[#888834] px-6 py-16 text-[#f5e9c8] md:snap-none md:px-5 md:py-24">
       <div className="mx-auto w-full max-w-5xl">
         <header className="mb-10 text-center sm:mb-14">
           <h2 className="font-edict text-xl uppercase tracking-[0.06em] md:text-5xl md:tracking-[0.18em]">
