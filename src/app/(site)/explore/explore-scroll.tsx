@@ -200,7 +200,15 @@ function ActivityPanel({
         </div>
         <div className="px-6 pb-12 text-center md:px-12 md:pb-0">
           <h2 className="font-edict text-3xl uppercase tracking-[0.18em] text-garden-moss sm:text-4xl">
-            {activity.name}
+            {activity.name === "Hot Air Balloon" ? (
+              <>
+                Hot Air{" "}
+                <br className="md:hidden" />
+                Balloon
+              </>
+            ) : (
+              activity.name
+            )}
           </h2>
           <p className="mx-auto mt-6 max-w-md text-balance font-edict text-base leading-relaxed text-[#493932]/85 sm:text-lg">
             {activity.note}
@@ -213,7 +221,7 @@ function ActivityPanel({
 
 function RestaurantsPanel() {
   return (
-    <section className="flex h-full items-center overflow-hidden bg-[#3f3e19] px-3 text-[#f5e9c8] sm:px-6">
+    <section className="flex h-full items-start overflow-hidden bg-[#3f3e19] px-3 pb-16 pt-16 text-[#f5e9c8] sm:px-6 md:items-center md:pb-0 md:pt-0">
       <div className="mx-auto w-full max-w-5xl">
         <header className="mb-10 text-center sm:mb-14">
           <h2 className="font-edict text-3xl uppercase tracking-[0.18em] text-[#888834] sm:text-4xl">
