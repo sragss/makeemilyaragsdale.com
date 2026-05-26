@@ -221,7 +221,7 @@ function ActivityPanel({
 
 function RestaurantsPanel() {
   return (
-    <section className="flex h-full items-start overflow-hidden bg-[#3f3e19] px-3 pb-16 pt-16 text-[#f5e9c8] sm:px-6 md:items-center md:pb-0 md:pt-0">
+    <section className="flex h-full items-start overflow-y-auto bg-[#3f3e19] px-3 pb-24 pt-16 text-[#f5e9c8] sm:px-6 md:items-center md:overflow-hidden md:pb-0 md:pt-0">
       <div className="mx-auto w-full max-w-5xl">
         <header className="mb-10 text-center sm:mb-14">
           <h2 className="font-edict text-3xl uppercase tracking-[0.18em] text-[#888834] sm:text-4xl">
