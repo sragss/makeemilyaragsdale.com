@@ -32,7 +32,7 @@ const HOTELS = [
     href: "https://www.fiestamericanatravelty.com/en/live-aqua/hotels/live-aqua-san-miguel-de-allende",
   },
   {
-    name: "L'otel Casa Arca",
+    name: "Casa Arca",
     src: "/images/L'otel Casa Arca.png",
     note: "Boutique design hotel tucked into Centro.",
     href: "https://www.lotel-casaarca.com/",
@@ -140,27 +140,20 @@ function ContactIcon({
 export function TravelScroll() {
   return (
     <>
-      <div className="flex flex-col md:hidden">
+      <ScrollStackPanels className="relative -mt-12 w-full md:-mt-10">
         <HeroPanel />
         <BelmondIntroPanel />
         <BelmondCarousel />
         <HotelsPanel />
-        <TransportationPanel />
-      </div>
-      <ScrollStackPanels className="relative -mt-12 hidden w-full md:-mt-10 md:block">
-        <HeroPanel />
-        <BelmondIntroPanel />
-        <BelmondCarousel />
-        <HotelsPanel />
-        <TransportationPanel />
       </ScrollStackPanels>
+      <TransportationPanel />
     </>
   );
 }
 
 function HeroPanel() {
   return (
-    <section className="relative min-h-[calc(100svh-2.5rem)] w-full overflow-hidden md:aspect-auto md:h-full md:min-h-0">
+    <section className="relative h-full w-full overflow-hidden">
       <Image
         src="/images/TravelandStay-Hero.png"
         alt="San Miguel de Allende skyline at golden hour"
@@ -182,7 +175,7 @@ function HeroPanel() {
 
 function BelmondIntroPanel() {
   return (
-    <section className="flex min-h-[calc(100svh-2.5rem)] items-center justify-center overflow-hidden bg-[#f5e9c8] px-6 py-16 text-[#493932] md:h-full md:min-h-0 md:px-3 md:py-0 md:pb-[14vh]">
+    <section className="flex h-full items-center justify-center overflow-hidden bg-[#f5e9c8] px-6 pb-[14vh] text-[#493932] md:px-3">
       <div className="mx-auto max-w-3xl space-y-6 text-center">
         <h2 className="font-edict text-[2.25rem] font-medium uppercase tracking-[0.08em] sm:text-[2.7rem]">
           The Belmond
@@ -204,7 +197,7 @@ function BelmondIntroPanel() {
 
 function HotelsPanel() {
   return (
-    <section className="flex min-h-[calc(100svh-2.5rem)] flex-col items-center justify-start overflow-hidden bg-[#f5e9c8] px-6 py-16 text-[#493932] md:h-full md:min-h-0 md:px-3 md:py-0 md:pt-[12vh]">
+    <section className="flex h-full flex-col items-center justify-start overflow-hidden bg-[#f5e9c8] px-6 pt-[12vh] text-[#493932] md:px-3">
       <div className="mx-auto max-w-2xl space-y-4 text-center">
         <h2 className="font-edict text-3xl font-light italic sm:text-4xl">
           Other hotels we recommend
@@ -215,7 +208,7 @@ function HotelsPanel() {
         </p>
       </div>
 
-      <ul className="mt-10 grid w-full grid-cols-2 gap-y-6 md:mt-[22vh] md:grid-cols-4">
+      <ul className="mt-[16vh] grid w-full grid-cols-2 gap-y-6 sm:mt-[22vh] sm:grid-cols-4">
         {HOTELS.map((hotel) => (
           <li key={hotel.name} className="space-y-4">
             <a
@@ -245,7 +238,7 @@ function HotelsPanel() {
 
 function TransportationPanel() {
   return (
-    <section className="flex items-center justify-center overflow-hidden bg-[#888834] px-6 py-16 text-[#f5e9c8] md:h-full md:px-5 md:py-0">
+    <section className="bg-[#888834] px-6 py-16 text-[#f5e9c8] md:px-5 md:py-24">
       <div className="mx-auto w-full max-w-5xl">
         <header className="mb-10 text-center sm:mb-14">
           <h2 className="font-edict text-xl uppercase tracking-[0.06em] md:text-5xl md:tracking-[0.18em]">

@@ -45,7 +45,7 @@ export function BelmondCarousel() {
 
   return (
     <section
-      className="relative h-[calc(100svh-2.5rem)] w-full overflow-hidden bg-[#1c1109] md:aspect-auto md:h-full"
+      className="relative h-full w-full overflow-hidden bg-[#1c1109]"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
