@@ -15,13 +15,11 @@ export function AttendToggle({
         selected={attending}
         onClick={() => onChange(true)}
         label="Joyfully accept"
-        tone="accept"
       />
       <ReplyChoice
         selected={!attending}
         onClick={() => onChange(false)}
         label="Regretfully decline"
-        tone="decline"
       />
     </div>
   );
@@ -31,26 +29,20 @@ function ReplyChoice({
   selected,
   onClick,
   label,
-  tone,
 }: {
   selected: boolean;
   onClick: () => void;
   label: string;
-  tone: "accept" | "decline";
 }) {
-  const selectedClass =
-    tone === "accept"
-      ? "border-[#d2cf53] bg-[#d2cf53] text-[#3f3e19]"
-      : "border-[#6b692a] bg-[#6b692a] text-garden-cream";
   return (
     <button
       type="button"
       aria-pressed={selected}
       onClick={onClick}
-      className={`relative min-h-14 overflow-hidden border px-4 py-4 text-left transition-colors sm:py-3 ${
+      className={`relative min-h-14 overflow-hidden border bg-garden-cream px-4 py-4 text-left text-garden-moss transition-colors sm:py-3 ${
         selected
-          ? selectedClass
-          : "border-garden-cream/35 text-garden-cream hover:border-garden-cream/70 hover:bg-garden-cream/10"
+          ? "border-garden-moss"
+          : "border-garden-cream hover:bg-garden-cream/90"
       }`}
     >
       <AnimatePresence>

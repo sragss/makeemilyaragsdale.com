@@ -161,7 +161,11 @@ interface Particle {
   shape: DrawFn;
 }
 
-function createParticle(cx: number, cy: number): Particle {
+function createParticle(
+  cx: number,
+  cy: number,
+  palette: readonly string[]
+): Particle {
   // Explode outward from center point
   const angle = Math.random() * Math.PI * 2;
   const speed = 3 + Math.random() * 8;
@@ -177,7 +181,7 @@ function createParticle(cx: number, cy: number): Particle {
     gravity: 0.06 + Math.random() * 0.04,
     drag: 0.97 + Math.random() * 0.02,
     opacity: 0.6 + Math.random() * 0.4,
-    color: COLORS[Math.floor(Math.random() * COLORS.length)],
+    color: palette[Math.floor(Math.random() * palette.length)],
     shape: SHAPES[Math.floor(Math.random() * SHAPES.length)],
   };
 }
@@ -185,9 +189,11 @@ function createParticle(cx: number, cy: number): Particle {
 export function BotanicalConfetti({
   duration = 4500,
   onComplete,
+  colors,
 }: {
   duration?: number;
   onComplete?: () => void;
+  colors?: readonly string[];
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
@@ -241,8 +247,9 @@ export function BotanicalConfetti({
         spawnedRef.current = true;
         const cx = canvas.width / 2;
         const cy = canvas.height * 0.55;
+        const palette = colors && colors.length > 0 ? colors : COLORS;
         for (let i = 0; i < 45; i++) {
-          particlesRef.current.push(createParticle(cx, cy));
+          particlesRef.current.push(createParticle(cx, cy, palette));
         }
       }
 

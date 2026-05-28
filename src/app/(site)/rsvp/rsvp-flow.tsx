@@ -123,7 +123,6 @@ function RsvpForm({ onComplete }: { onComplete: (attending: boolean) => void }) 
   const [attendingFriday, setAttendingFriday] = useState(true);
   const [attendingSaturday, setAttendingSaturday] = useState(true);
   const [hotelWillBook, setHotelWillBook] = useState<boolean | undefined>();
-  const [hotelAcknowledged, setHotelAcknowledged] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [showHotelConfetti, setShowHotelConfetti] = useState(false);
@@ -140,14 +139,11 @@ function RsvpForm({ onComplete }: { onComplete: (attending: boolean) => void }) 
     (guest) => !guest.mainCoursePreference.trim()
   );
   const missingHotel = acceptedGuests.length > 0 && hotelWillBook === undefined;
-  const missingHotelAcknowledgement =
-    acceptedGuests.length > 0 && hotelWillBook === true && !hotelAcknowledged;
   const hasAcceptedGuests = acceptedGuests.length > 0;
   const rsvpComplete =
     namedGuests.length > 0 && (!hasAcceptedGuests || !missingEventSelection);
   const mealComplete = !hasAcceptedGuests || !missingMainCourse;
-  const stayComplete =
-    !hasAcceptedGuests || (!missingHotel && !missingHotelAcknowledgement);
+  const stayComplete = !hasAcceptedGuests || !missingHotel;
   const stepComplete: Record<RsvpStep, boolean> = {
     details: true,
     rsvp: rsvpComplete,
@@ -171,14 +167,12 @@ function RsvpForm({ onComplete }: { onComplete: (attending: boolean) => void }) 
     hasAcceptedGuests,
     missingEventSelection,
     missingHotel,
-    missingHotelAcknowledgement,
   });
   const canSubmit =
     namedGuests.length > 0 &&
     !missingEventSelection &&
     !missingMainCourse &&
     !missingHotel &&
-    !missingHotelAcknowledgement &&
     !submitting;
 
   function updateGuest(
@@ -246,8 +240,6 @@ function RsvpForm({ onComplete }: { onComplete: (attending: boolean) => void }) 
         guests,
         hotelWillBook:
           acceptedGuests.length > 0 ? hotelWillBook : undefined,
-        hotelAcknowledged:
-          acceptedGuests.length > 0 ? hotelAcknowledged : undefined,
       });
       onComplete(acceptedGuests.length > 0);
     } catch {
@@ -262,6 +254,7 @@ function RsvpForm({ onComplete }: { onComplete: (attending: boolean) => void }) 
       {showHotelConfetti && (
         <BotanicalConfetti
           duration={3500}
+          colors={["#d2cf53"]}
           onComplete={() => setShowHotelConfetti(false)}
         />
       )}
@@ -355,16 +348,12 @@ function RsvpForm({ onComplete }: { onComplete: (attending: boolean) => void }) 
                 <StepPanel key="stay" step="stay" direction={stepDirection}>
                   <HotelSection
                     hotelWillBook={hotelWillBook}
-                    hotelAcknowledged={hotelAcknowledged}
                     onWillBookChange={(value) => {
                       setHotelWillBook(value);
                       if (value) {
                         setShowHotelConfetti(true);
-                      } else {
-                        setHotelAcknowledged(false);
                       }
                     }}
-                    onAcknowledgedChange={setHotelAcknowledged}
                   />
                 </StepPanel>
               )}
@@ -414,14 +403,12 @@ function getStepHint({
   hasAcceptedGuests,
   missingEventSelection,
   missingHotel,
-  missingHotelAcknowledgement,
 }: {
   currentStep: RsvpStep;
   namedGuestCount: number;
   hasAcceptedGuests: boolean;
   missingEventSelection: boolean;
   missingHotel: boolean;
-  missingHotelAcknowledgement: boolean;
 }) {
   if (currentStep === "details") {
     return "";
@@ -436,7 +423,6 @@ function getStepHint({
 
   if (currentStep === "stay") {
     if (missingHotel) return "Choose whether you would like room-block details.";
-    if (missingHotelAcknowledgement) return "Confirm that follow-up is okay.";
   }
 
   return "";
@@ -718,62 +704,32 @@ function EventCheckboxes({
 
 function HotelSection({
   hotelWillBook,
-  hotelAcknowledged,
   onWillBookChange,
-  onAcknowledgedChange,
 }: {
   hotelWillBook: boolean | undefined;
-  hotelAcknowledged: boolean;
   onWillBookChange: (value: boolean) => void;
-  onAcknowledgedChange: (value: boolean) => void;
 }) {
   return (
-    <section className="space-y-5">
-      <p className="font-serif text-[1.35rem] font-light leading-tight text-garden-cream sm:text-[1.2rem]">
+    <section className="-mt-5 space-y-5">
+      <p className="text-center font-edict text-[1.55rem] italic font-light leading-tight text-garden-cream sm:text-[1.9rem]">
         Casa de Sierra Nevada
       </p>
-      <p className="font-serif text-[1.08rem] leading-relaxed text-garden-cream/82 sm:text-base">
-        Planning to stay at the Belmond? We can send room-block details.
+      <p className="mx-auto max-w-sm text-center font-serif text-[1.125rem] leading-snug text-garden-cream/85 sm:text-[1.215rem]">
+        We have reserved the Belmond as our home base for the weekend, and we
+        would love for as many of you to stay with us as possible. Please book
+        early to secure a spot!
       </p>
 
-      <div className="grid grid-cols-2 overflow-hidden border border-garden-cream/35">
-        <div className="relative aspect-[9/6]">
-          <Image
-            src="/images/belmond-aerial.jpg"
-            alt="Belmond Casa de Sierra Nevada aerial view"
-            fill
-            className="object-cover"
-            sizes="(max-width: 640px) 45vw, 220px"
-          />
-        </div>
-        <div className="relative aspect-[9/6] border-l border-garden-cream/35">
-          <Image
-            src="/images/belmond-dining.jpg"
-            alt="Belmond Casa de Sierra Nevada dining"
-            fill
-            className="object-cover"
-            sizes="(max-width: 640px) 45vw, 220px"
-          />
-        </div>
-      </div>
-
-      <a
-        href="https://www.belmond.com/hotels/north-america/mexico/san-miguel-de-allende/belmond-casa-de-sierra-nevada/"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex min-h-11 items-center border border-garden-cream/55 px-4 py-2 font-edict text-[11px] uppercase tracking-[0.24em] text-garden-cream transition-colors hover:border-[#d2cf53] hover:bg-[#d2cf53] hover:text-[#3f3e19] sm:text-[10px] sm:tracking-[0.28em]"
-      >
-        View the Belmond
-      </a>
+      <hr className="border-t border-garden-cream/30" />
 
       <div className="space-y-3">
-        <FieldLabel required>Room block</FieldLabel>
+        <FieldLabel required>Planning to stay at the Belmond</FieldLabel>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           <ChoiceButton
             selected={hotelWillBook === true}
             onClick={() => onWillBookChange(true)}
           >
-            Yes, send details
+            Yes
           </ChoiceButton>
           <ChoiceButton
             selected={hotelWillBook === false}
@@ -784,51 +740,28 @@ function HotelSection({
         </div>
       </div>
 
-      <AnimatePresence initial={false}>
-        {hotelWillBook && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="overflow-hidden"
-          >
-            <label
-              className={`flex min-h-14 w-full cursor-pointer items-start gap-3 border px-4 py-4 text-left transition-colors sm:py-3 ${
-                hotelAcknowledged
-                  ? "border-[#d2cf53] bg-[#d2cf53]/10"
-                  : "border-garden-cream/30 hover:border-garden-cream/60"
-              }`}
-            >
-              <input
-                type="checkbox"
-                checked={hotelAcknowledged}
-                onChange={(event) => onAcknowledgedChange(event.target.checked)}
-                className="peer sr-only"
-              />
-              <span
-                aria-hidden
-                className={`mt-0.5 flex size-6 shrink-0 items-center justify-center border border-garden-cream/60 transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-[#d2cf53]/55 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-garden-olive sm:size-5 ${
-                  hotelAcknowledged
-                    ? "border-[#d2cf53] bg-[#d2cf53] text-[#3f3e19]"
-                    : "text-transparent"
-                }`}
-              >
-                <CheckIcon aria-hidden className="size-4 sm:size-3.5" />
-              </span>
-              <span className="space-y-1">
-                <span className="block font-edict text-[11px] uppercase tracking-[0.24em] text-garden-cream sm:text-[10px] sm:tracking-[0.28em]">
-                  Follow-up okay
-                  <span className="ml-1 text-garden-cream/70">*</span>
-                </span>
-                <span className="block font-serif text-[15px] leading-relaxed text-garden-cream/82 sm:text-sm">
-                  I understand the room block is limited.
-                </span>
-              </span>
-            </label>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <a
+        href="https://reservation.belmond.com/select-room?productCode=CSN&specialCodeType=groupCode&specialCodeValue=5686768&startDate=2027-02-25&endDate=2027-02-28&"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group relative block aspect-[16/9] w-full overflow-hidden border border-garden-cream/35"
+        aria-label="Belmond booking link - opens in a new tab"
+      >
+        <Image
+          src="/images/Belmond 1 upscale.jpg"
+          alt="Belmond Casa de Sierra Nevada"
+          fill
+          className="object-cover"
+          sizes="(max-width: 640px) 100vw, 640px"
+        />
+        <div className="absolute inset-0 bg-black/25" />
+        <div className="absolute inset-0 flex items-center justify-center px-6">
+          <span className="font-inter inline-block border border-garden-cream/85 bg-black/15 px-8 py-3.5 text-[11px] uppercase tracking-[0.28em] text-garden-cream backdrop-blur-sm transition-colors group-hover:bg-garden-cream group-hover:text-[#493932]">
+            Booking Link
+          </span>
+        </div>
+      </a>
+
     </section>
   );
 }
@@ -953,8 +886,8 @@ function ChoiceButton({
       onClick={onClick}
       className={`flex min-h-16 items-center gap-3 border px-4 py-3 text-left font-serif text-[1.08rem] leading-snug transition-colors sm:min-h-14 sm:text-base ${
         selected
-          ? "border-[#d2cf53] bg-[#d2cf53] text-[#3f3e19]"
-          : "border-garden-cream/35 text-garden-cream hover:border-garden-cream/70 hover:bg-garden-cream/10"
+          ? "border-garden-moss bg-garden-moss text-garden-cream"
+          : "border-garden-cream bg-garden-cream text-garden-moss hover:bg-garden-cream/90"
       }`}
     >
       <span
@@ -985,10 +918,10 @@ function ChecklistChoice({
       aria-pressed={selected}
       aria-label={`${selected ? "Remove" : "Add"} ${title}`}
       onClick={onClick}
-      className={`flex min-h-[4.5rem] w-full items-start gap-3 border px-4 py-3.5 text-left transition-colors sm:min-h-16 sm:px-3.5 sm:py-3 ${
+      className={`flex min-h-[4.5rem] w-full items-start gap-3 border bg-garden-cream px-4 py-3.5 text-left text-garden-moss transition-colors sm:min-h-16 sm:px-3.5 sm:py-3 ${
         selected
-          ? "border-[#d2cf53] bg-[#d2cf53] text-[#3f3e19]"
-          : "border-garden-cream/35 text-garden-cream hover:border-garden-cream/70 hover:bg-garden-cream/10"
+          ? "border-garden-moss"
+          : "border-garden-cream hover:bg-garden-cream/90"
       }`}
     >
       <span

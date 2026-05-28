@@ -79,7 +79,9 @@ export function BelmondCarousel() {
 
         <div className="absolute inset-0 flex items-center justify-center px-6">
           <a
-            href="#"
+            href="https://reservation.belmond.com/select-room?productCode=CSN&specialCodeType=groupCode&specialCodeValue=5686768&startDate=2027-02-25&endDate=2027-02-28&"
+            target="_blank"
+            rel="noopener noreferrer"
             className="font-inter inline-block border border-[#f5e9c8]/85 bg-black/15 px-8 py-3.5 text-[11px] uppercase tracking-[0.28em] text-[#f5e9c8] backdrop-blur-sm transition-colors hover:bg-[#f5e9c8] hover:text-[#493932]"
           >
             Booking Link
