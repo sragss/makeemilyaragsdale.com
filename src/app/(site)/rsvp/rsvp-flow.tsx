@@ -568,7 +568,7 @@ function WeekendDetails() {
           by
         </span>
         <span className="ml-3 font-edict text-[1.35rem] uppercase tracking-[0.12em] sm:ml-4 sm:text-[1.55rem]">
-          January 15, 2027
+          December 15, 2026
         </span>
       </p>
     </div>

@@ -27,11 +27,11 @@ const LOOKS: Look[] = [
     bgClass: "bg-[#493523]",
     textClass: "text-garden-cream",
     accentClass: "text-garden-green",
-    inspirationUrl: "https://www.pinterest.com/emily_devery/wedding/pool-party-inspiration/",
+    inspirationUrl: "https://www.pinterest.com/emily_devery/pool-party-attire/",
   },
   {
     day: "Friday Evening",
-    title: "White Party",
+    title: "Blanc Soiree",
     subtitle: "Parade and Rooftop",
     body: "Footwear suitable for walking the parade on cobblestone, and a light jacket or wrap for the rooftop after sunset as the temperature drops substantially in the evenings.",
     image: "/images/White Party Attire.png",
@@ -39,7 +39,7 @@ const LOOKS: Look[] = [
     bgClass: "bg-[#f5e9c8]",
     textClass: "text-[#888834]",
     accentClass: "text-[#493523]",
-    inspirationUrl: "https://www.pinterest.com/emily_devery/wedding/welcome-party-inspiration/",
+    inspirationUrl: "https://www.pinterest.com/emily_devery/welcome-party-attire/",
   },
   {
     day: "Saturday",
@@ -51,7 +51,7 @@ const LOOKS: Look[] = [
     bgClass: "bg-[#3f3e19]",
     textClass: "text-garden-cream",
     accentClass: "text-[#d2cf53]",
-    inspirationUrl: "https://www.pinterest.com/emily_devery/wedding/enchanted-garden-inspiration/",
+    inspirationUrl: "https://www.pinterest.com/emily_devery/enchanted-garden-attire/",
   },
 ];
 
