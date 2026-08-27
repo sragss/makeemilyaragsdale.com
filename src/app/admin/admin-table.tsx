@@ -24,7 +24,7 @@ import {
 import { InviteTrashButton } from "./invite-trash-button";
 import { updateRsvp } from "./rsvp/[id]/actions";
 
-interface InviteRow {
+export interface InviteRow {
   id: string;
   address: string | null;
   guests: {

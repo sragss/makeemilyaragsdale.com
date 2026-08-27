@@ -1,13 +1,37 @@
 import Link from "next/link";
 import { getDb } from "@/db";
 import { addressSubmissions } from "@/db/schema";
-import { count } from "drizzle-orm";
+import { desc } from "drizzle-orm";
 import { Separator } from "@/components/ui/separator";
+import {
+  guestNamesToPeople,
+  householdHasRsvped,
+} from "@/lib/guest-matching";
+import { formatDisplayName } from "@/lib/format-name";
 import { isAdminAuthenticated } from "./actions";
 import { LoginForm } from "./login-form";
 import { CreateRsvpForm } from "./create-rsvp";
-import { AdminTable } from "./admin-table";
+import { AdminViews } from "./admin-views";
 import { AgentPrompt } from "./agent-prompt";
+
+function formatAddress(row: {
+  addressLine1: string;
+  addressLine2: string | null;
+  city: string;
+  region: string;
+  postalCode: string;
+  country: string;
+}) {
+  const cityLine = [
+    row.city,
+    [row.region, row.postalCode].filter(Boolean).join(" "),
+  ]
+    .filter(Boolean)
+    .join(", ");
+  return [row.addressLine1, row.addressLine2, cityLine, row.country]
+    .filter(Boolean)
+    .join("\n");
+}
 
 export const dynamic = "force-dynamic";
 
@@ -37,9 +61,31 @@ export default async function AdminPage() {
 
   const allInvites = allInvitesRaw.filter((i) => !i.deleted);
 
-  const [{ value: addressCount }] = await db
-    .select({ value: count() })
-    .from(addressSubmissions);
+  const addresses = await db
+    .select()
+    .from(addressSubmissions)
+    .orderBy(desc(addressSubmissions.createdAt));
+  const addressCount = addresses.length;
+
+  // Households that gave a mailing address but have no RSVP yet.
+  const rsvpedPeople = guestNamesToPeople(
+    allInvites.flatMap((i) => i.guests.map((g) => g.name))
+  );
+  const awaiting = addresses
+    .filter((row) => !householdHasRsvped(row.name, rsvpedPeople))
+    .map((row) => ({
+      id: row.id,
+      name: formatDisplayName(row.name),
+      email: row.email,
+      phone: row.phone,
+      address: formatAddress(row),
+      submittedAt: row.createdAt.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      }),
+    }));
+
   const totalGuests = allInvites.flatMap((i) => i.guests);
   const declined = totalGuests.filter(
     (g) => g.attendingFriday === false && g.attendingSaturday === false
@@ -56,14 +102,14 @@ export default async function AdminPage() {
     address: inv.address,
     guests: inv.guests.map((g) => ({
       id: g.id,
-      name: g.name,
+      name: formatDisplayName(g.name),
       attendingFriday: g.attendingFriday,
       attendingSaturday: g.attendingSaturday,
       email: g.email,
       phone: g.phone,
       mainCoursePreference: g.mainCoursePreference,
       dietaryRestrictions: g.dietaryRestrictions,
-      plusOneName: g.plusOneName,
+      plusOneName: g.plusOneName ? formatDisplayName(g.plusOneName) : null,
     })),
     hotelBooking: inv.hotelBookings
       ? {
@@ -101,7 +147,7 @@ export default async function AdminPage() {
 
         <CreateRsvpForm />
 
-        <AdminTable invites={tableData} />
+        <AdminViews invites={tableData} awaiting={awaiting} />
       </div>
     </main>
   );
