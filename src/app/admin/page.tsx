@@ -85,7 +85,7 @@ export default async function AdminPage() {
       // A household line can cover several people ("Phil, Faith & Wells
       // Budding"), so the awaiting count is people, not rows.
       people: Math.max(expandHousehold(row.name).length, 1),
-      expected: row.expected,
+      status: (row.status as "unknown" | "yes" | "likely_no" | "no") ?? "unknown",
       email: row.email,
       phone: row.phone,
       address: formatAddress(row),
@@ -113,7 +113,7 @@ export default async function AdminPage() {
     (g) => g.attendingFriday || g.attendingSaturday
   ).length;
   const expectedCount = awaiting
-    .filter((row) => row.expected)
+    .filter((row) => row.status === "yes")
     .reduce((n, row) => n + row.people, 0);
   const projectedCount = attendingCount + expectedCount;
 

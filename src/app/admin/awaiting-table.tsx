@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 
 export interface AwaitingRow {
@@ -16,20 +17,30 @@ export interface AwaitingRow {
   name: string;
   /** How many people this household line covers. */
   people: number;
-  /** Manually flagged as believed-to-be-coming. */
-  expected: boolean;
+  /** Hand-set read on them: no idea yet, coming, probably not, or not. */
+  status: "unknown" | "yes" | "likely_no" | "no";
   email: string;
   phone: string;
   address: string;
   submittedAt: string;
 }
 
+const STATUS_LABELS: Record<AwaitingRow["status"], string | null> = {
+  unknown: null,
+  yes: "Coming",
+  likely_no: "Probably no",
+  no: "Not coming",
+};
+
 export function AwaitingTable({
   rows,
   note,
+  showStatus = false,
 }: {
   rows: AwaitingRow[];
   note: string;
+  /** Show a per-row badge — used where a list mixes statuses. */
+  showStatus?: boolean;
 }) {
   const [search, setSearch] = useState("");
 
@@ -70,7 +81,14 @@ export function AwaitingTable({
           <TableBody>
             {filtered.map((row) => (
               <TableRow key={row.id}>
-                <TableCell className="text-sm">{row.name}</TableCell>
+                <TableCell className="text-sm">
+                  {row.name}
+                  {showStatus && STATUS_LABELS[row.status] && (
+                    <Badge variant="outline" className="ml-2 text-xs">
+                      {STATUS_LABELS[row.status]}
+                    </Badge>
+                  )}
+                </TableCell>
                 <TableCell>
                   <div className="space-y-0.5 text-xs text-muted-foreground">
                     {row.email && <span className="block">{row.email}</span>}

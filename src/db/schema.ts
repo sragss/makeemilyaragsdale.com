@@ -112,7 +112,8 @@ export const addressSubmissions = pgTable("address_submissions", {
   region: text("region").notNull(),
   postalCode: text("postal_code").notNull(),
   country: text("country").notNull(),
-  // Manually flagged in the admin: believed to be coming, but has not RSVP'd.
-  expected: boolean("expected").notNull().default(false),
+  // Hand-set in the admin for people who have not formally RSVP'd:
+  // "unknown" (no read on them yet), "yes", "likely_no", or "no".
+  status: text("status").notNull().default("unknown"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
