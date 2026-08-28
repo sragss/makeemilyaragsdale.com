@@ -55,8 +55,11 @@ export function expandHousehold(raw: string): Person[] {
   const words = (p: string) =>
     p.split(" ").filter((w) => w && !SUFFIXES.has(w));
 
-  const lastWords = words(parts[parts.length - 1]);
-  const surname = lastWords[lastWords.length - 1] ?? "";
+  // The shared surname comes from the last part that actually carries one, so
+  // "Ryan Sproule & Madeline" still resolves Madeline to Sproule.
+  const withSurname = parts.map(words).filter((w) => w.length >= 2);
+  const donor = withSurname[withSurname.length - 1] ?? words(parts[parts.length - 1]);
+  const surname = donor[donor.length - 1] ?? "";
 
   return parts
     .map((part) => {

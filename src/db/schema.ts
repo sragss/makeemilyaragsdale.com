@@ -88,6 +88,19 @@ export const hotelBookingRelations = relations(hotelBookings, ({ one }) => ({
   }),
 }));
 
+/**
+ * People whose status needs chasing down, independent of the RSVP and address
+ * tables — someone who replied but probably cannot come, or who was invited
+ * but never appeared in either table at all.
+ */
+export const followUps = pgTable("follow_ups", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: text("name").notNull(),
+  note: text("note"),
+  resolved: boolean("resolved").notNull().default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const addressSubmissions = pgTable("address_submissions", {
   id: uuid("id").defaultRandom().primaryKey(),
   name: text("name").notNull(),
@@ -99,5 +112,7 @@ export const addressSubmissions = pgTable("address_submissions", {
   region: text("region").notNull(),
   postalCode: text("postal_code").notNull(),
   country: text("country").notNull(),
+  // Manually flagged in the admin: believed to be coming, but has not RSVP'd.
+  expected: boolean("expected").notNull().default(false),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });

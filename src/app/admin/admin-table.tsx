@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
   Table,
   TableBody,
@@ -12,7 +11,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -22,11 +20,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { InviteTrashButton } from "./invite-trash-button";
-import { updateRsvp } from "./rsvp/[id]/actions";
 
 export interface InviteRow {
   id: string;
-  address: string | null;
   guests: {
     id: string;
     name: string;
@@ -58,11 +54,6 @@ const HOTEL_OPTIONS = [
   { value: "declined_hotel", label: "Declined" },
 ] as const;
 
-const ADDR_OPTIONS = [
-  { value: "has_addr", label: "Has address" },
-  { value: "no_addr", label: "Missing" },
-] as const;
-
 const HOTEL_LABELS: Record<string, string> = {
   booking: "Booking",
   booked: "Booked",
@@ -75,7 +66,6 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState<Set<string>>(new Set());
   const [filterHotel, setFilterHotel] = useState<Set<string>>(new Set());
-  const [filterAddr, setFilterAddr] = useState<Set<string>>(new Set());
   const [sortKey, setSortKey] = useState<SortKey>("name");
   const [sortAsc, setSortAsc] = useState(true);
 
@@ -114,22 +104,12 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
       clear: () => toggleFilter(filterHotel, setFilterHotel, v),
     });
   }
-  for (const v of filterAddr) {
-    const opt = ADDR_OPTIONS.find((o) => o.value === v);
-    if (opt)
-      activeFilters.push({
-        label: `Address: ${opt.label}`,
-        clear: () => toggleFilter(filterAddr, setFilterAddr, v),
-      });
-  }
-
   const filtered = useMemo(() => {
     let result = invites;
 
     if (search.trim()) {
       const q = search.toLowerCase();
       result = result.filter((inv) => {
-        if (inv.address?.toLowerCase().includes(q)) return true;
         return inv.guests.some(
           (g) =>
             g.name.toLowerCase().includes(q) ||
@@ -162,14 +142,6 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
       });
     }
 
-    if (filterAddr.size > 0) {
-      result = result.filter((inv) => {
-        if (filterAddr.has("has_addr") && inv.address) return true;
-        if (filterAddr.has("no_addr") && !inv.address) return true;
-        return false;
-      });
-    }
-
     result = [...result].sort((a, b) => {
       let cmp = 0;
       if (sortKey === "name") {
@@ -186,7 +158,6 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
     search,
     filterStatus,
     filterHotel,
-    filterAddr,
     sortKey,
     sortAsc,
   ]);
@@ -199,7 +170,7 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
       {/* Search + Filter button */}
       <div className="flex gap-2">
         <Input
-          placeholder="Search guests, address, email, phone..."
+          placeholder="Search guests, email, phone..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="flex-1"
@@ -229,13 +200,6 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
               selected={filterHotel}
               onToggle={(v) => toggleFilter(filterHotel, setFilterHotel, v)}
             />
-            <Separator />
-            <FilterSection
-              label="Address"
-              options={ADDR_OPTIONS}
-              selected={filterAddr}
-              onToggle={(v) => toggleFilter(filterAddr, setFilterAddr, v)}
-            />
             {activeFilters.length > 0 && (
               <>
                 <Separator />
@@ -243,7 +207,6 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
                   onClick={() => {
                     setFilterStatus(new Set());
                     setFilterHotel(new Set());
-                    setFilterAddr(new Set());
                   }}
                   className="text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                 >
@@ -304,7 +267,7 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
                 <div className="space-y-0.5">
                   <Link
                     href={`/admin/rsvp/${invite.id}`}
-                    className="block underline underline-offset-4 decoration-muted-foreground/50 transition-colors hover:decoration-foreground"
+                    className="block underline-offset-4 decoration-muted-foreground/50 transition-colors hover:underline"
                   >
                     {invite.guests.map((g) => (
                       <span key={g.id} className="block text-sm">
@@ -318,10 +281,6 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
                       </span>
                     ))}
                   </Link>
-                  <AddressControl
-                    inviteId={invite.id}
-                    address={invite.address}
-                  />
                 </div>
               </TableCell>
               <TableCell>
@@ -404,67 +363,6 @@ export function AdminTable({ invites }: { invites: InviteRow[] }) {
       </Table>
       </div>
     </div>
-  );
-}
-
-function AddressControl({
-  inviteId,
-  address,
-}: {
-  inviteId: string;
-  address: string | null;
-}) {
-  const router = useRouter();
-  const [value, setValue] = useState(address ?? "");
-  const [savedAddress, setSavedAddress] = useState(address ?? "");
-  const [saving, setSaving] = useState(false);
-
-  async function handleSave() {
-    setSaving(true);
-    const nextAddress = value.trim();
-    await updateRsvp(inviteId, {
-      address: nextAddress || null,
-    });
-    setSavedAddress(nextAddress);
-    setSaving(false);
-    router.refresh();
-  }
-
-  return (
-    <Popover>
-      <PopoverTrigger
-        className={`mt-1 text-[11px] underline underline-offset-4 decoration-muted-foreground/40 transition-colors cursor-pointer ${
-          savedAddress
-            ? "text-muted-foreground hover:text-foreground"
-            : "text-destructive/80 hover:text-destructive"
-        }`}
-      >
-        {savedAddress ? "address saved" : "missing address"}
-      </PopoverTrigger>
-      <PopoverContent align="start" className="w-80 space-y-3">
-        <div className="space-y-1">
-          <p className="text-sm font-medium">Mailing address</p>
-        </div>
-        <textarea
-          value={value}
-          onChange={(event) => setValue(event.target.value)}
-          placeholder={"123 Main St\nApartment 4B\nCity, State ZIP"}
-          rows={4}
-          className="min-h-24 w-full rounded-lg border border-input bg-transparent px-2.5 py-2 text-sm transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-        />
-        <div className="flex items-center justify-between gap-3">
-          <Button
-            type="button"
-            size="sm"
-            onClick={handleSave}
-            disabled={saving}
-            className="h-8"
-          >
-            {saving ? "Saving..." : "Save"}
-          </Button>
-        </div>
-      </PopoverContent>
-    </Popover>
   );
 }
 

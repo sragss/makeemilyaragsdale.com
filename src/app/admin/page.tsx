@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { getDb } from "@/db";
-import { addressSubmissions } from "@/db/schema";
-import { desc } from "drizzle-orm";
+import { addressSubmissions, followUps } from "@/db/schema";
+import { asc, desc } from "drizzle-orm";
 import { Separator } from "@/components/ui/separator";
 import {
+  expandHousehold,
   guestNamesToPeople,
   householdHasRsvped,
 } from "@/lib/guest-matching";
@@ -67,6 +68,11 @@ export default async function AdminPage() {
     .orderBy(desc(addressSubmissions.createdAt));
   const addressCount = addresses.length;
 
+  const followUpRows = await db
+    .select()
+    .from(followUps)
+    .orderBy(asc(followUps.resolved), desc(followUps.createdAt));
+
   // Households that gave a mailing address but have no RSVP yet.
   const rsvpedPeople = guestNamesToPeople(
     allInvites.flatMap((i) => i.guests.map((g) => g.name))
@@ -76,6 +82,10 @@ export default async function AdminPage() {
     .map((row) => ({
       id: row.id,
       name: formatDisplayName(row.name),
+      // A household line can cover several people ("Phil, Faith & Wells
+      // Budding"), so the awaiting count is people, not rows.
+      people: Math.max(expandHousehold(row.name).length, 1),
+      expected: row.expected,
       email: row.email,
       phone: row.phone,
       address: formatAddress(row),
@@ -97,9 +107,18 @@ export default async function AdminPage() {
     (i) => i.hotelBookings?.willBook === true
   );
 
+  // Where we stand on numbers: everyone who has said yes, plus the households
+  // flagged as expected who have not replied yet.
+  const attendingCount = totalGuests.filter(
+    (g) => g.attendingFriday || g.attendingSaturday
+  ).length;
+  const expectedCount = awaiting
+    .filter((row) => row.expected)
+    .reduce((n, row) => n + row.people, 0);
+  const projectedCount = attendingCount + expectedCount;
+
   const tableData = allInvites.map((inv) => ({
     id: inv.id,
-    address: inv.address,
     guests: inv.guests.map((g) => ({
       id: g.id,
       name: formatDisplayName(g.name),
@@ -134,20 +153,43 @@ export default async function AdminPage() {
 
         <AgentPrompt />
 
+        <div className="rounded-lg border border-input bg-muted/30 px-5 py-4">
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+            Projected headcount
+          </p>
+          <p className="mt-1 text-4xl font-light leading-none">
+            {projectedCount}
+          </p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {attendingCount} confirmed
+            <span className="mx-1.5 text-muted-foreground/50">·</span>
+            {expectedCount} expected
+          </p>
+        </div>
+
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-4 text-center">
           <Stat label="Saturday" value={totalGuests.filter((g) => g.attendingSaturday === true).length} />
           <Stat label="Friday" value={totalGuests.filter((g) => g.attendingFriday === true).length} />
           <Stat label="Declined" value={declined.length} />
           <Stat label="Pending" value={pending.length} />
           <Stat label="Hotel" value={hotelYes.length} />
-          <Stat label="RSVPs" value={allInvites.length} />
+          <Stat label="Groups" value={allInvites.length} />
         </div>
 
         <Separator />
 
         <CreateRsvpForm />
 
-        <AdminViews invites={tableData} awaiting={awaiting} />
+        <AdminViews
+          invites={tableData}
+          awaiting={awaiting}
+          followUps={followUpRows.map((f) => ({
+            id: f.id,
+            name: f.name,
+            note: f.note,
+            resolved: f.resolved,
+          }))}
+        />
       </div>
     </main>
   );

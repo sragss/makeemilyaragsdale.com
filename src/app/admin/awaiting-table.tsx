@@ -14,13 +14,23 @@ import { Input } from "@/components/ui/input";
 export interface AwaitingRow {
   id: string;
   name: string;
+  /** How many people this household line covers. */
+  people: number;
+  /** Manually flagged as believed-to-be-coming. */
+  expected: boolean;
   email: string;
   phone: string;
   address: string;
   submittedAt: string;
 }
 
-export function AwaitingTable({ rows }: { rows: AwaitingRow[] }) {
+export function AwaitingTable({
+  rows,
+  note,
+}: {
+  rows: AwaitingRow[];
+  note: string;
+}) {
   const [search, setSearch] = useState("");
 
   const filtered = useMemo(() => {
@@ -41,18 +51,11 @@ export function AwaitingTable({ rows }: { rows: AwaitingRow[] }) {
         onChange={(e) => setSearch(e.target.value)}
       />
 
-      <p className="text-xs text-muted-foreground">
-        Gave a mailing address at{" "}
-        <span className="font-mono">/address</span> but has no matching RSVP.
-        Matched on name, so nicknames or spelling changes can put someone here
-        by mistake — worth a glance before you chase anyone.
-      </p>
+      <p className="text-xs text-muted-foreground">{note}</p>
 
       {filtered.length === 0 ? (
         <p className="py-12 text-center text-sm text-muted-foreground">
-          {rows.length === 0
-            ? "Everyone on the address list has RSVP'd."
-            : "No matches."}
+          {rows.length === 0 ? "Nobody in this list." : "No matches."}
         </p>
       ) : (
         <Table>
@@ -75,7 +78,13 @@ export function AwaitingTable({ rows }: { rows: AwaitingRow[] }) {
                   </div>
                 </TableCell>
                 <TableCell className="text-xs whitespace-pre-line text-muted-foreground">
-                  {row.address}
+                  {row.address.trim() ? (
+                    row.address
+                  ) : (
+                    <span className="text-muted-foreground/60 italic">
+                      no address yet
+                    </span>
+                  )}
                 </TableCell>
                 <TableCell className="text-right text-xs text-muted-foreground whitespace-nowrap">
                   {row.submittedAt}

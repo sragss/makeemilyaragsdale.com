@@ -111,7 +111,13 @@ export default async function AdminAddressesPage() {
                       {row.phone}
                     </TableCell>
                     <TableCell className="text-sm whitespace-pre-line leading-snug">
-                      {address}
+                      {address ? (
+                        address
+                      ) : (
+                        <span className="text-destructive/70 italic">
+                          no address yet
+                        </span>
+                      )}
                     </TableCell>
                     <TableCell>
                       <CopyButton url={address} label="Address" />
