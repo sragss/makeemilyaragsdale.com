@@ -5,13 +5,22 @@ import { AdminTable, type InviteRow } from "./admin-table";
 import { AwaitingTable, type AwaitingRow } from "./awaiting-table";
 import { FollowUpTable, type FollowUpRow } from "./follow-up-table";
 
-type View = "rsvps" | "expected" | "notComing" | "awaiting" | "followUp";
+type View =
+  | "rsvps"
+  | "expected"
+  | "expectedNo"
+  | "firmNo"
+  | "awaiting"
+  | "followUp";
 
 const EXPECTED_NOTE =
   "Believed to be coming, but they have not formally RSVP'd. These people count toward the projected headcount.";
 
-const NOT_COMING_NOTE =
-  "Believed not to be coming, but they have not formally declined. Not counted in the projected headcount.";
+const EXPECTED_NO_NOTE =
+  "Probably not coming, but nothing is settled — worth one more ask before writing them off. Not counted in the projected headcount.";
+
+const FIRM_NO_NOTE =
+  "Confirmed not coming. Nothing left to chase here. Not counted in the projected headcount.";
 
 const AWAITING_NOTE =
   "Invited, no RSVP, and no read on them yet — everyone here still needs chasing. People you have marked coming or not coming have moved to their own tabs.";
@@ -28,9 +37,10 @@ export function AdminViews({
   const [view, setView] = useState<View>("rsvps");
 
   const expected = awaiting.filter((r) => r.status === "yes");
-  const notComing = awaiting.filter(
-    (r) => r.status === "likely_no" || r.status === "no"
-  );
+  // Two separate reads on a no: "probably not" still deserves a nudge,
+  // "not coming" is settled.
+  const expectedNo = awaiting.filter((r) => r.status === "likely_no");
+  const firmNo = awaiting.filter((r) => r.status === "no");
   const unknown = awaiting.filter((r) => r.status === "unknown");
 
   // Counts are people, not groups — a single RSVP or address line can cover a
@@ -59,7 +69,8 @@ export function AdminViews({
       <div className="inline-flex flex-wrap gap-1 rounded-lg border border-input bg-muted/40 p-1">
         {tab("rsvps", "RSVPs", rsvpPeople)}
         {tab("expected", "Expected yes", people(expected))}
-        {tab("notComing", "Expected no", people(notComing))}
+        {tab("expectedNo", "Expected no", people(expectedNo))}
+        {tab("firmNo", "Firm no", people(firmNo))}
         {tab("awaiting", "Awaiting RSVP", people(unknown))}
         {tab(
           "followUp",
@@ -72,8 +83,11 @@ export function AdminViews({
       {view === "expected" && (
         <AwaitingTable rows={expected} note={EXPECTED_NOTE} />
       )}
-      {view === "notComing" && (
-        <AwaitingTable rows={notComing} note={NOT_COMING_NOTE} showStatus />
+      {view === "expectedNo" && (
+        <AwaitingTable rows={expectedNo} note={EXPECTED_NO_NOTE} />
+      )}
+      {view === "firmNo" && (
+        <AwaitingTable rows={firmNo} note={FIRM_NO_NOTE} />
       )}
       {view === "awaiting" && (
         <AwaitingTable rows={unknown} note={AWAITING_NOTE} />
