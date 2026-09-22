@@ -9,7 +9,7 @@ type View =
   | "rsvps"
   | "expected"
   | "expectedNo"
-  | "firmNo"
+  | "declined"
   | "awaiting"
   | "followUp";
 
@@ -17,10 +17,10 @@ const EXPECTED_NOTE =
   "Believed to be coming, but they have not formally RSVP'd. These people count toward the projected headcount.";
 
 const EXPECTED_NO_NOTE =
-  "Probably not coming, but nothing is settled — worth one more ask before writing them off. Not counted in the projected headcount.";
+  "Probably not coming, but they have not confirmed either way — worth one more ask before writing them off. Not counted in the projected headcount.";
 
-const FIRM_NO_NOTE =
-  "Confirmed not coming. Nothing left to chase here. Not counted in the projected headcount.";
+const DECLINED_NOTE =
+  "Told us they cannot make it. Nothing left to chase here. Not counted in the projected headcount.";
 
 const AWAITING_NOTE =
   "Invited, no RSVP, and no read on them yet — everyone here still needs chasing. People you have marked coming or not coming have moved to their own tabs.";
@@ -38,9 +38,9 @@ export function AdminViews({
 
   const expected = awaiting.filter((r) => r.status === "yes");
   // Two separate reads on a no: "probably not" still deserves a nudge,
-  // "not coming" is settled.
+  // a regretful decline is settled.
   const expectedNo = awaiting.filter((r) => r.status === "likely_no");
-  const firmNo = awaiting.filter((r) => r.status === "no");
+  const declined = awaiting.filter((r) => r.status === "no");
   const unknown = awaiting.filter((r) => r.status === "unknown");
 
   // Counts are people, not groups — a single RSVP or address line can cover a
@@ -70,7 +70,7 @@ export function AdminViews({
         {tab("rsvps", "RSVPs", rsvpPeople)}
         {tab("expected", "Expected yes", people(expected))}
         {tab("expectedNo", "Expected no", people(expectedNo))}
-        {tab("firmNo", "Firm no", people(firmNo))}
+        {tab("declined", "Regretfully declined", people(declined))}
         {tab("awaiting", "Awaiting RSVP", people(unknown))}
         {tab(
           "followUp",
@@ -86,8 +86,8 @@ export function AdminViews({
       {view === "expectedNo" && (
         <AwaitingTable rows={expectedNo} note={EXPECTED_NO_NOTE} />
       )}
-      {view === "firmNo" && (
-        <AwaitingTable rows={firmNo} note={FIRM_NO_NOTE} />
+      {view === "declined" && (
+        <AwaitingTable rows={declined} note={DECLINED_NOTE} />
       )}
       {view === "awaiting" && (
         <AwaitingTable rows={unknown} note={AWAITING_NOTE} />
