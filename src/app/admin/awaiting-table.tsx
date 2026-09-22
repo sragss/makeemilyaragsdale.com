@@ -62,7 +62,7 @@ export function AwaitingTable({
         onChange={(e) => setSearch(e.target.value)}
       />
 
-      <p className="text-xs text-muted-foreground">{note}</p>
+      {note && <p className="text-xs text-muted-foreground">{note}</p>}
 
       {filtered.length === 0 ? (
         <p className="py-12 text-center text-sm text-muted-foreground">

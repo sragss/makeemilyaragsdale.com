@@ -40,14 +40,30 @@ export function AdminViews({
   // Two separate reads on a no: "probably not" still deserves a nudge,
   // a regretful decline is settled.
   const expectedNo = awaiting.filter((r) => r.status === "likely_no");
-  const declined = awaiting.filter((r) => r.status === "no");
+  const declinedByHand = awaiting.filter((r) => r.status === "no");
   const unknown = awaiting.filter((r) => r.status === "unknown");
+
+  // A decline that came through the form belongs with the other regrets, not
+  // in the RSVPs tab — that tab is for people we are counting on. A group
+  // where somebody is still coming stays put.
+  const declinedRsvps = invites.filter(
+    (inv) =>
+      inv.guests.length > 0 &&
+      inv.guests.every(
+        (g) => g.attendingFriday === false && g.attendingSaturday === false
+      )
+  );
+  const declinedIds = new Set(declinedRsvps.map((inv) => inv.id));
+  const activeRsvps = invites.filter((inv) => !declinedIds.has(inv.id));
 
   // Counts are people, not groups — a single RSVP or address line can cover a
   // couple or a whole family.
   const people = (rows: AwaitingRow[]) =>
     rows.reduce((n, row) => n + row.people, 0);
-  const rsvpPeople = invites.reduce((n, inv) => n + inv.guests.length, 0);
+  const guestsIn = (rows: InviteRow[]) =>
+    rows.reduce((n, inv) => n + inv.guests.length, 0);
+  const rsvpPeople = guestsIn(activeRsvps);
+  const declinedPeople = guestsIn(declinedRsvps) + people(declinedByHand);
 
   const tab = (value: View, label: string, count: number) => (
     <button
@@ -70,7 +86,7 @@ export function AdminViews({
         {tab("rsvps", "RSVPs", rsvpPeople)}
         {tab("expected", "Expected yes", people(expected))}
         {tab("expectedNo", "Expected no", people(expectedNo))}
-        {tab("declined", "Regretfully declined", people(declined))}
+        {tab("declined", "Regretfully declined", declinedPeople)}
         {tab("awaiting", "Awaiting RSVP", people(unknown))}
         {tab(
           "followUp",
@@ -79,7 +95,7 @@ export function AdminViews({
         )}
       </div>
 
-      {view === "rsvps" && <AdminTable invites={invites} />}
+      {view === "rsvps" && <AdminTable invites={activeRsvps} />}
       {view === "expected" && (
         <AwaitingTable rows={expected} note={EXPECTED_NOTE} />
       )}
@@ -87,7 +103,33 @@ export function AdminViews({
         <AwaitingTable rows={expectedNo} note={EXPECTED_NO_NOTE} />
       )}
       {view === "declined" && (
-        <AwaitingTable rows={declined} note={DECLINED_NOTE} />
+        <div className="space-y-8">
+          <p className="text-xs text-muted-foreground">{DECLINED_NOTE}</p>
+
+          {declinedRsvps.length > 0 && (
+            <section className="space-y-3">
+              <h3 className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                Declined through the RSVP form
+              </h3>
+              <AdminTable invites={declinedRsvps} />
+            </section>
+          )}
+
+          {declinedByHand.length > 0 && (
+            <section className="space-y-3">
+              <h3 className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                Told us another way
+              </h3>
+              <AwaitingTable rows={declinedByHand} note="" />
+            </section>
+          )}
+
+          {declinedRsvps.length === 0 && declinedByHand.length === 0 && (
+            <p className="py-12 text-center text-sm text-muted-foreground">
+              Nobody in this list.
+            </p>
+          )}
+        </div>
       )}
       {view === "awaiting" && (
         <AwaitingTable rows={unknown} note={AWAITING_NOTE} />
