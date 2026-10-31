@@ -2,7 +2,6 @@
 
 const MAIN_COURSES = [
   "Beef",
-  "Pork",
   "Chicken",
   "Fish",
   "Vegetarian",

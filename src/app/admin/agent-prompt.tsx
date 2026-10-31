@@ -26,7 +26,7 @@ WRITING (POST /api/admin with JSON body):
   {"action":"delete", "id":"...", "confirm":true}
 
 EVENTS: Two events — Friday pool party (Feb 26) and Saturday wedding (Feb 27). Each guest has attendingFriday and attendingSaturday (true/false/null).
-MAIN COURSE: mainCoursePreference is a string such as Beef, Pork, Chicken, Fish, Vegetarian, or a custom value.
+MAIN COURSE: mainCoursePreference is a string. The RSVP form offers Beef, Chicken, Fish, Vegetarian; any other value (including Pork, which earlier guests could pick) is possible and must be preserved.
 
 SAFETY:
 - Delete requires "confirm":true — it soft-deletes only (recoverable)

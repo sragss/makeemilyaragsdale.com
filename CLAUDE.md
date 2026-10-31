@@ -75,7 +75,7 @@ Returns `{ rsvps, guests, attending, declined, pending, hotelBooking, hotelCompl
 {"action":"delete","id":"RSVP_ID","confirm":true}
 ```
 
-Guest lookup can use `guestId`, or `inviteId` + `guestName`. `mainCoursePreference` is a string such as Beef, Pork, Chicken, Fish, Vegetarian, or a custom value.
+Guest lookup can use `guestId`, or `inviteId` + `guestName`. `mainCoursePreference` is a free string. The RSVP form offers Beef, Chicken, Fish, and Vegetarian; Pork was removed as a choice after some guests had already picked it, so existing Pork values still exist and should be preserved.
 
 ## Design
 
