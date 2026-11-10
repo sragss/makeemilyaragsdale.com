@@ -7,19 +7,32 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { SamAndEmilyLogo } from "@/components/logos";
 
-const TABS = [
+interface Tab {
+  href: string;
+  label: string;
+  /** Leaves the site, so it opens in a new tab and never reads as active. */
+  external?: boolean;
+}
+
+const TABS: Tab[] = [
   { href: "/", label: "Home" },
   { href: "/schedule", label: "Schedule" },
   { href: "/travel", label: "Travel & Stay" },
   { href: "/dress-code", label: "Attire" },
   { href: "/explore", label: "Explore" },
   { href: "/faq", label: "FAQ" },
+  {
+    href: "https://www.zola.com/registry/emilyandsamuelfebruary27",
+    label: "Registry",
+    external: true,
+  },
   { href: "/rsvp", label: "RSVP" },
 ];
 
-function isActive(pathname: string, href: string) {
-  if (href === "/") return pathname === "/";
-  return pathname === href || pathname.startsWith(`${href}/`);
+function isActive(pathname: string, tab: Tab) {
+  if (tab.external) return false;
+  if (tab.href === "/") return pathname === "/";
+  return pathname === tab.href || pathname.startsWith(`${tab.href}/`);
 }
 
 export function SiteNav() {
@@ -62,30 +75,44 @@ export function SiteNav() {
         <nav className="relative hidden flex-1 justify-end overflow-x-auto scrollbar-none md:flex">
           <ul className="flex h-full items-stretch whitespace-nowrap">
             {TABS.map((tab) => {
-              const active = isActive(pathname, tab.href);
+              const active = isActive(pathname, tab);
+              const className = `group relative flex items-center px-3 font-edict text-[12px] font-medium uppercase tracking-[0.16em] transition-colors ${
+                active
+                  ? "text-garden-cream"
+                  : "text-garden-cream/75 hover:text-garden-cream"
+              }`;
+              const inner = (
+                <>
+                  <span className="relative">{tab.label}</span>
+                  {active && (
+                    <motion.span
+                      layoutId="site-nav-indicator"
+                      className="absolute inset-x-2 bottom-0 h-px bg-garden-green shadow-[0_0_10px_rgba(170,181,55,0.85)]"
+                      transition={{
+                        type: "spring",
+                        stiffness: 380,
+                        damping: 32,
+                      }}
+                    />
+                  )}
+                </>
+              );
               return (
                 <li key={tab.href} className="relative flex">
-                  <Link
-                    href={tab.href}
-                    className={`group relative flex items-center px-3 font-edict text-[12px] font-medium uppercase tracking-[0.16em] transition-colors ${
-                      active
-                        ? "text-garden-cream"
-                        : "text-garden-cream/75 hover:text-garden-cream"
-                    }`}
-                  >
-                    <span className="relative">{tab.label}</span>
-                    {active && (
-                      <motion.span
-                        layoutId="site-nav-indicator"
-                        className="absolute inset-x-2 bottom-0 h-px bg-garden-green shadow-[0_0_10px_rgba(170,181,55,0.85)]"
-                        transition={{
-                          type: "spring",
-                          stiffness: 380,
-                          damping: 32,
-                        }}
-                      />
-                    )}
-                  </Link>
+                  {tab.external ? (
+                    <a
+                      href={tab.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={className}
+                    >
+                      {inner}
+                    </a>
+                  ) : (
+                    <Link href={tab.href} className={className}>
+                      {inner}
+                    </Link>
+                  )}
                 </li>
               );
             })}
@@ -124,24 +151,37 @@ export function SiteNav() {
             >
               <ul className="border-y border-garden-cream/20">
                 {TABS.map((tab) => {
-                  const active = isActive(pathname, tab.href);
+                  const active = isActive(pathname, tab);
+                  const className = `group relative flex min-h-14 items-center py-4 font-edict text-[13px] font-medium uppercase tracking-[0.24em] transition-colors ${
+                    active
+                      ? "text-garden-cream"
+                      : "text-garden-cream/75 hover:text-garden-cream"
+                  }`;
 
                   return (
                     <li
                       key={tab.href}
                       className="border-b border-garden-cream/15 last:border-b-0"
                     >
-                      <Link
-                        href={tab.href}
-                        onClick={() => setMobileMenuOpen(false)}
-                        className={`group relative flex min-h-14 items-center py-4 font-edict text-[13px] font-medium uppercase tracking-[0.24em] transition-colors ${
-                          active
-                            ? "text-garden-cream"
-                            : "text-garden-cream/75 hover:text-garden-cream"
-                        }`}
-                      >
-                        <span>{tab.label}</span>
-                      </Link>
+                      {tab.external ? (
+                        <a
+                          href={tab.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className={className}
+                        >
+                          <span>{tab.label}</span>
+                        </a>
+                      ) : (
+                        <Link
+                          href={tab.href}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className={className}
+                        >
+                          <span>{tab.label}</span>
+                        </Link>
+                      )}
                     </li>
                   );
                 })}
